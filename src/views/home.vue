@@ -66,8 +66,8 @@
         </div>
         <div class="add-btn">
           <el-button-group>
-            <el-button size="mini" icon="el-icon-plus" @click="dialogFormVisible = true"></el-button>
-            <el-button size="mini" icon="el-icon-minus" @click="delCollection"></el-button>
+            <el-button size="mini" icon="el-icon-plus" @click="addSnippets"></el-button>
+            <el-button size="mini" icon="el-icon-minus"></el-button>
           </el-button-group>
         </div>
       </div>
@@ -80,11 +80,13 @@
         </el-form-item>
         <el-form-item label="关键字" :label-width="formLabelWidth">
           <el-input size="mini" v-model="form.keyword" placeholder="请输入关键字"></el-input>
-          <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字. </div>
+          <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字.</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input type="textarea" :rows="6" placeholder="在这里输入文本片段" v-model="form.snippet"></el-input>
-          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}, {random}. 如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件</div>
+          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}, {random}.
+            如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件
+          </div>
         </el-form-item>
 
       </el-form>
@@ -98,6 +100,7 @@
 
 <script>
 import collection from "@/components/collection.vue";
+import {getSnippetsEntity} from "@/entitys";
 
 export default {
   components: {
@@ -123,14 +126,53 @@ export default {
           collection: '1697005378732',
           id: '169700537986',
         }],
-      dialogFormVisible:false,
-      form:{},
-      formLabelWidth:'80px',
+      dialogFormVisible: false,
+      form: {},
+      formLabelWidth: '80px',
     }
   },
   mounted() {
   },
   methods: {
+
+    addSnippets() {
+      let collection_list = window.utools.db.allDocs("collection")
+      if (collection_list === 0) {
+        this.$message({
+          message: '请先创建一个集合',
+          type: 'warning'
+        })
+        return false;
+      }
+      if (this.current_collection_item === null) {
+        this.current_collection_item = collection_list[0]
+      }
+      this.dialogFormVisible = true
+    },
+
+    onSubmit() {
+      if (!this._verify()) return false;
+
+      let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form.name, this.form.keyword, this.form.snippet)
+      let result = window.utools.db.put({
+        _id: `${this.current_collection_item.data.id}/${snippets.id}`,
+        data: snippets
+      })
+
+      if (result.ok) {
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        })
+        this.dialogFormVisible = false
+      } else {
+        this.$message({
+          message: '保存失败',
+          type: 'error'
+        })
+      }
+
+    },
 
     changeStatus(e) {
       console.log('changeStatus', e)
@@ -155,6 +197,34 @@ export default {
     testButton() {
       const features = utools.getFeatures()
       console.log(features)
+    },
+
+    _verify() {
+      if (this.form.name === '') {
+        this.$message({
+          message: '名称不能为空',
+          type: 'warning'
+        })
+        return false;
+      }
+
+      if (this.form.keyword === '') {
+        this.$message({
+          message: '关键字不能为空',
+          type: 'warning'
+        })
+        return false;
+      }
+
+      if (this.form.snippet === '') {
+        this.$message({
+          message: '文本片段不能为空',
+          type: 'warning'
+        })
+        return false;
+      }
+
+      return true;
     },
   },
 
@@ -225,7 +295,8 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.remark{
+
+.remark {
   font-size: 12px;
   color: #999;
   line-height: 18px;

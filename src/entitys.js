@@ -9,3 +9,15 @@ export function getCollectionEntity(name, prefix, num = 0) {
 
 }
 
+export function getSnippetsEntity(collection_id, name, keyword, snippet) {
+  var timestamp = new Date().getTime();
+  return {
+    collection_id: collection_id,
+    name: name,
+    keyword: keyword,
+    snippet: snippet,
+    id: timestamp,
+    status: 1,
+  }
+}
+

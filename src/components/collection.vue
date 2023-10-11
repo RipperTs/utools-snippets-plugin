@@ -15,7 +15,9 @@
       <div class="add-btn">
         <el-button-group>
           <el-button size="mini" icon="el-icon-plus" @click="dialogFormVisible = true"></el-button>
-          <el-button size="mini" icon="el-icon-minus" :disabled="this.current_collection_index >= this.collection_list.length" @click="delCollection"></el-button>
+          <el-button size="mini" icon="el-icon-minus"
+                     :disabled="this.current_collection_index >= this.collection_list.length"
+                     @click="delCollection"></el-button>
         </el-button-group>
       </div>
     </div>
