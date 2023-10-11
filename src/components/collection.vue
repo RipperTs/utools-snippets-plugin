@@ -73,7 +73,7 @@ export default {
     },
     delCollection() {
       // 确认删除对话框
-      this.$confirm('此操作将永久删除该分组, 是否继续?', '提示', {
+      this.$confirm('此操作将删除该分组及分组下的所有数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
