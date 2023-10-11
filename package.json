@@ -1,0 +1,71 @@
+{
+  "name": "utools-template",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "serve": "node gen-router.js && vue-cli-service serve",
+    "build": "node gen-router.js && vue-cli-service build",
+    "genmenu": "node gen-router.js",
+    "svgo": "svgo -f src/assets/icons/svg --config=src/assets/icons/svgo.config.js"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss7-compat": "^2.2.17",
+    "axios": "^0.21.4",
+    "core-js": "^3.6.4",
+    "dayjs": "^1.11.6",
+    "element-ui": "^2.15.6",
+    "lodash": "^4.17.21",
+    "mavon-editor": "^2.9.0",
+    "uuid": "^9.0.1",
+    "vue": "^2.6.11",
+    "vue-router": "^3.5.3",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.3.0",
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-plugin-router": "~4.3.0",
+    "@vue/cli-plugin-vuex": "~4.3.0",
+    "@vue/cli-service": "~4.3.0",
+    "autoprefixer": "^9.8.8",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-import": "^1.13.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-abi": "^3.30.0",
+    "postcss": "^7.0.39",
+    "sass": "^1.29.0",
+    "sass-loader": "^8.0.2",
+    "svg-sprite-loader": "^6.0.11",
+    "svgo": "^3.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
+    "utools-api-types": "^3.0.0",
+    "utools-helper": "^2.1.0",
+    "vant": "^2.8.4",
+    "vue-quill-editor": "^3.0.6",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "description": "",
+  "main": "babel.config.js",
+  "keywords": [],
+  "author": ""
+}
