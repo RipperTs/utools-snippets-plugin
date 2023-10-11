@@ -15,7 +15,7 @@
       <div class="add-btn">
         <el-button-group>
           <el-button size="mini" icon="el-icon-plus" @click="dialogFormVisible = true"></el-button>
-          <el-button size="mini" icon="el-icon-minus" @click="delCollection"></el-button>
+          <el-button size="mini" icon="el-icon-minus" :disabled="this.current_collection_index >= this.collection_list.length" @click="delCollection"></el-button>
         </el-button-group>
       </div>
     </div>
@@ -23,11 +23,11 @@
     <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="65%">
       <el-form :model="form">
         <el-form-item label="Name" :label-width="formLabelWidth">
-          <el-input v-model="form.name"></el-input>
+          <el-input size="mini" v-model="form.name"></el-input>
           <div class="explain mt-1.5">集合的名称, 最多不超过10个字符!</div>
         </el-form-item>
         <el-form-item label="Prefix" :label-width="formLabelWidth">
-          <el-input v-model="form.prefix" placeholder="prefix"></el-input>
+          <el-input size="mini" v-model="form.prefix" placeholder="prefix"></el-input>
           <div class="explain mt-1.5">本集合中所有片段的关键字前缀，即设置本集合中的所有片段在展开前都需要
             > 前缀。
           </div>
@@ -35,8 +35,8 @@
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onSubmit()">保 存</el-button>
+        <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit()">保 存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -66,10 +66,6 @@ export default {
   methods: {
     getCollectionList() {
       this.collection_list = window.utools.db.allDocs("collection")
-      if (this.current_collection_index >= this.collection_list.length) {
-        this.current_collection_index = 0
-        this.$emit('changeCollectionIndex', 0)
-      }
     },
     delCollection() {
       // 确认删除对话框
@@ -96,7 +92,6 @@ export default {
     clickCollection(item, index) {
       this.currCollectionItem = item
       this.current_collection_index = index
-      this.$emit('changeCollectionIndex', index)
       this.$emit('clickCollection', item, index)
     },
     onSubmit() {

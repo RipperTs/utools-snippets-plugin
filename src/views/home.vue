@@ -14,29 +14,130 @@
 
     <div class="setting-container p-5">
       <collection class="left-component" @clickCollection="clickCollection"></collection>
-      <div class="right-container border rounded bg-white"></div>
+      <div class="right-container rounded">
+        <div class="table-box">
+          <el-table
+            :data="tableData"
+            height="100%"
+            style="width: 100%;border-radius: 3px">
+            <el-table-column
+              prop="name"
+              width="120"
+              label="名称">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.name }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              width="60"
+              label="状态">
+              <template slot-scope="scope">
+                <el-switch
+                  :value="scope.row.status === 1"
+                  active-color="#13ce66"
+                  @change="changeStatus(scope.row)"
+                  inactive-color="#ff4949">
+                </el-switch>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="keyword"
+              width="120"
+              label="关键字">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.keyword }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="snippet"
+              label="文本片段">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.snippet }}
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="add-btn">
+          <el-button-group>
+            <el-button size="mini" icon="el-icon-plus" @click="dialogFormVisible = true"></el-button>
+            <el-button size="mini" icon="el-icon-minus" @click="delCollection"></el-button>
+          </el-button-group>
+        </div>
+      </div>
     </div>
+
+    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="80%">
+      <el-form :model="form">
+        <el-form-item label="名称" :label-width="formLabelWidth">
+          <el-input size="mini" v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="关键字" :label-width="formLabelWidth">
+          <el-input size="mini" v-model="form.keyword" placeholder="请输入关键字"></el-input>
+          <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字. </div>
+        </el-form-item>
+        <el-form-item label="文本片段" :label-width="formLabelWidth">
+          <el-input type="textarea" :rows="6" placeholder="在这里输入文本片段" v-model="form.snippet"></el-input>
+          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}, {random}. 如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件</div>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit()">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import collection from "@/components/collection.vue";
+
 export default {
   components: {
     collection
   },
   data() {
     return {
-      collection_list: [],
+      current_collection_item: null,
       current_collection_index: 0,
+      tableData: [{
+        status: 1,
+        name: '本地localhost',
+        keyword: '-127',
+        snippet: '127.0.0.1',
+        collection: '1697005378732',
+        id: '169700537982',
+      },
+        {
+          status: 0,
+          name: '转大写',
+          keyword: '-upper',
+          snippet: '{clipboard:uppercase}32132132133213',
+          collection: '1697005378732',
+          id: '169700537986',
+        }],
+      dialogFormVisible:false,
+      form:{},
+      formLabelWidth:'80px',
     }
   },
   mounted() {
   },
   methods: {
 
-    clickCollection(item,index) {
-      console.log(item,index)
+    changeStatus(e) {
+      console.log('changeStatus', e)
+    },
+
+    clickCollection(item, index) {
+      this.current_collection_item = item
     },
     addFunctionality() {
       utools.setFeature({
@@ -86,11 +187,48 @@ export default {
   display: flex;
   justify-content: space-between;
 
-  .left-component{
+  .left-component {
     width: 32%;
   }
+
   .right-container {
     width: 66%;
+
+    .table-box {
+      height: 80vh;
+      // y超出部分滚动
+      overflow-y: auto;
+    }
   }
+}
+
+.add-btn {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  margin-top: 2px;
+
+  .el-button--mini {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.el-switch {
+  transform: scale(0.6);
+}
+
+.snippet-content {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.remark{
+  font-size: 12px;
+  color: #999;
+  line-height: 18px;
+  margin-top: 5px;
 }
 </style>
