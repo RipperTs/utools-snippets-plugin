@@ -3,18 +3,19 @@
     <div class="left-container">
       <div class="title">分组列表</div>
       <div class="collection-list">
-        <div v-for="(item,index) in collection_list" :key="index">
-          <div class="item bg-white" @click="clickCollection(index)"
+        <div v-for="(item,index) in collection_list" :key="index" v-if="collection_list.length > 0">
+          <div class="item bg-white" @click="clickCollection(item,index)"
                :style="{'background':current_collection_index === index ? '#eee': '#fff'}">
-            <div class="name">{{ item.name }}</div>
-            <div class="desc mt-0.5">{{ item.num }} Snippets, prefix {{ item.prefix }}</div>
+            <div class="name">{{ item.data.name }}</div>
+            <div class="desc mt-0.5">{{ item.data.num }} Snippets, prefix {{ item.data.prefix }}</div>
           </div>
         </div>
+        <el-empty v-if="!collection_list.length" :image-size="100" class="mt-20" description="暂无分组"></el-empty>
       </div>
       <div class="add-btn">
         <el-button-group>
           <el-button size="mini" icon="el-icon-plus" @click="dialogFormVisible = true"></el-button>
-          <el-button size="mini" icon="el-icon-minus"></el-button>
+          <el-button size="mini" icon="el-icon-minus" @click="delCollection"></el-button>
         </el-button-group>
       </div>
     </div>
@@ -27,7 +28,9 @@
         </el-form-item>
         <el-form-item label="Prefix" :label-width="formLabelWidth">
           <el-input v-model="form.prefix" placeholder="prefix"></el-input>
-          <div class="explain mt-1.5">本集合中所有片段的关键字前缀，即设置本集合中的所有片段在展开前都需要 > 前缀。</div>
+          <div class="explain mt-1.5">本集合中所有片段的关键字前缀，即设置本集合中的所有片段在展开前都需要
+            > 前缀。
+          </div>
         </el-form-item>
 
       </el-form>
@@ -40,38 +43,98 @@
 </template>
 
 <script>
+import {getCollectionEntity} from "@/entitys";
+
 export default {
-  props: {
-    collection_list: {
-      type: Array,
-      default: () => {
-        return []
-      }
-    },
-    current_collection_index: {
-      type: Number,
-      default: 0
-    }
-  },
+  props: {},
   data() {
     return {
-      dialogFormVisible: true,
+      dialogFormVisible: false,
       form: {
         name: '',
         prefix: ''
       },
       formLabelWidth: '50px',
+      currCollectionItem: {},
+      collection_list: [],
+      current_collection_index: 0,
     }
   },
-  mounted() {
-
+  created() {
+    this.getCollectionList()
   },
   methods: {
-    clickCollection(index) {
-      this.$emit('clickCollection', index)
+    getCollectionList() {
+      this.collection_list = window.utools.db.allDocs("collection")
+      if (this.current_collection_index >= this.collection_list.length) {
+        this.current_collection_index = 0
+        this.$emit('changeCollectionIndex', 0)
+      }
     },
-    onSubmit(){
-      this.$emit('onSubmit', this.form)
+    delCollection() {
+      // 确认删除对话框
+      this.$confirm('此操作将永久删除该分组, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let result = window.utools.db.remove(this.currCollectionItem)
+        if (result.ok) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.getCollectionList()
+        } else {
+          this.$message({
+            message: '删除失败',
+            type: 'error'
+          })
+        }
+      })
+    },
+    clickCollection(item, index) {
+      this.currCollectionItem = item
+      this.current_collection_index = index
+      this.$emit('changeCollectionIndex', index)
+      this.$emit('clickCollection', item, index)
+    },
+    onSubmit() {
+      if (!this._verify()) return false;
+
+      let collectionEntity = getCollectionEntity(this.form.name, this.form.prefix)
+      let result = window.utools.db.put({
+        _id: `collection/${collectionEntity.id}`,
+        data: collectionEntity
+      })
+      if (result.ok) {
+        this.dialogFormVisible = false;
+        this.form = {
+          name: '',
+          prefix: ''
+        }
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        })
+        this.getCollectionList()
+      } else {
+        this.$message({
+          message: '保存失败',
+          type: 'error'
+        })
+      }
+    },
+
+    _verify() {
+      if (this.form.name === '') {
+        this.$message({
+          message: '请输入集合名称',
+          type: 'warning'
+        })
+        return false;
+      }
+      return true;
     },
   },
 

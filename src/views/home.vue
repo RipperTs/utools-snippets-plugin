@@ -13,11 +13,7 @@
     </div>
 
     <div class="setting-container p-5">
-      <collection class="left-component"
-                  :collection_list="collection_list"
-                  :current_collection_index="current_collection_index"
-                  @clickCollection="clickCollection"
-      ></collection>
+      <collection class="left-component" @clickCollection="clickCollection"></collection>
       <div class="right-container border rounded bg-white"></div>
     </div>
   </div>
@@ -31,73 +27,16 @@ export default {
   },
   data() {
     return {
-      collection_list: [
-        {
-          "id": "1",
-          "name": "Docker",
-          "prefix": "ssh",
-          "num": 6,
-        },
-        {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        }, {
-          "id": "2",
-          "name": "system",
-          "prefix": "-",
-          "num": 289,
-        },
-      ],
-      current_collection_index: 1,
+      collection_list: [],
+      current_collection_index: 0,
     }
   },
   mounted() {
   },
   methods: {
-    clickCollection(index) {
-      this.current_collection_index = index
+
+    clickCollection(item,index) {
+      console.log(item,index)
     },
     addFunctionality() {
       utools.setFeature({
