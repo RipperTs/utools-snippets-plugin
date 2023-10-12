@@ -1,6 +1,6 @@
 {
   "name": "snippets",
-  "pluginName": "关键字自动上屏",
+  "pluginName": "Automatic snippets",
   "description": "帮助您随时随地地使用最有用的文本（代码）片段。在任意位置键入关键字，即可将对应的文本片段内容插入到指定位置。",
   "author": "https://github.com/ripperts",
   "homepage": "https://github.com/ripperts/snippets",
@@ -19,8 +19,10 @@
       "code": "snippets",
       "explain": "Automatic snippets",
       "cmds": [
-        "设置片段",
+        "Automatic snippets",
         "自动上屏",
+        "关键字上屏",
+        "设置自动上屏",
         {
           "type": "regex"
         }
