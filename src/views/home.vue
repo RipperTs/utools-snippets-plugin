@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialogFormVisible" top="8vh" :show-close="false" width="80%"
+    <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible" top="8vh" :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
@@ -111,6 +111,7 @@
       </div>
       <el-dialog
         width="70%"
+        style="user-select: none;"
         :show-close="false"
         :visible.sync="innerVisible"
         append-to-body>
@@ -454,7 +455,8 @@ export default {
   height: 85vh;
   display: flex;
   justify-content: space-between;
-
+  // 禁止选中
+  user-select: none;
   .left-component {
     width: 32%;
   }
