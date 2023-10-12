@@ -397,14 +397,6 @@ export default {
         return false;
       }
 
-      if (this.form.name.length > 10) {
-        this.$message({
-          message: '名称不能超过10个字符',
-          type: 'warning'
-        })
-        return false;
-      }
-
       if (this.form.keyword.length > 10) {
         this.$message({
           message: '关键字不能超过10个字符',
