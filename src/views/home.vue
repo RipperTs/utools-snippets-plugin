@@ -52,7 +52,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              width="120"
+              width="100"
               label="关键字">
               <template slot-scope="scope">
                 <div class="snippet-content">
@@ -387,6 +387,22 @@ export default {
       if (this.form.name === '') {
         this.$message({
           message: '名称不能为空',
+          type: 'warning'
+        })
+        return false;
+      }
+
+      if (this.form.name.length > 10) {
+        this.$message({
+          message: '名称不能超过10个字符',
+          type: 'warning'
+        })
+        return false;
+      }
+
+      if (this.form.keyword.length > 10) {
+        this.$message({
+          message: '关键字不能超过10个字符',
           type: 'warning'
         })
         return false;

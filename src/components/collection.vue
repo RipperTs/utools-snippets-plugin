@@ -203,7 +203,14 @@ export default {
     _verify() {
       if (this.form.name === '') {
         this.$message({
-          message: '请输入集合名称',
+          message: '请输入分组名称',
+          type: 'warning'
+        })
+        return false;
+      }
+      if(this.form.name.length > 10){
+        this.$message({
+          message: '分组名称最多不超过10个字符',
           type: 'warning'
         })
         return false;
