@@ -229,6 +229,7 @@ export default {
     border-radius: 3px 3px 0 0;
     border: 1px solid #eee;
     font-weight: 500;
+    color: #909399;
   }
 
   .collection-list {
@@ -243,11 +244,12 @@ export default {
     border-radius: 0 0 3px 3px;
 
     .name {
-      font-size: 12px;
+      font-size: 14px;
+      color: #606266;
     }
 
     .desc {
-      font-size: 12px;
+      font-size: 11px;
       color: #aaa;
     }
 

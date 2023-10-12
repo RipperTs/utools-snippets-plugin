@@ -39,12 +39,13 @@
             </el-table-column>
             <el-table-column
               width="60"
+              align="center"
               label="状态">
               <template slot-scope="scope">
                 <el-switch
                   :value="scope.row.data.status === 1"
                   active-color="#13ce66"
-                  @change="changeStatus(scope.row.data)"
+                  @change="changeStatus(scope.row)"
                   inactive-color="#ff4949">
                 </el-switch>
               </template>
@@ -106,7 +107,7 @@
 
 <script>
 import collection from "@/components/collection.vue";
-import {changeCollectionNum, getSnippetsEntity} from "@/entitys";
+import {changeCollectionNum, changeSnippetsStatus, getSnippetsEntity} from "@/entitys";
 
 export default {
   components: {
@@ -261,8 +262,26 @@ export default {
 
     },
 
-    changeStatus(e) {
-      console.log('changeStatus', e)
+    /**
+     * 改变文本片段的状态
+     * @param row
+     * @returns {boolean}
+     */
+    changeStatus(row) {
+      let status = row.data.status === 1 ? 0 : 1
+      let result = changeSnippetsStatus(row, status)
+      if (!result.ok) return false;
+
+      if (status === 0) {
+        window.utools.removeFeature(`${this.current_collection_item.data.id}/${row.data.id}`)
+      } else {
+        window.utools.setFeature({
+          "code": `${this.current_collection_item.data.id}/${row.data.id}`,
+          "explain": row.data.name,
+          "cmds": [row.data.keyword]
+        })
+      }
+      this.getCollectionList()
     },
 
     /**
@@ -316,6 +335,7 @@ export default {
   padding: 7px 10px;
   display: flex;
   justify-content: left;
+  user-select: none;
 
   .description_content {
     .title {
