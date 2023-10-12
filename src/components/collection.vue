@@ -244,7 +244,7 @@ export default {
     border-radius: 0 0 3px 3px;
 
     .name {
-      font-size: 14px;
+      font-size: 12px;
       color: #606266;
     }
 
