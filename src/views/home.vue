@@ -27,6 +27,7 @@
             height="100%"
             highlight-current-row
             @row-click="clickSnippet"
+            @row-dblclick="dbClickSnippet"
             style="width: 100%;border-radius: 3px">
             <el-table-column
               width="120"
@@ -79,7 +80,8 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="80%">
+    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="80%"
+               @close="closeDialog">
       <el-form :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
           <el-input size="mini" v-model="form.name"></el-input>
@@ -99,7 +101,9 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="onSubmit()">保 存</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit()">
+          {{ !is_edit ? '保 存' : '修 改' }}
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -107,7 +111,12 @@
 
 <script>
 import collection from "@/components/collection.vue";
-import {changeCollectionNum, changeSnippetsStatus, getSnippetsEntity} from "@/entitys";
+import {
+  changeCollectionNum,
+  changeSnippetsStatus,
+  editSnippetsEntity,
+  getSnippetsEntity
+} from "@/entitys";
 
 export default {
   components: {
@@ -126,7 +135,8 @@ export default {
         snippet: ''
       },
       formLabelWidth: '80px',
-      current_snippet_item: null
+      current_snippet_item: null,
+      is_edit: false,
     }
   },
   mounted() {
@@ -134,8 +144,34 @@ export default {
   },
   methods: {
 
+    /**
+     * 单击文本片段
+     * @param row
+     */
     clickSnippet(row) {
       this.current_snippet_item = row
+    },
+
+    /**
+     * 双击文本片段
+     */
+    dbClickSnippet() {
+      this.form = {
+        name: this.current_snippet_item.data.name,
+        keyword: this.current_snippet_item.data.keyword,
+        snippet: this.current_snippet_item.data.snippet
+      }
+      this.dialogFormVisible = true
+      this.is_edit = true
+    },
+
+    closeDialog() {
+      this.form = {
+        name: '',
+        keyword: '',
+        snippet: ''
+      }
+      this.is_edit = false
     },
 
     /**
@@ -221,6 +257,19 @@ export default {
     onSubmit() {
       if (!this._verify()) return false;
 
+      if (!this.is_edit) {
+        this.createSnippet()
+        return false;
+      }
+
+      this.editSnippet()
+    },
+
+    /**
+     * 创建文本片段
+     * @returns {boolean}
+     */
+    createSnippet() {
       let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form.name, this.form.keyword, this.form.snippet)
       let result = window.utools.db.put({
         _id: `${this.current_collection_item.data.id}/${snippets.id}`,
@@ -248,18 +297,40 @@ export default {
           return false;
         }
         this.dialogFormVisible = false
-        this.form = {
-          name: '',
-          keyword: '',
-          snippet: ''
-        }
       } else {
         this.$message({
           message: '保存失败',
           type: 'error'
         })
       }
+    },
 
+    /**
+     * 编辑文本片段
+     */
+    editSnippet() {
+      let result = editSnippetsEntity(this.current_snippet_item, this.form.name, this.form.keyword, this.form.snippet)
+      if (!result.ok) {
+        this.$message({
+          message: '修改失败',
+          type: 'error'
+        })
+        return false;
+      }
+      if (this.current_snippet_item.data.status === 1) {
+        window.utools.removeFeature(`${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
+        window.utools.setFeature({
+          "code": `${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`,
+          "explain": this.form.name,
+          "cmds": [this.form.keyword]
+        })
+      }
+      this.$message({
+        message: '修改成功',
+        type: 'success'
+      })
+      this.dialogFormVisible = false
+      this.getCollectionList()
     },
 
     /**

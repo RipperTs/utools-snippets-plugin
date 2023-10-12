@@ -74,6 +74,12 @@ export function getSnippetsEntity(collection_id, name, keyword, snippet) {
 }
 
 
+/**
+ * 改变文本片段状态
+ * @param rawData
+ * @param status
+ * @returns {DbReturn}
+ */
 export function changeSnippetsStatus(rawData, status = 1) {
   const snippetsEntity = {
     collection_id: rawData.data.collection_id,
@@ -82,6 +88,27 @@ export function changeSnippetsStatus(rawData, status = 1) {
     snippet: rawData.data.snippet,
     id: rawData.data.id,
     status: status,
+  }
+
+  return saveEntity(rawData, snippetsEntity)
+}
+
+/**
+ * 修改文本片段实体
+ * @param rawData
+ * @param name
+ * @param keyword
+ * @param snippet
+ * @returns {DbReturn}
+ */
+export function editSnippetsEntity(rawData, name, keyword, snippet) {
+  const snippetsEntity = {
+    collection_id: rawData.data.collection_id,
+    name: name,
+    keyword: keyword,
+    snippet: snippet,
+    id: rawData.data.id,
+    status: rawData.data.status,
   }
 
   return saveEntity(rawData, snippetsEntity)
