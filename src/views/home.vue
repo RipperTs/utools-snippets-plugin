@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="80%"
+    <el-dialog :visible.sync="dialogFormVisible" top="8vh" :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
@@ -91,10 +91,18 @@
           <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字.</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <el-input type="textarea" :rows="6" placeholder="在这里输入文本片段"
+          <div class="placeholder-tags mb-1.5">
+            <el-tag v-for="(item,index) in placeholder_tags"
+                    :key="index" size="small"
+                    class="cursor-pointer" :class="index!==0?'ml-3':''"
+                    @click="clickTag(item)"
+            >{{ item.name }}
+            </el-tag>
+          </div>
+          <el-input type="textarea" :rows="7" placeholder="在这里输入文本片段"
                     v-model="form.snippet"></el-input>
-          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}, {random}.
-            如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件
+          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}. 点击上方标签即可快速插入占位符,
+            如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件.
           </div>
         </el-form-item>
 
@@ -117,6 +125,7 @@ import {
   editSnippetsEntity,
   getSnippetsEntity
 } from "@/entitys";
+import placeholder_tags from "@/utils/placeholder";
 
 export default {
   components: {
@@ -137,12 +146,17 @@ export default {
       formLabelWidth: '80px',
       current_snippet_item: null,
       is_edit: false,
+      placeholder_tags: placeholder_tags,
     }
   },
   mounted() {
     this.getCollectionList()
   },
   methods: {
+
+    clickTag(tag) {
+      this.form.snippet += tag.value
+    },
 
     /**
      * 单击文本片段
