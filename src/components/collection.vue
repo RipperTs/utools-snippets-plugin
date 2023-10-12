@@ -30,7 +30,7 @@
       <el-form class="form-box" :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
           <el-input size="mini" v-model="form.name"></el-input>
-          <div class="explain mt-1.5">集合的名称, 最多不超过10个字符!</div>
+          <div class="explain mt-1.5">集合的名称, 最多不超过20个字符!</div>
         </el-form-item>
 
       </el-form>
@@ -208,9 +208,9 @@ export default {
         })
         return false;
       }
-      if(this.form.name.length > 10){
+      if(this.form.name.length > 20){
         this.$message({
-          message: '分组名称最多不超过10个字符',
+          message: '分组名称最多不超过20个字符',
           type: 'warning'
         })
         return false;
@@ -252,6 +252,10 @@ export default {
     .name {
       font-size: 12px;
       color: #606266;
+      // 超出部分省略号
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .desc {
