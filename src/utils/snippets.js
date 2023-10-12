@@ -9,7 +9,7 @@ function snippets(code) {
   const snippets = window.utools.db.get(code)
   if (snippets) {
     const content = processingContent(snippets.data.snippet)
-    window.utools.hideMainWindowTypeString(content)
+    window.utools.hideMainWindowPasteText(content)
     window.utools.outPlugin()
   } else {
     window.utools.showNotification('未找到该关键字')

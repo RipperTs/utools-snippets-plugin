@@ -1,15 +1,36 @@
 <template>
-  <div class="about-main">
-    about page
+  <div>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: "about"
+  components: { },
+  data() {
+    return {
+
+    }
+  },
+  computed: { },
+  watch: { },
+  created() {
+
+  },
+  mounted() {
+    let _this = this;
+
+  },
+  methods: {
+
+  },
+
+  //切记页面销毁需要销毁
+  destroyed() {
+    let _this = this
+  },
 }
 </script>
-
-<style scoped>
+<style lang="scss" scoped>
 
 </style>
