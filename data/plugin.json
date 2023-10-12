@@ -17,7 +17,7 @@
   "features": [
     {
       "code": "snippets",
-      "explain": "打开 Automatic snippets 插件,并在其中设置文本片段",
+      "explain": "打开此插件的设置页面,并在其中设置文本片段",
       "cmds": [
         "Automatic snippets",
         "自动上屏",
