@@ -6,9 +6,10 @@
         <div class="placeholder-tags mb-1.5">
           <el-tag v-for="(itm,idx) in item.value"
                   :key="idx" size="small"
-                  class="cursor-pointer" :class="idx!==0?'ml-3':''"
+                  class="cursor-pointer mt-3 tags-item"
                   @click="clickTag(itm)"
-          >{{ itm.name }}</el-tag>
+          >{{ itm.name }}
+          </el-tag>
         </div>
       </div>
     </div>
@@ -28,8 +29,8 @@ export default {
 
   },
   methods: {
-    clickTag(item){
-      this.$emit('clickTag',item)
+    clickTag(item) {
+      this.$emit('clickTag', item)
     },
   },
 
@@ -49,11 +50,28 @@ export default {
     margin-top: 0px;
   }
 
-  .label{
+  .label {
     font-size: 16px;
   }
-  .tags-box{
+
+  .tags-box {
     width: 100%;
   }
 }
+
+.placeholder-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  .tags-item {
+    // 每行首个元素左边距为0
+    margin-left: 10px;
+
+    &:nth-child(4) {
+      margin-left: 0px;
+    }
+
+  }
+}
+
 </style>

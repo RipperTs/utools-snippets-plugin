@@ -39,6 +39,14 @@ const placeholder_tags = [
         "value": "{clipboard:uppercase}"
       },
       {
+        "name": "剪贴板转驼峰",
+        "value": "{clipboard:camelcase}"
+      },
+      {
+        "name": "剪贴板转下划线",
+        "value": "{clipboard:snakecase}"
+      },
+      {
         "name": "剪贴板去掉首尾空格",
         "value": "{clipboard:trim}"
       },

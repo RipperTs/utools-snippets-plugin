@@ -41,6 +41,10 @@ function processingContent(content) {
   content = content.replace(/{clipboard:lowercase}/g, _.lowerCase(window.getClipboardContent()))
   // 将content中的所有 {clipboard:uppercase} 替换为剪贴板内容转大写
   content = content.replace(/{clipboard:uppercase}/g, _.toUpper(window.getClipboardContent()))
+  // 将content中的所有 {clipboard:camelcase} 替换为剪贴板内容转驼峰
+  content = content.replace(/{clipboard:camelcase}/g, _.camelCase(window.getClipboardContent()))
+  // 将content中的所有 {clipboard:snakecase} 替换为剪贴板内容转下划线
+  content = content.replace(/{clipboard:snakecase}/g, _.snakeCase(window.getClipboardContent()))
   // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
   content = content.replace(/{clipboard:trim}/g, window.getClipboardContent().trim())
   // 将content中的所有 {uuid} 替换为uuid
