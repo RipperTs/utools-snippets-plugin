@@ -448,6 +448,7 @@ export default {
 
   .right-container {
     width: 66%;
+    margin-top: 1px;
 
     .table-box {
       height: 80vh;
