@@ -91,18 +91,14 @@
           <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字.</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <div class="placeholder-tags mb-1.5">
-            <el-tag v-for="(item,index) in placeholder_tags"
-                    :key="index" size="small"
-                    class="cursor-pointer" :class="index!==0?'ml-3':''"
-                    @click="clickTag(item)"
-            >{{ item.name }}
-            </el-tag>
-          </div>
-          <el-input type="textarea" :rows="7" placeholder="在这里输入文本片段"
+          <el-input type="textarea" ref="snippetInput" :rows="7" placeholder="在这里输入文本片段, 支持占位符"
                     v-model="form.snippet"></el-input>
-          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}. 点击上方标签即可快速插入占位符,
-            如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件.
+          <div>
+            <el-button class="placeholder-btn" size="mini" @click="innerVisible = true">{ }
+            </el-button>
+          </div>
+          <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}. 点击上方按钮选择要插入占位符,
+            如果需要更加高级的自动化扩展推荐使用 "一步到位" 插件.
           </div>
         </el-form-item>
 
@@ -113,23 +109,31 @@
           {{ !is_edit ? '保 存' : '修 改' }}
         </el-button>
       </div>
+      <el-dialog
+        width="70%"
+        :show-close="false"
+        :visible.sync="innerVisible"
+        append-to-body>
+        <placeholder @clickTag="clickTag"></placeholder>
+      </el-dialog>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import collection from "@/components/collection.vue";
+import placeholder from "@/components/placeholder.vue";
 import {
   changeCollectionNum,
   changeSnippetsStatus,
   editSnippetsEntity,
   getSnippetsEntity
 } from "@/entitys";
-import placeholder_tags from "@/utils/placeholder";
 
 export default {
   components: {
-    collection
+    collection,
+    placeholder
   },
   data() {
     return {
@@ -143,10 +147,10 @@ export default {
         keyword: '',
         snippet: ''
       },
-      formLabelWidth: '80px',
+      formLabelWidth: '72px',
       current_snippet_item: null,
       is_edit: false,
-      placeholder_tags: placeholder_tags,
+      innerVisible: false,
     }
   },
   mounted() {
@@ -155,7 +159,8 @@ export default {
   methods: {
 
     clickTag(tag) {
-      this.form.snippet += tag.value
+      this.form.snippet += tag.value;
+      this.innerVisible = false;
     },
 
     /**
@@ -507,5 +512,18 @@ export default {
 
 ::v-deep .el-table__body tr.current-row > td.el-table__cell {
   background-color: #eee !important;
+}
+
+.placeholder-btn {
+  width: 18px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+}
+
+::v-deep .el-dialog__header {
+  padding: 0 !important;
 }
 </style>

@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
+import _ from 'lodash';
 
 /**
  * 上屏动作
@@ -24,10 +25,24 @@ function snippets(code) {
  * @returns {*}
  */
 function processingContent(content) {
-  // 将content中的所有 {time} 替换为当前时间
-  content = content.replace(/{time}/g, dayjs().format('YYYY-MM-DD HH:mm:ss'))
+  // 将content中的所有 {datetime} 替换为当前时间
+  content = content.replace(/{datetime}/g, dayjs().format('YYYY年MM月DD日 HH:mm:ss'))
+  content = content.replace(/{date}/g, dayjs().format('YYYY年MM月DD日'))
+  content = content.replace(/{time}/g, dayjs().format('HH:mm:ss'))
+  // 将content中的所有 {timestamp} 替换为当前时间戳
+  content = content.replace(/{timestamp}/g, dayjs().unix())
+  // 将content中的所有 {isodate:yyyy-MM-dd HH:mm:ss} 替换为当前时间
+  content = content.replace(/{isodate:(.*)}/g, function (match, format) {
+    return dayjs().format(format)
+  })
   // 将content中的所有 {clipboard} 替换为剪贴板内容
   content = content.replace(/{clipboard}/g, window.getClipboardContent())
+  // 将content中的所有 {clipboard:lowercase} 替换为剪贴板内容转小写
+  content = content.replace(/{clipboard:lowercase}/g, _.lowerCase(window.getClipboardContent()))
+  // 将content中的所有 {clipboard:uppercase} 替换为剪贴板内容转大写
+  content = content.replace(/{clipboard:uppercase}/g, _.toUpper(window.getClipboardContent()))
+  // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
+  content = content.replace(/{clipboard:trim}/g, window.getClipboardContent().trim())
   // 将content中的所有 {uuid} 替换为uuid
   content = content.replace(/{uuid}/g, uuidv4())
   // 将content中的所有 {random:1..10} 替换为随机数

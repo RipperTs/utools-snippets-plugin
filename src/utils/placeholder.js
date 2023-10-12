@@ -1,31 +1,63 @@
-import dayjs from "dayjs";
-
 const placeholder_tags = [
   {
-    "type": "time",
-    "name": "当前时间",
-    "value": "{time}"
+    "label": "日期和时间",
+    "value": [{
+      "name": "日期和时间",
+      "value": "{datetime}"
+    },
+      {
+        "name": "现在日期",
+        "value": "{date}"
+      },
+      {
+        "name": "现在时间",
+        "value": "{time}"
+      },
+      {
+        "name": "现在时间戳",
+        "value": "{timestamp}"
+      },
+      {
+        "name": "日期和时间 (自定义格式)",
+        "value": "{isodate:yyyy-MM-dd HH:mm:ss}"
+      }
+    ]
   },
   {
-    "type": "clipboard",
-    "name": "剪贴板",
-    "value": "{clipboard}"
+    "label": "剪贴板",
+    "value": [
+      {
+        "name": "剪贴板",
+        "value": "{clipboard}"
+      },
+      {
+        "name": "剪贴板转小写",
+        "value": "{clipboard:lowercase}"
+      },
+      {
+        "name": "剪贴板转大写",
+        "value": "{clipboard:uppercase}"
+      },
+      {
+        "name": "剪贴板去掉首尾空格",
+        "value": "{clipboard:trim}"
+      },
+    ]
   },
   {
-    "type": "uuid",
-    "name": "UUID",
-    "value": "{uuid}"
-  },
-  {
-    "type": "random",
-    "name": "随机数",
-    "value": "{random:1..10}"
+    "label": "随机数",
+    "value": [
+      {
+        "name": "UUID",
+        "value": "{uuid}"
+      },
+      {
+        "name": "随机数 (自定义范围)",
+        "value": "{random:1..10}"
+      }
+    ]
   }
 ]
 
-
-export function getNowTime() {
-  return dayjs().format('YYYY-MM-DD HH:mm:ss')
-}
 
 export default placeholder_tags
