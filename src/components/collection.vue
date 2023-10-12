@@ -7,10 +7,14 @@
           <div class="item bg-white" @click="clickCollection(item,index)"
                :style="{'background':current_collection_index === index ? '#eee': '#fff'}">
             <div class="name">{{ item.data.name }}</div>
-            <div class="desc mt-0.5">{{ item.data.num }} Snippets, prefix {{ item.data.prefix }}</div>
+            <div class="desc mt-0.5">{{ item.data.num }} Snippets, prefix {{
+                item.data.prefix
+              }}
+            </div>
           </div>
         </div>
-        <el-empty v-if="!collection_list.length" :image-size="100" class="mt-20" description="暂无分组"></el-empty>
+        <el-empty v-if="!collection_list.length" :image-size="100" class="mt-20"
+                  description="暂无分组"></el-empty>
       </div>
       <div class="add-btn">
         <el-button-group>
@@ -48,7 +52,20 @@
 import {getCollectionEntity} from "@/entitys";
 
 export default {
-  props: {},
+  props: {
+    collection_list: {
+      type: Array,
+      default: () => []
+    },
+    current_collection_index: {
+      type: Number,
+      default: 0
+    },
+    current_collection_item: {
+      type: Object,
+      default: () => null
+    }
+  },
   data() {
     return {
       dialogFormVisible: false,
@@ -57,32 +74,34 @@ export default {
         prefix: ''
       },
       formLabelWidth: '50px',
-      currCollectionItem: {},
-      collection_list: [],
-      current_collection_index: 0,
     }
   },
-  created() {
-    this.getCollectionList()
-  },
+
   methods: {
-    getCollectionList() {
-      this.collection_list = window.utools.db.allDocs("collection")
-    },
+
     delCollection() {
+      const snippet_list = window.utools.db.allDocs(this.current_collection_item.data.id + '')
+      if (snippet_list && snippet_list.length > 0) {
+        this.$message({
+          message: '请先删除所有文本片段后再删除分组',
+          type: 'warning'
+        })
+        return false;
+      }
       // 确认删除对话框
       this.$confirm('此操作将删除该分组及分组下的所有数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let result = window.utools.db.remove(this.currCollectionItem)
+        let result = window.utools.db.remove(this.current_collection_item)
         if (result.ok) {
           this.$message({
             message: '删除成功',
             type: 'success'
           })
-          this.getCollectionList()
+          // 通知父组件更新列表
+          this.$emit('changeList')
         } else {
           this.$message({
             message: '删除失败',
@@ -92,7 +111,6 @@ export default {
       })
     },
     clickCollection(item, index) {
-      this.currCollectionItem = item
       this.current_collection_index = index
       this.$emit('clickCollection', item, index)
     },
@@ -114,7 +132,7 @@ export default {
           message: '保存成功',
           type: 'success'
         })
-        this.getCollectionList()
+        this.$emit('changeList')
       } else {
         this.$message({
           message: '保存失败',

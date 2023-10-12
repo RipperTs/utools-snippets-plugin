@@ -13,52 +13,54 @@
     </div>
 
     <div class="setting-container p-5">
-      <collection class="left-component" @clickCollection="clickCollection"></collection>
+      <collection class="left-component"
+                  :collection_list="collection_list"
+                  :current_collection_index="current_collection_index"
+                  :current_collection_item="current_collection_item"
+                  @clickCollection="clickCollection"
+                  @changeList="changeCollectionList"
+      ></collection>
       <div class="right-container rounded">
         <div class="table-box">
           <el-table
-            :data="tableData"
+            :data="snippet_list"
             height="100%"
             style="width: 100%;border-radius: 3px">
             <el-table-column
-              prop="name"
               width="120"
               label="名称">
               <template slot-scope="scope">
                 <div class="snippet-content">
-                  {{ scope.row.name }}
+                  {{ scope.row.data.name }}
                 </div>
               </template>
             </el-table-column>
             <el-table-column
-              prop="name"
               width="60"
               label="状态">
               <template slot-scope="scope">
                 <el-switch
-                  :value="scope.row.status === 1"
+                  :value="scope.row.data.status === 1"
                   active-color="#13ce66"
-                  @change="changeStatus(scope.row)"
+                  @change="changeStatus(scope.row.data)"
                   inactive-color="#ff4949">
                 </el-switch>
               </template>
             </el-table-column>
             <el-table-column
-              prop="keyword"
               width="120"
               label="关键字">
               <template slot-scope="scope">
                 <div class="snippet-content">
-                  {{ scope.row.keyword }}
+                  {{ scope.row.data.keyword }}
                 </div>
               </template>
             </el-table-column>
             <el-table-column
-              prop="snippet"
               label="文本片段">
               <template slot-scope="scope">
                 <div class="snippet-content">
-                  {{ scope.row.snippet }}
+                  {{ scope.row.data.snippet }}
                 </div>
               </template>
             </el-table-column>
@@ -83,7 +85,8 @@
           <div class="remark">如果此分组设置了前缀,那么实际使用的关键字为: 前缀+关键字.</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <el-input type="textarea" :rows="6" placeholder="在这里输入文本片段" v-model="form.snippet"></el-input>
+          <el-input type="textarea" :rows="6" placeholder="在这里输入文本片段"
+                    v-model="form.snippet"></el-input>
           <div class="remark">片段中可以包含占位符,例如: {time}, {clipboard}, {random}.
             如果需要更加高级的自动化扩展推荐使用uTools官方的"一步到位"插件
           </div>
@@ -110,42 +113,58 @@ export default {
     return {
       current_collection_item: null,
       current_collection_index: 0,
-      tableData: [{
-        status: 1,
-        name: '本地localhost',
-        keyword: '-127',
-        snippet: '127.0.0.1',
-        collection: '1697005378732',
-        id: '169700537982',
-      },
-        {
-          status: 0,
-          name: '转大写',
-          keyword: '-upper',
-          snippet: '{clipboard:uppercase}32132132133213',
-          collection: '1697005378732',
-          id: '169700537986',
-        }],
+      collection_list: [],
+      snippet_list: [],
       dialogFormVisible: false,
-      form: {},
+      form: {
+        name: '',
+        keyword: '',
+        snippet: ''
+      },
       formLabelWidth: '80px',
     }
   },
   mounted() {
+    this.getCollectionList()
   },
   methods: {
 
+    /**
+     * 获取分组列表
+     */
+    getCollectionList() {
+      this.collection_list = window.utools.db.allDocs("collection")
+      if (this.current_collection_index === 0 && this.collection_list.length > 0) {
+        this.current_collection_item = this.collection_list[0]
+      }
+      this.getSnippetList()
+    },
+
+    /**
+     * 获取文本片段
+     */
+    getSnippetList() {
+      this.snippet_list = window.utools.db.allDocs(this.current_collection_item.data.id + '')
+    },
+
+    /**
+     * 改变分组列表的事件
+     */
+    changeCollectionList() {
+      this.getCollectionList()
+    },
+
+    /**
+     * 添加文本片段事件
+     * @returns {boolean}
+     */
     addSnippets() {
-      let collection_list = window.utools.db.allDocs("collection")
-      if (collection_list === 0) {
+      if (this.collection_list === 0) {
         this.$message({
-          message: '请先创建一个集合',
+          message: '请先创建一个分组',
           type: 'warning'
         })
         return false;
-      }
-      if (this.current_collection_item === null) {
-        this.current_collection_item = collection_list[0]
       }
       this.dialogFormVisible = true
     },
@@ -164,6 +183,12 @@ export default {
           message: '保存成功',
           type: 'success'
         })
+        this.form = {
+          name: '',
+          keyword: '',
+          snippet: ''
+        }
+        this.getSnippetList()
         this.dialogFormVisible = false
       } else {
         this.$message({
@@ -178,9 +203,17 @@ export default {
       console.log('changeStatus', e)
     },
 
+    /**
+     * 点击分组列表的事件
+     * @param item
+     * @param index
+     */
     clickCollection(item, index) {
       this.current_collection_item = item
+      this.current_collection_index = index
+      this.getSnippetList()
     },
+
     addFunctionality() {
       utools.setFeature({
         "code": "ssh",
