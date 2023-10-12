@@ -135,7 +135,6 @@ export default {
      * @param index
      */
     clickCollection(item, index) {
-      this.current_collection_index = index
       this.$emit('clickCollection', item, index)
     },
     /**

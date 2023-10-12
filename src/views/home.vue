@@ -231,6 +231,8 @@ export default {
       this.collection_list = window.utools.db.allDocs("collection")
       if (this.current_collection_index === 0 && this.collection_list.length > 0) {
         this.current_collection_item = this.collection_list[0]
+      } else {
+        this.current_collection_item = this.collection_list[this.current_collection_index]
       }
       this.getSnippetList()
     },
