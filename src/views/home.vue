@@ -25,6 +25,8 @@
           <el-table
             :data="snippet_list"
             height="100%"
+            highlight-current-row
+            @row-click="clickSnippet"
             style="width: 100%;border-radius: 3px">
             <el-table-column
               width="120"
@@ -69,7 +71,8 @@
         <div class="add-btn">
           <el-button-group>
             <el-button size="mini" icon="el-icon-plus" @click="addSnippets"></el-button>
-            <el-button size="mini" icon="el-icon-minus"></el-button>
+            <el-button size="mini" icon="el-icon-minus" :disabled="this.snippet_list.length === 0"
+                       @click="delSnippets"></el-button>
           </el-button-group>
         </div>
       </div>
@@ -122,12 +125,44 @@ export default {
         snippet: ''
       },
       formLabelWidth: '80px',
+      current_snippet_item: null
     }
   },
   mounted() {
     this.getCollectionList()
   },
   methods: {
+
+    clickSnippet(row) {
+      this.current_snippet_item = row
+    },
+
+    /**
+     * 删除文本片段
+     */
+    delSnippets() {
+      // 确认删除对话框
+      this.$confirm('此操作将当前删除文本片段, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let result = window.utools.db.remove(this.current_snippet_item)
+        if (result.ok) {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.getSnippetList()
+          this.current_snippet_item = null
+        } else {
+          this.$message({
+            message: '删除失败',
+            type: 'error'
+          })
+        }
+      })
+    },
 
     /**
      * 获取分组列表
@@ -334,5 +369,9 @@ export default {
   color: #999;
   line-height: 18px;
   margin-top: 5px;
+}
+
+::v-deep .el-table__body tr.current-row > td.el-table__cell {
+  background-color: #eee !important;
 }
 </style>
