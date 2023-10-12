@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 const placeholder_tags = [
   {
     "type": "time",
@@ -20,5 +22,10 @@ const placeholder_tags = [
     "value": "{random:1..10}"
   }
 ]
+
+
+export function getNowTime() {
+  return dayjs().format('YYYY-MM-DD HH:mm:ss')
+}
 
 export default placeholder_tags
