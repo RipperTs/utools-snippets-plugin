@@ -19,7 +19,7 @@ const placeholder_tags = [
       },
       {
         "name": "日期和时间 (自定义格式)",
-        "value": "{isodate:yyyy-MM-dd HH:mm:ss}"
+        "value": "{isodate:YYYY-MM-DD HH:mm:ss}"
       }
     ]
   },
