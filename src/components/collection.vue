@@ -4,12 +4,11 @@
       <div class="title">分组列表</div>
       <div class="collection-list">
         <div v-for="(item,index) in collection_list" :key="index" v-if="collection_list.length > 0">
-          <div class="item bg-white" @click="clickCollection(item,index)"
+          <div class="item bg-white" @dblclick="dblclickCollection(item,index)"
+               @click="clickCollection(item,index)"
                :style="{'background':current_collection_index === index ? '#eee': '#fff'}">
             <div class="name">{{ item.data.name }}</div>
-            <div class="desc mt-0.5">{{ item.data.num }} Snippets, prefix {{
-                item.data.prefix
-              }}
+            <div class="desc mt-0.5">共有 {{ item.data.num }} 个片段
             </div>
           </div>
         </div>
@@ -26,30 +25,28 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="65%">
-      <el-form :model="form">
-        <el-form-item label="Name" :label-width="formLabelWidth">
+    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" @close="closeDialog"
+               width="50%">
+      <el-form class="form-box" :model="form">
+        <el-form-item label="名称" :label-width="formLabelWidth">
           <el-input size="mini" v-model="form.name"></el-input>
           <div class="explain mt-1.5">集合的名称, 最多不超过10个字符!</div>
-        </el-form-item>
-        <el-form-item label="Prefix" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.prefix" placeholder="prefix"></el-input>
-          <div class="explain mt-1.5">本集合中所有片段的关键字前缀，即设置本集合中的所有片段在展开前都需要
-            > 前缀。
-          </div>
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="onSubmit()">保 存</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit()">{{
+            edit_collection_item !== null ? '修 改' : '保 存'
+          }}
+        </el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {getCollectionEntity} from "@/entitys";
+import {editCollectionEntity, getCollectionEntity} from "@/entitys";
 
 export default {
   props: {
@@ -74,11 +71,33 @@ export default {
         prefix: ''
       },
       formLabelWidth: '50px',
+      edit_collection_item: null,
     }
   },
 
   methods: {
 
+    closeDialog() {
+      this.edit_collection_item = null
+    },
+
+    /**
+     * 双击修改集合
+     * @param item
+     */
+    dblclickCollection(item) {
+      this.form = {
+        name: item.data.name,
+        prefix: item.data.prefix
+      }
+      this.edit_collection_item = item
+      this.dialogFormVisible = true
+    },
+
+    /**
+     * 删除集合
+     * @returns {boolean}
+     */
     delCollection() {
       const snippet_list = window.utools.db.allDocs(this.current_collection_item.data.id + '')
       if (snippet_list && snippet_list.length > 0) {
@@ -110,13 +129,54 @@ export default {
         }
       })
     },
+    /**
+     * 单击某个集合
+     * @param item
+     * @param index
+     */
     clickCollection(item, index) {
       this.current_collection_index = index
       this.$emit('clickCollection', item, index)
     },
+    /**
+     * 保存集合
+     * @returns {boolean}
+     */
     onSubmit() {
       if (!this._verify()) return false;
 
+      if (this.edit_collection_item === null) {
+        this.addCollection()
+        return false;
+      }
+
+      this.editCollection()
+
+    },
+
+    /**
+     * 修改集合分组
+     */
+    editCollection() {
+      let result = editCollectionEntity(this.edit_collection_item, this.form.name, this.form.prefix)
+      if (result.ok) {
+        this.dialogFormVisible = false;
+        this.form = {
+          name: '',
+          prefix: ''
+        }
+        this.$message({
+          message: '修改成功',
+          type: 'success'
+        })
+        this.$emit('changeList')
+      }
+    },
+
+    /**
+     * 新增分组集合
+     */
+    addCollection() {
       let collectionEntity = getCollectionEntity(this.form.name, this.form.prefix)
       let result = window.utools.db.put({
         _id: `collection/${collectionEntity.id}`,
@@ -158,6 +218,8 @@ export default {
 <style lang="scss" scoped>
 .left-container {
   height: 80vh;
+  // 禁止选中
+  user-select: none;
 
   .title {
     font-size: 12px;
@@ -221,5 +283,10 @@ export default {
   font-size: 12px;
   color: #999;
   line-height: 18px;
+}
+
+.form-box {
+  // 禁止选中
+  user-select: none;
 }
 </style>

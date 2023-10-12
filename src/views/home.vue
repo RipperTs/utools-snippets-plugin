@@ -106,7 +106,7 @@
 
 <script>
 import collection from "@/components/collection.vue";
-import {getSnippetsEntity} from "@/entitys";
+import {changeCollectionNum, getSnippetsEntity} from "@/entitys";
 
 export default {
   components: {
@@ -147,13 +147,22 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        let remove_result = window.utools.removeFeature(`${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
+        if (!remove_result) {
+          this.$message({
+            message: '删除失败',
+            type: 'error'
+          })
+          return false;
+        }
         let result = window.utools.db.remove(this.current_snippet_item)
         if (result.ok) {
           this.$message({
             message: '删除成功',
             type: 'success'
           })
-          this.getSnippetList()
+          changeCollectionNum(this.current_collection_item, 2)
+          this.getCollectionList()
           this.current_snippet_item = null
         } else {
           this.$message({
@@ -204,6 +213,10 @@ export default {
       this.dialogFormVisible = true
     },
 
+    /**
+     * 提交保存文本片段
+     * @returns {boolean}
+     */
     onSubmit() {
       if (!this._verify()) return false;
 
@@ -218,13 +231,27 @@ export default {
           message: '保存成功',
           type: 'success'
         })
+        changeCollectionNum(this.current_collection_item)
+        this.getCollectionList()
+        let feature_result = window.utools.setFeature({
+          "code": `${this.current_collection_item.data.id}/${snippets.id}`,
+          "explain": this.form.name,
+          "cmds": [this.form.keyword]
+        })
+        if (!feature_result) {
+          window.utools.db.remove(snippets.id + '')
+          this.$message({
+            message: '保存失败了',
+            type: 'error'
+          })
+          return false;
+        }
+        this.dialogFormVisible = false
         this.form = {
           name: '',
           keyword: '',
           snippet: ''
         }
-        this.getSnippetList()
-        this.dialogFormVisible = false
       } else {
         this.$message({
           message: '保存失败',
@@ -249,23 +276,6 @@ export default {
       this.getSnippetList()
     },
 
-    addFunctionality() {
-      utools.setFeature({
-        "code": "ssh",
-        "explain": "快速连接ssh",
-        // "icon": "res/xxx.png",
-        // "icon": "data:image/png;base64,xxx...",
-        // "platform": ["win32", "darwin", "linux"]
-        "cmds": ["ssh"]
-      })
-    },
-    delFunc() {
-      utools.removeFeature('ssh')
-    },
-    testButton() {
-      const features = utools.getFeatures()
-      console.log(features)
-    },
 
     _verify() {
       if (this.form.name === '') {
