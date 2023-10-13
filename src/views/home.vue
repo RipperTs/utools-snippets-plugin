@@ -260,7 +260,7 @@ export default {
      * 获取文本片段
      */
     getSnippetList() {
-      this.snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item.data.id}`)
+      this.snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item?.data?.id}`)
     },
 
     /**

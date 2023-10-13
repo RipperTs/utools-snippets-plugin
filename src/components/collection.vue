@@ -229,7 +229,10 @@ export default {
 
   .title {
     font-size: 12px;
-    padding: 4px;
+    height: 35px;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
     background: #fff;
     box-shadow: 0 0 4px #eee;
     border-radius: 3px 3px 0 0;
@@ -242,7 +245,7 @@ export default {
     background: #fff;
     // y轴超出部分滚动
     overflow-y: auto;
-    height: 95%;
+    height: 93%;
     padding-bottom: 10px;
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
