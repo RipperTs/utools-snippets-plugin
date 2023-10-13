@@ -47,6 +47,7 @@
 
 <script>
 import {editCollectionEntity, getCollectionEntity} from "@/entitys";
+import {collection_prefix} from "@/utils";
 
 export default {
   props: {
@@ -178,7 +179,7 @@ export default {
     addCollection() {
       let collectionEntity = getCollectionEntity(this.form.name, this.form.prefix)
       let result = window.utools.db.put({
-        _id: `collection/${collectionEntity.id}`,
+        _id: `${collection_prefix}/${collectionEntity.id}`,
         data: collectionEntity
       })
       if (result.ok) {
@@ -224,8 +225,7 @@ export default {
 <style lang="scss" scoped>
 .left-container {
   height: 80vh;
-  // 禁止选中
-  user-select: none;
+
 
   .title {
     font-size: 12px;

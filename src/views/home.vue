@@ -92,6 +92,7 @@
         <el-form-item label="关键字" :label-width="formLabelWidth">
           <el-input size="mini" v-model="form.keyword"
                     placeholder="请输入关键字, 此关键字为uTools输入的命令"></el-input>
+          <div class="remark mt-1.5">此关键字全局唯一, 所以需要注意不要重复定义!</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input type="textarea" ref="snippetInput" :rows="7"
@@ -138,7 +139,7 @@ import {
   editSnippetsEntity,
   getSnippetsEntity
 } from "@/entitys";
-import {checkCmdIsExist} from "@/utils/featurs";
+import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
 
 export default {
   components: {
@@ -213,7 +214,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let remove_result = window.utools.removeFeature(`${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
+        let remove_result = window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
         if (!remove_result) {
           this.$message({
             message: '删除失败',
@@ -243,7 +244,7 @@ export default {
      * 获取分组列表
      */
     getCollectionList() {
-      this.collection_list = window.utools.db.allDocs("collection")
+      this.collection_list = window.utools.db.allDocs(collection_prefix)
       if (this.current_collection_index === 0 && this.collection_list.length > 0) {
         this.current_collection_item = this.collection_list[0]
       } else {
@@ -256,7 +257,7 @@ export default {
      * 获取文本片段
      */
     getSnippetList() {
-      this.snippet_list = window.utools.db.allDocs(this.current_collection_item.data.id + '')
+      this.snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item.data.id}`)
     },
 
     /**
@@ -301,17 +302,17 @@ export default {
      * @returns {boolean}
      */
     createSnippet() {
-      const is_cmd_exist = checkCmdIsExist(this.form.keyword)
-      if (is_cmd_exist) {
+      const keyword_exist = checkKeywordIsExist(this.form.keyword)
+      if (keyword_exist) {
         this.$message({
-          message: '这个关键字已经被占用了',
+          message: '关键字已被占用',
           type: 'warning'
         })
         return false;
       }
       let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form.name, this.form.keyword, this.form.snippet)
       let result = window.utools.db.put({
-        _id: `${this.current_collection_item.data.id}/${snippets.id}`,
+        _id: `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
         data: snippets
       })
 
@@ -323,12 +324,12 @@ export default {
         changeCollectionNum(this.current_collection_item)
         this.getCollectionList()
         let feature_result = window.utools.setFeature({
-          "code": `${this.current_collection_item.data.id}/${snippets.id}`,
+          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
           "explain": this.form.name,
           "cmds": [this.form.keyword]
         })
         if (!feature_result) {
-          window.utools.db.remove(snippets.id + '')
+          window.utools.db.remove(`${snippet_prefix}/${snippets.id}`)
           this.$message({
             message: '保存失败了',
             type: 'error'
@@ -357,9 +358,9 @@ export default {
         return false;
       }
       if (this.current_snippet_item.data.status === 1) {
-        window.utools.removeFeature(`${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
+        window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
         window.utools.setFeature({
-          "code": `${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`,
+          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`,
           "explain": this.form.name,
           "cmds": [this.form.keyword]
         })
@@ -383,10 +384,10 @@ export default {
       if (!result.ok) return false;
 
       if (status === 0) {
-        window.utools.removeFeature(`${this.current_collection_item.data.id}/${row.data.id}`)
+        window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${row.data.id}`)
       } else {
         window.utools.setFeature({
-          "code": `${this.current_collection_item.data.id}/${row.data.id}`,
+          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${row.data.id}`,
           "explain": row.data.name,
           "cmds": [row.data.keyword]
         })

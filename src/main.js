@@ -36,6 +36,10 @@ window.utools.onPluginEnter(({code, type, payload}) => {
   Vue.prototype.$pluginType = type
   Vue.prototype.$pluginPayload = payload
 
+  if (window.utools.db.replicateStateFromCloud()) {
+    window.utools.showNotification('数据可能不完整，还在从云端复制中')
+  }
+
   if (code !== 'snippets') snippets(code)
 
   new Vue({
