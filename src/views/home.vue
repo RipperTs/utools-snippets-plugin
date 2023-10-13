@@ -73,7 +73,7 @@
         <div class="add-btn">
           <el-button-group>
             <el-button size="mini" icon="el-icon-plus" @click="addSnippets"></el-button>
-            <el-button size="mini" icon="el-icon-minus" :disabled="this.snippet_list.length === 0"
+            <el-button size="mini" icon="el-icon-minus" :disabled="current_snippet_item === null"
                        @click="delSnippets"></el-button>
           </el-button-group>
         </div>
@@ -403,6 +403,7 @@ export default {
     clickCollection(item, index) {
       this.current_collection_item = item
       this.current_collection_index = index
+      this.current_snippet_item = null
       this.getSnippetList()
     },
 
