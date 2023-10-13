@@ -8,7 +8,7 @@
         fit="contain"></el-image>
       <div class="description_content ml-5">
         <div class="title">Automatic snippets</div>
-        <div class="desc mt-0.5">仅需简单的几步设置，来帮助您随时随地使用最有用的文本片段。</div>
+        <div class="desc mt-0.5">仅需简单的几步设置，就可以帮助您随时随地使用最有用的文本片段。</div>
       </div>
     </div>
 
