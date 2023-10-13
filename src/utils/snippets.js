@@ -2,8 +2,6 @@ import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
 
-const app_version = parseInt(window.utools.getAppVersion())
-
 /**
  * 上屏动作
  * @param code
@@ -12,6 +10,7 @@ function snippets(code) {
   const snippets = window.utools.db.get(code)
   if (snippets) {
     const content = processingContent(snippets.data.snippet)
+    const app_version = parseInt(window.utools.getAppVersion())
     // 兼容旧版本3.x
     if (app_version >= 4) {
       window.utools.hideMainWindowPasteText(content)
