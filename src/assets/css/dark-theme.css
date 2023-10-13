@@ -1,0 +1,190 @@
+body {
+    --color-bg: #303133;
+    --table-cell-click: #656565;
+    background: #777 !important;
+}
+
+.top-content {
+    background: #494848 !important;
+}
+
+.top-content .title {
+    color: #ddd;
+}
+
+.top-content .desc {
+    color: #aaa;
+}
+
+.el-table {
+    background-color: var(--color-bg);
+}
+
+.el-dialog .el-button--primary {
+    background-color: var(--color-bg);
+    border-color: var(--color-bg);
+    color: #fff;
+}
+
+.el-dialog .el-button--primary:hover {
+    background-color: var(--color-bg);
+    border-color: #999;
+    color: #ddd;
+}
+
+.el-dialog .el-button--default {
+    background-color: #ddd;
+    border-color: #ddd;
+    color: #999;
+}
+
+.el-dialog .el-button--default:hover {
+    background-color: #ddd;
+    border-color: #eee;
+    color: #777;
+}
+
+.left-container .title {
+    background: var(--color-bg) !important;
+    box-shadow: 0 0 4px var(--color-bg) !important;
+    border: 1px solid var(--color-bg) !important;
+    color: #ddd !important;
+}
+
+.left-container .collection-list {
+    background: var(--color-bg) !important;
+    box-shadow: 0 0 4px var(--color-bg) !important;
+    border: 1px solid var(--color-bg) !important;
+    color: #ddd !important;
+}
+
+.left-container .collection-list .name {
+    color: #ddd !important;
+}
+
+.left-container .collection-list .item {
+    border-bottom: 1px dashed #626262 !important;
+}
+
+.left-container .collection-list .item:hover {
+    background: #696969 !important;
+}
+
+.left-container .collection-item {
+    background: #494848 !important;
+
+}
+
+.left-container .collection-item-active {
+    background: #656565 !important;
+}
+
+.left-container .el-button--default {
+    background-color: #494848;
+    border: 1px solid #565656 !important;
+    color: #aaa;
+}
+
+.left-container .el-button--default:hover {
+    background-color: #565656;
+    color: #ddd;
+    border: 1px solid #5d5d5d !important;
+}
+
+.left-container .el-button--default.is-disabled {
+    background-color: #565656;
+    border: 1px solid #565656 !important;
+    color: #777777;
+}
+
+.el-dialog {
+    background: #494848 !important;
+    color: #ddd !important;
+}
+
+.el-dialog .el-form-item__label {
+    color: #ddd !important;
+}
+
+.el-dialog .el-input__inner {
+    background: #494848 !important;
+    color: #ddd !important;
+    border: 1px solid #707070 !important;
+}
+
+.el-dialog .el-textarea__inner {
+    background: #494848 !important;
+    color: #ddd !important;
+    border: 1px solid #707070 !important;
+}
+
+.el-dialog .list-box {
+    border-bottom: 1px solid #707070 !important;
+}
+
+.el-dialog .list-box .label {
+    color: #ddd !important;
+}
+
+.right-container .el-button--default {
+    background-color: #494848;
+    border: 1px solid #565656 !important;
+    color: #aaa;
+}
+
+.right-container .el-button--default:hover {
+    background-color: #565656;
+    color: #ddd;
+    border: 1px solid #5d5d5d !important;
+}
+
+.right-container .el-button--default.is-disabled {
+    background-color: #565656;
+    border: 1px solid #565656 !important;
+    color: #777777;
+}
+
+.snippet-header-cell {
+    background-color: var(--color-bg) !important;
+    color: #ddd !important;
+    border-bottom: 1px solid #707070 !important;
+}
+
+.snippet-cell {
+    background-color: #494848 !important;
+    color: #ddd !important;
+    border-bottom: 1px solid #575757 !important;
+}
+
+.el-message-box {
+    background: #494848 !important;
+    color: #ddd !important;
+    border: 1px solid #707070 !important;
+}
+
+.el-message-box .el-message-box__title {
+    color: #eee !important;
+}
+
+.el-message-box .el-message-box__content {
+    color: #ccc !important;
+}
+
+.el-message-box .el-message-box__btns .el-button--default {
+    background-color: #ddd;
+    border-color: #ddd;
+    color: #999;
+}
+
+.el-message-box .el-message-box__btns .el-button--default:hover {
+    background-color: #565656;
+    color: #ddd;
+    border: 1px solid #5d5d5d !important;
+}
+
+.el-message-box .el-message-box__btns .el-button--primary {
+    background-color: var(--color-bg);
+    border-color: var(--color-bg);
+    color: #fff;
+}
+

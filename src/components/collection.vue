@@ -4,9 +4,9 @@
       <div class="title">分组列表</div>
       <div class="collection-list">
         <div v-for="(item,index) in collection_list" :key="index" v-if="collection_list.length > 0">
-          <div class="item bg-white" @dblclick="dblclickCollection(item,index)"
+          <div class="item bg-white collection-item" @dblclick="dblclickCollection(item,index)"
                @click="clickCollection(item,index)"
-               :style="{'background':current_collection_index === index ? '#eee': '#fff'}">
+               :class="current_collection_index=== index ? 'collection-item-active' : ''">
             <div class="name">{{ item.data.name }}</div>
             <div class="desc mt-0.5">共有 {{ item.data.num }} 个片段
             </div>
@@ -209,7 +209,7 @@ export default {
         })
         return false;
       }
-      if(this.form.name.length > 20){
+      if (this.form.name.length > 20) {
         this.$message({
           message: '分组名称最多不超过20个字符',
           type: 'warning'
@@ -300,5 +300,12 @@ export default {
 .form-box {
   // 禁止选中
   user-select: none;
+}
+
+.collection-item {
+  background: #fff;
+}
+.collection-item-active{
+  background: #eee;
 }
 </style>

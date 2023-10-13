@@ -6,11 +6,11 @@ import {UTools} from "./utils/utools.js";
 import Vant from "./vant.js";
 import router from './router';
 import store from './store/index'
-import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './style.css';
 import "./assets/css/tailwindcss.css"
 import './assets/icons' // icon
+import ElementUI from 'element-ui';
 import dayjs from 'dayjs'
 import snippets from "@/utils/snippets";
 
@@ -31,6 +31,11 @@ Vue.prototype.$dayjs = dayjs;
 window.utools.onPluginEnter(({code, type, payload}) => {
 
   console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
+
+  if (!window.utools.isDarkColors()) {
+    // 加载深色模式样式
+    import('./assets/css/dark-theme.css')
+  }
 
   Vue.prototype.$pluginCode = code
   Vue.prototype.$pluginType = type

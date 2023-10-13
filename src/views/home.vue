@@ -26,6 +26,9 @@
             :data="snippet_list"
             height="100%"
             highlight-current-row
+            header-row-class-name="snippet-header-row"
+            header-cell-class-name="snippet-header-cell"
+            cell-class-name="snippet-cell"
             @row-click="clickSnippet"
             @row-dblclick="dbClickSnippet"
             style="width: 100%;border-radius: 3px">
@@ -528,7 +531,7 @@ export default {
 }
 
 ::v-deep .el-table__body tr.current-row > td.el-table__cell {
-  background-color: #eee !important;
+  background-color: var(--table-cell-click) !important;
 }
 
 .placeholder-btn {
