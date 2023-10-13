@@ -86,13 +86,16 @@
                @close="closeDialog">
       <el-form :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.name" autofocus placeholder="请输入名称, 此名称为文本片段的说明"></el-input>
+          <el-input size="mini" v-model="form.name" autofocus
+                    placeholder="请输入名称, 此名称为文本片段的说明"></el-input>
         </el-form-item>
         <el-form-item label="关键字" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.keyword" placeholder="请输入关键字, 此关键字为uTools输入的命令"></el-input>
+          <el-input size="mini" v-model="form.keyword"
+                    placeholder="请输入关键字, 此关键字为uTools输入的命令"></el-input>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <el-input type="textarea" ref="snippetInput" :rows="7" placeholder="在这里输入文本片段, 支持占位符"
+          <el-input type="textarea" ref="snippetInput" :rows="7"
+                    placeholder="在这里输入文本片段, 支持占位符"
                     v-model="form.snippet"></el-input>
           <div>
             <el-button class="placeholder-btn" size="mini" @click="innerVisible = true">{ }
@@ -101,7 +104,9 @@
           <div class="remark" style="line-height: 20px;">
             <p>您可以在文本片段中添加占位符, 可以更加灵活的对片段内容进行动态处理.</p>
             <p>点击上方 { } 按钮选择要插入占位符, 即可在文本片段后面追加插入占位符.</p>
-            <p>如果需要更加高级的自动化扩展推荐使用 <span class="text-blue-600 font-medium cursor-pointer" @click="redirectPlugin">一步到位</span> 插件.</p>
+            <p>如果需要更加高级的自动化扩展推荐使用 <span
+              class="text-blue-600 font-medium cursor-pointer"
+              @click="redirectPlugin">一步到位</span> 插件.</p>
           </div>
         </el-form-item>
 
@@ -133,6 +138,7 @@ import {
   editSnippetsEntity,
   getSnippetsEntity
 } from "@/entitys";
+import {checkCmdIsExist} from "@/utils/featurs";
 
 export default {
   components: {
@@ -295,6 +301,14 @@ export default {
      * @returns {boolean}
      */
     createSnippet() {
+      const is_cmd_exist = checkCmdIsExist(this.form.keyword)
+      if (is_cmd_exist) {
+        this.$message({
+          message: '这个关键字已经被占用了',
+          type: 'warning'
+        })
+        return false;
+      }
       let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form.name, this.form.keyword, this.form.snippet)
       let result = window.utools.db.put({
         _id: `${this.current_collection_item.data.id}/${snippets.id}`,
@@ -391,7 +405,7 @@ export default {
       this.getSnippetList()
     },
 
-    redirectPlugin(){
+    redirectPlugin() {
       window.utools.redirect('一步到位')
     },
 
@@ -463,6 +477,7 @@ export default {
   justify-content: space-between;
   // 禁止选中
   user-select: none;
+
   .left-component {
     width: 32%;
   }
