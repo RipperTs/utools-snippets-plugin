@@ -127,6 +127,10 @@ body {
     color: #ddd !important;
 }
 
+.right-container .el-table::before {
+    background-color: var(--color-bg);
+}
+
 .right-container .el-button--default {
     background-color: #494848;
     border: 1px solid #565656 !important;
