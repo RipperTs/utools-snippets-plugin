@@ -15,6 +15,7 @@ function snippets(code) {
     if (app_version >= 4) {
       window.utools.hideMainWindowPasteText(content)
     } else {
+      window.utools.copyText(content)
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
     }
