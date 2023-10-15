@@ -447,6 +447,15 @@ export default {
         return false;
       }
 
+      let cursor_count = this.form.snippet.split('{cursor}').length - 1
+      if (cursor_count > 1) {
+        this.$message({
+          message: '只允许添加一个{cursor}占位符',
+          type: 'warning'
+        })
+        return false;
+      }
+
       return true;
     },
   },
