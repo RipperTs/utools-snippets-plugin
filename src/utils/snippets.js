@@ -2,6 +2,8 @@ import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
 
+const timingMillisecond = 100 // 移动光标位置的延迟时间
+
 /**
  * 上屏动作
  * @param code
@@ -9,6 +11,7 @@ import _ from 'lodash';
 function snippets(code) {
   const snippets = window.utools.db.get(code)
   if (snippets) {
+    const cursor_position = getCursorPosition(snippets.data.snippet)
     const content = processingContent(snippets.data.snippet)
     const app_version = parseInt(window.utools.getAppVersion())
     // 兼容旧版本3.x
@@ -19,13 +22,17 @@ function snippets(code) {
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
     }
-    // 延迟3秒
-    setTimeout(() => {
-      for (let i = 0; i < 500; i++) {
-        window.utools.simulateKeyboardTap('left')
-      }
+    if (cursor_position > 0) {
+      setTimeout(() => {
+        for (let i = 0; i < cursor_position; i++) {
+          window.utools.simulateKeyboardTap('left')
+        }
+        window.utools.outPlugin()
+      }, timingMillisecond)
+    } else {
       window.utools.outPlugin()
-    }, 300)
+    }
+
   } else {
     window.utools.showNotification('未找到该关键字')
     window.utools.hideMainWindow()
@@ -67,7 +74,22 @@ function processingContent(content) {
   content = content.replace(/{random:(\d+)..(\d+)}/g, function (match, min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   })
+  // 将content中的所有 {cursor} 替换为空字符串
+  content = content.replace(/{cursor}/g, '')
   return content
+}
+
+/**
+ * 获取要移动到光标的位置
+ * @param content
+ * @returns {number}
+ */
+function getCursorPosition(content) {
+  const index = content.indexOf('{cursor}')
+  if (index === -1) {
+    return 0;
+  }
+  return content.length - index - 8
 }
 
 export default snippets;

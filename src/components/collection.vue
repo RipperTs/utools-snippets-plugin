@@ -29,10 +29,9 @@
                width="50%">
       <el-form class="form-box" :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.name"></el-input>
+          <el-input size="mini" @keyup.enter.native="onSubmit()" v-model="form.name"></el-input>
           <div class="explain mt-1.5">集合的名称, 最多不超过20个字符!</div>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
