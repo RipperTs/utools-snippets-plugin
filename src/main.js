@@ -32,8 +32,6 @@ window.utools.onPluginEnter(({code, type, payload}) => {
 
   console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
 
-  console.log(parseInt(window.utools.getAppVersion()))
-
   if (window.utools.isDarkColors()) {
     // 加载深色模式样式
     import('./assets/css/dark-theme.css')
@@ -42,10 +40,6 @@ window.utools.onPluginEnter(({code, type, payload}) => {
   Vue.prototype.$pluginCode = code
   Vue.prototype.$pluginType = type
   Vue.prototype.$pluginPayload = payload
-
-  if (window.utools.db.replicateStateFromCloud()) {
-    window.utools.showNotification('数据可能不完整，还在从云端复制中')
-  }
 
   if (code !== 'snippets') snippets(code)
 

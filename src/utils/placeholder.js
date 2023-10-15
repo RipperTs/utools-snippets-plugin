@@ -64,7 +64,16 @@ const placeholder_tags = [
         "value": "{random:1..10}"
       }
     ]
-  }
+  },
+  {
+    "label": "光标",
+    "value": [
+      {
+        "name": "光标位置",
+        "value": "{cursor}"
+      }
+    ]
+  },
 ]
 
 

@@ -19,7 +19,13 @@ function snippets(code) {
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
     }
-    window.utools.outPlugin()
+    // 延迟3秒
+    setTimeout(() => {
+      for (let i = 0; i < 500; i++) {
+        window.utools.simulateKeyboardTap('left')
+      }
+      window.utools.outPlugin()
+    }, 300)
   } else {
     window.utools.showNotification('未找到该关键字')
     window.utools.hideMainWindow()
