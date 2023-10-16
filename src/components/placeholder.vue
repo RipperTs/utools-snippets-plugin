@@ -42,9 +42,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .list-box {
-  margin-top: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+  margin-top: 14px;
+  border-bottom: 1px solid #f3f2f2;
+  padding-bottom: 6px;
 
   &:first-child {
     margin-top: 0px;

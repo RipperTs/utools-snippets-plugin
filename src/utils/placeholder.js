@@ -70,6 +70,31 @@ const placeholder_tags = [
     ]
   },
   {
+    "label": "划词选中",
+    "value": [
+      {
+        "name": "当前选中",
+        "value": "{selection}"
+      },
+      {
+        "name": "当前选中转小写",
+        "value": "{selection:lowercase}"
+      },
+      {
+        "name": "当前选中转大写",
+        "value": "{selection:uppercase}"
+      },
+      {
+        "name": "当前选中转驼峰",
+        "value": "{selection:camelcase}"
+      },
+      {
+        "name": "当前选中转下划线",
+        "value": "{selection:snakecase}"
+      }
+    ]
+  },
+  {
     "label": "光标",
     "value": [
       {

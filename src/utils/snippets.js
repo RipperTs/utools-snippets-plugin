@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
+import placeholder_tags from "@/utils/placeholder";
 
 const timingMillisecond = 100 // 延迟时间
 
@@ -11,9 +12,16 @@ const timingMillisecond = 100 // 延迟时间
 function snippets(code) {
   const snippets = window.utools.db.get(code)
   if (snippets) {
+    // 获取当前剪贴板内容
     const current_clipboard_content = window.getClipboardContent()
-    const cursor_position = getCursorPosition(snippets.data.snippet)
-    const content = processingContent(snippets.data.snippet)
+    // 处理内容
+    let content = processingContent(snippets.data.snippet, current_clipboard_content)
+    // 获取要移动到光标的位置
+    let cursor_position = getCursorPosition(content)
+    if (cursor_position > 0) {
+      // 将content中的所有 {cursor} 替换为空字符串
+      content = content.replace(/{cursor}/g, '')
+    }
     const app_version = parseInt(window.utools.getAppVersion())
     // 兼容旧版本3.x
     if (app_version >= 4) {
@@ -48,9 +56,10 @@ function snippets(code) {
 /**
  * 处理内容(主要替换占位符)
  * @param content
+ * @param current_clipboard_content
  * @returns {*}
  */
-function processingContent(content) {
+function processingContent(content, current_clipboard_content) {
   // 将content中的所有 {datetime} 替换为当前时间
   content = content.replace(/{datetime}/g, dayjs().format('YYYY年MM月DD日 HH:mm:ss'))
   content = content.replace(/{date}/g, dayjs().format('YYYY年MM月DD日'))
@@ -62,20 +71,20 @@ function processingContent(content) {
     return dayjs().format(format)
   })
   // 将content中的所有 {clipboard} 替换为剪贴板内容
-  content = content.replace(/{clipboard}/g, window.getClipboardContent())
+  content = content.replace(/{clipboard}/g, current_clipboard_content)
   // 将content中的所有 {clipboard:lowercase} 替换为剪贴板内容转小写
-  content = content.replace(/{clipboard:lowercase}/g, _.lowerCase(window.getClipboardContent()))
+  content = content.replace(/{clipboard:lowercase}/g, _.lowerCase(current_clipboard_content))
   // 将content中的所有 {clipboard:uppercase} 替换为剪贴板内容转大写
-  content = content.replace(/{clipboard:uppercase}/g, _.toUpper(window.getClipboardContent()))
+  content = content.replace(/{clipboard:uppercase}/g, _.toUpper(current_clipboard_content))
   // 将content中的所有 {clipboard:camelcase} 替换为剪贴板内容转驼峰
-  content = content.replace(/{clipboard:camelcase}/g, _.camelCase(window.getClipboardContent()))
+  content = content.replace(/{clipboard:camelcase}/g, _.camelCase(current_clipboard_content))
   // 将content中的所有 {clipboard:snakecase} 替换为剪贴板内容转下划线
-  content = content.replace(/{clipboard:snakecase}/g, _.snakeCase(window.getClipboardContent()))
+  content = content.replace(/{clipboard:snakecase}/g, _.snakeCase(current_clipboard_content))
   // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
-  content = content.replace(/{clipboard:trim}/g, window.getClipboardContent().trim())
+  content = content.replace(/{clipboard:trim}/g, current_clipboard_content.trim())
   // 将content中的所有 {clipboard:trim:xxx} 替换为剪贴板内容去掉首尾指定字符
   content = content.replace(/{clipboard:trim:(.*)}/g, function (match, trim) {
-    return _.trim(window.getClipboardContent(), trim)
+    return _.trim(current_clipboard_content, trim)
   })
   // 将content中的所有 {uuid} 替换为uuid
   content = content.replace(/{uuid}/g, uuidv4())
@@ -83,8 +92,6 @@ function processingContent(content) {
   content = content.replace(/{random:(\d+)..(\d+)}/g, function (match, min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   })
-  // 将content中的所有 {cursor} 替换为空字符串
-  content = content.replace(/{cursor}/g, '')
   return content
 }
 
@@ -99,6 +106,25 @@ function getCursorPosition(content) {
     return 0;
   }
   return content.length - index - 8
+}
+
+/**
+ * 检查是否需要获取划词选中内容
+ * @param content
+ * @returns {boolean}
+ */
+function checkIsSelectWords(content) {
+  let isSelectWords = false
+  placeholder_tags.forEach((item) => {
+    if (item.label === '划词选中') {
+      item.value.forEach((item) => {
+        if (content.indexOf(item.value) !== -1) {
+          isSelectWords = true;
+        }
+      })
+    }
+  })
+  return isSelectWords
 }
 
 
