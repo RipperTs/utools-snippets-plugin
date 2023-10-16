@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
 
-const timingMillisecond = 100 // 移动光标位置的延迟时间
+const timingMillisecond = 100 // 延迟时间
 
 /**
  * 上屏动作
@@ -11,6 +11,7 @@ const timingMillisecond = 100 // 移动光标位置的延迟时间
 function snippets(code) {
   const snippets = window.utools.db.get(code)
   if (snippets) {
+    const current_clipboard_content = window.getClipboardContent()
     const cursor_position = getCursorPosition(snippets.data.snippet)
     const content = processingContent(snippets.data.snippet)
     const app_version = parseInt(window.utools.getAppVersion())
@@ -27,10 +28,14 @@ function snippets(code) {
         for (let i = 0; i < cursor_position; i++) {
           window.utools.simulateKeyboardTap('left')
         }
+        window.utools.copyText(current_clipboard_content)
         window.utools.outPlugin()
       }, timingMillisecond)
     } else {
-      window.utools.outPlugin()
+      setTimeout(() => {
+        window.utools.copyText(current_clipboard_content)
+        window.utools.outPlugin()
+      }, timingMillisecond)
     }
 
   } else {
@@ -68,6 +73,10 @@ function processingContent(content) {
   content = content.replace(/{clipboard:snakecase}/g, _.snakeCase(window.getClipboardContent()))
   // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
   content = content.replace(/{clipboard:trim}/g, window.getClipboardContent().trim())
+  // 将content中的所有 {clipboard:trim:xxx} 替换为剪贴板内容去掉首尾指定字符
+  content = content.replace(/{clipboard:trim:(.*)}/g, function (match, trim) {
+    return _.trim(window.getClipboardContent(), trim)
+  })
   // 将content中的所有 {uuid} 替换为uuid
   content = content.replace(/{uuid}/g, uuidv4())
   // 将content中的所有 {random:1..10} 替换为随机数
@@ -91,5 +100,6 @@ function getCursorPosition(content) {
   }
   return content.length - index - 8
 }
+
 
 export default snippets;

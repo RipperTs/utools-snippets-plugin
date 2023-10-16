@@ -47,8 +47,12 @@ const placeholder_tags = [
         "value": "{clipboard:snakecase}"
       },
       {
-        "name": "剪贴板去掉首尾空格",
+        "name": "剪贴板删除首尾空格",
         "value": "{clipboard:trim}"
+      },
+      {
+        "name": "剪贴板删除首尾指定字符",
+        "value": "{clipboard:trim:xxx}"
       },
     ]
   },
