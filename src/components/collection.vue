@@ -46,7 +46,7 @@
 
 <script>
 import {editCollectionEntity, getCollectionEntity} from "@/entitys";
-import {collection_prefix} from "@/utils";
+import {collection_prefix, snippet_prefix} from "@/utils";
 
 export default {
   props: {
@@ -103,7 +103,7 @@ export default {
      * @returns {boolean}
      */
     delCollection() {
-      const snippet_list = window.utools.db.allDocs(this.current_collection_item.data.id + '')
+      const snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item.data.id}`)
       if (snippet_list && snippet_list.length > 0) {
         this.$message({
           message: '请先删除所有文本片段后再删除分组',
