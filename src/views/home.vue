@@ -14,6 +14,7 @@
 
     <div class="setting-container p-5">
       <collection class="left-component"
+                  ref="collectionRef"
                   :collection_list="collection_list"
                   :current_collection_index="current_collection_index"
                   :current_collection_item="current_collection_item"
@@ -84,6 +85,7 @@
     </div>
 
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
+               :close-on-click-modal="false"
                top="10vh"
                :show-close="false" width="80%"
                @close="closeDialog">
@@ -166,6 +168,13 @@ export default {
       is_edit: false,
       innerVisible: false,
     }
+  },
+  created() {
+    window.utools.onPluginOut(() => {
+      this.dialogFormVisible = false
+      this.innerVisible = false;
+      this.$refs.collectionRef._initDialog()
+    })
   },
   mounted() {
     this.getCollectionList()

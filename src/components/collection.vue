@@ -77,6 +77,10 @@ export default {
 
   methods: {
 
+    _initDialog(){
+      this.dialogFormVisible = false
+    },
+
     closeDialog() {
       this.edit_collection_item = null
     },
