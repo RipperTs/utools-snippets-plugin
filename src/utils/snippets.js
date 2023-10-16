@@ -10,56 +10,71 @@ const timingMillisecond = 100 // 延迟时间
  * @param code
  */
 function snippets(code) {
-  const snippets = window.utools.db.get(code)
-  if (snippets) {
-    // 获取当前剪贴板内容
-    const current_clipboard_content = window.getClipboardContent()
-    // 处理内容
-    let content = processingContent(snippets.data.snippet, current_clipboard_content)
-    // 获取要移动到光标的位置
-    let cursor_position = getCursorPosition(content)
-    if (cursor_position > 0) {
-      // 将content中的所有 {cursor} 替换为空字符串
-      content = content.replace(/{cursor}/g, '')
-    }
-    const app_version = parseInt(window.utools.getAppVersion())
-    // 兼容旧版本3.x
-    if (app_version >= 4) {
-      window.utools.hideMainWindowPasteText(content)
-    } else {
-      window.utools.copyText(content)
-      window.utools.hideMainWindow()
-      window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
-    }
-    if (cursor_position > 0) {
-      setTimeout(() => {
+  // 延迟等待处理函数
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  (async function () {
+    const snippets = window.utools.db.get(code)
+    if (snippets) {
+      // 获取当前剪贴板内容
+      const current_clipboard_content = window.getClipboardContent()
+      const is_select_words = checkIsSelectWords(snippets.data.snippet)
+      let content = ''
+      if (is_select_words) {
+        // 需要获取划词选中内容
+        window.utools.hideMainWindow()
+        window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
+        await delay(100);
+        let select_words = window.getClipboardContent()
+        content = processingContent(snippets.data.snippet, current_clipboard_content, select_words)
+      } else {
+        content = processingContent(snippets.data.snippet, current_clipboard_content)
+      }
+      // 获取要移动到光标的位置
+      let cursor_position = getCursorPosition(content)
+      if (cursor_position > 0) {
+        // 将content中的所有 {cursor} 替换为空字符串
+        content = content.replace(/{cursor}/g, '')
+      }
+      const app_version = parseInt(window.utools.getAppVersion())
+      // 兼容旧版本3.x
+      if (app_version >= 4) {
+        window.utools.hideMainWindowPasteText(content)
+      } else {
+        window.utools.copyText(content)
+        window.utools.hideMainWindow()
+        window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
+      }
+      if (cursor_position > 0) {
+        await delay(timingMillisecond);
         for (let i = 0; i < cursor_position; i++) {
           window.utools.simulateKeyboardTap('left')
         }
+        // 获取之前剪贴板内容
         window.utools.copyText(current_clipboard_content)
         window.utools.outPlugin()
-      }, timingMillisecond)
-    } else {
-      setTimeout(() => {
+      } else {
+        await delay(timingMillisecond);
         window.utools.copyText(current_clipboard_content)
         window.utools.outPlugin()
-      }, timingMillisecond)
-    }
+      }
 
-  } else {
-    window.utools.showNotification('未找到该关键字')
-    window.utools.hideMainWindow()
-    window.utools.outPlugin()
-  }
+    } else {
+      window.utools.showNotification('未找到该关键字')
+      window.utools.hideMainWindow()
+      window.utools.outPlugin()
+    }
+  })();
 }
 
 /**
  * 处理内容(主要替换占位符)
  * @param content
  * @param current_clipboard_content
+ * @param select_words
  * @returns {*}
  */
-function processingContent(content, current_clipboard_content) {
+function processingContent(content, current_clipboard_content, select_words = '') {
   // 将content中的所有 {datetime} 替换为当前时间
   content = content.replace(/{datetime}/g, dayjs().format('YYYY年MM月DD日 HH:mm:ss'))
   content = content.replace(/{date}/g, dayjs().format('YYYY年MM月DD日'))
@@ -92,6 +107,12 @@ function processingContent(content, current_clipboard_content) {
   content = content.replace(/{random:(\d+)..(\d+)}/g, function (match, min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
   })
+
+  content = content.replace(/{selection}/g, select_words.trim())
+  content = content.replace(/{selection:lowercase}/g, _.lowerCase(select_words.trim()))
+  content = content.replace(/{selection:uppercase}/g, _.toUpper(select_words.trim()))
+  content = content.replace(/{selection:camelcase}/g, _.camelCase(select_words.trim()))
+  content = content.replace(/{selection:snakecase}/g, _.snakeCase(select_words.trim()))
   return content
 }
 
