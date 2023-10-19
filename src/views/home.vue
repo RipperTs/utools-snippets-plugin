@@ -226,6 +226,21 @@ export default {
      * @param tag
      */
     async clickTag(tag) {
+      if (this.form.snippet.indexOf('{cursor}') !== -1 && tag.value === '{cursor}') {
+        this.$message({
+          message: '只允许添加一个"光标位置"占位符',
+          type: 'warning'
+        })
+        return false;
+      }
+      if (this.form.snippet.indexOf('{input:content}') !== -1 && tag.value === '{input:content}') {
+        this.$message({
+          message: '只允许添加一个"手动输入内容"占位符',
+          type: 'warning'
+        })
+        return false;
+      }
+
       const myField = document.querySelector('#textarea')
       if (this.textareaPos.startPos === 0 && this.textareaPos.endPos === 0) {
         this.form.snippet += tag.value;
@@ -510,15 +525,6 @@ export default {
       if (this.form.snippet === '') {
         this.$message({
           message: '文本片段不能为空',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      let cursor_count = this.form.snippet.split('{cursor}').length - 1
-      if (cursor_count > 1) {
-        this.$message({
-          message: '只允许添加一个{cursor}占位符',
           type: 'warning'
         })
         return false;
