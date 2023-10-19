@@ -76,7 +76,8 @@
         </div>
         <div class="add-btn">
           <el-button-group>
-            <el-button size="mini" icon="el-icon-plus" :disabled="collection_list.length <=0" @click="addSnippets"></el-button>
+            <el-button size="mini" icon="el-icon-plus" :disabled="collection_list.length <=0"
+                       @click="addSnippets"></el-button>
             <el-button size="mini" icon="el-icon-minus" :disabled="current_snippet_item === null"
                        @click="delSnippets"></el-button>
           </el-button-group>
@@ -100,16 +101,16 @@
           <div class="remark mt-1.5">此关键字全局唯一, 所以需要注意不要重复定义!</div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <el-input type="textarea" ref="snippetInput" :rows="7"
+          <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
                     placeholder="在这里输入文本片段, 支持占位符"
                     v-model="form.snippet"></el-input>
           <div>
-            <el-button class="placeholder-btn" size="mini" @click="innerVisible = true">{ }
+            <el-button class="placeholder-btn" size="mini" @click="openInnerVisible()">{ }
             </el-button>
           </div>
           <div class="remark" style="line-height: 20px;">
             <p>您可以在文本片段中添加占位符, 可以更加灵活的对片段内容进行动态处理.</p>
-            <p>点击上方 { } 按钮选择要插入占位符, 即可在文本片段后面追加插入占位符.</p>
+            <p>点击上方 { } 按钮选择要插入占位符, 即可在当前光标位置插入占位符.</p>
             <p>如果需要更加高级的自动化扩展推荐使用 <span
               class="text-blue-600 font-medium cursor-pointer"
               @click="redirectPlugin">一步到位</span> 插件.</p>
@@ -169,6 +170,10 @@ export default {
       current_snippet_item: null,
       is_edit: false,
       innerVisible: false,
+      textareaPos: {
+        startPos: 0,
+        endPos: 0
+      }
     }
   },
   computed: {
@@ -188,6 +193,15 @@ export default {
   },
   methods: {
 
+    openInnerVisible() {
+      const myField = document.querySelector('#textarea')
+      if (myField.selectionStart || myField.selectionStart === 0) {
+        this.textareaPos.startPos = myField.selectionStart
+        this.textareaPos.endPos = myField.selectionEnd
+      }
+      this.innerVisible = true;
+    },
+
     handleEvent(e) {
       if (e.isTrusted && e.keyCode === 13) {
         const text = this.sharedData?.text || ''
@@ -199,8 +213,20 @@ export default {
 
     },
 
-    clickTag(tag) {
-      this.form.snippet += tag.value;
+    /**
+     * 插入占位符
+     * @param tag
+     */
+    async clickTag(tag) {
+      const myField = document.querySelector('#textarea')
+      if (this.textareaPos.startPos === 0 && this.textareaPos.endPos === 0) {
+        this.form.snippet += tag.value;
+      } else {
+        this.form.snippet = this.form.snippet.substring(0, this.textareaPos.startPos) + tag.value + this.form.snippet.substring(this.textareaPos.endPos, this.form.snippet.length)
+        await this.$nextTick() // 这句是重点, 圈起来
+        myField.setSelectionRange(this.textareaPos.endPos + tag.value.length, this.textareaPos.endPos + tag.value.length)
+        myField.focus()
+      }
       this.innerVisible = false;
     },
 
@@ -230,6 +256,10 @@ export default {
         name: '',
         keyword: '',
         snippet: ''
+      }
+      this.textareaPos = {
+        startPos: 0,
+        endPos: 0
       }
       this.is_edit = false
     },
