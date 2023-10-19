@@ -259,6 +259,9 @@ export default {
       this.is_edit = true
     },
 
+    /**
+     * 关闭添加文本片段弹窗
+     */
     closeDialog() {
       this.form = {
         name: '',
