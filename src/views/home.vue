@@ -193,6 +193,9 @@ export default {
   },
   methods: {
 
+    /**
+     * 打开光标占位符弹窗
+     */
     openInnerVisible() {
       const myField = document.querySelector('#textarea')
       if (myField.selectionStart || myField.selectionStart === 0) {
@@ -202,6 +205,11 @@ export default {
       this.innerVisible = true;
     },
 
+    /**
+     * 键盘事件(手动输入时候会启用)
+     * @param e
+     * @returns {boolean}
+     */
     handleEvent(e) {
       if (e.isTrusted && e.keyCode === 13) {
         const text = this.sharedData?.text || ''
