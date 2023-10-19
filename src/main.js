@@ -2,7 +2,6 @@ import Vue from "vue";
 import App from "./App.vue";
 import axios from 'axios'
 import 'mavon-editor/dist/css/index.css'
-import {UTools} from "./utils/utools.js";
 import Vant from "./vant.js";
 import router from './router';
 import store from './store/index'
@@ -12,11 +11,7 @@ import "./assets/css/tailwindcss.css"
 import './assets/icons' // icon
 import ElementUI from 'element-ui';
 import dayjs from 'dayjs'
-import snippets from "@/utils/snippets";
-
-if (process.env.NODE_ENV !== "production") {
-  window.utools = window.utools || UTools;
-}
+import {snippets} from "@/utils/snippets";
 
 Vue.config.productionTip = false;
 
@@ -25,33 +20,36 @@ Vue.prototype.$http = axios
 Vue.use(Vant);
 Vue.use(ElementUI, {size: 'small'});
 
-Vue.prototype.utools = window.utools;
 Vue.prototype.$dayjs = dayjs;
 
-window.utools.onPluginEnter(({code, type, payload}) => {
+if (window.utools) {
 
-  console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
+  window.utools.onPluginEnter(({code, type, payload}) => {
 
-  if (window.utools.isDarkColors()) {
-    // 加载深色模式样式
-    import('./assets/css/dark-theme.css')
-  }
+    console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
 
-  Vue.prototype.$pluginCode = code
-  Vue.prototype.$pluginType = type
-  Vue.prototype.$pluginPayload = payload
+    if (window.utools.isDarkColors()) {
+      // 加载深色模式样式
+      import('./assets/css/dark-theme.css')
+    }
 
-  if (code !== 'snippets') snippets(code)
+    Vue.prototype.$pluginCode = code
+    Vue.prototype.$pluginType = type
+    Vue.prototype.$pluginPayload = payload
 
-  new Vue({
-    router,
-    store,
-    render: (h) => h(App),
-  }).$mount('#app');
+    if (code !== 'snippets') snippets(code)
 
-});
+  });
 
-window.utools.onPluginDetach(() => {
-  console.log('分离插件')
-  Vue.prototype.$pluginDetach = true
-})
+  window.utools.onPluginDetach(() => {
+    console.log('分离插件')
+    Vue.prototype.$pluginDetach = true
+  })
+
+}
+
+new Vue({
+  router,
+  store,
+  render: (h) => h(App),
+}).$mount('#app');

@@ -4,7 +4,6 @@ import Vue from 'vue'
 
 Vue.use(VueRouter)
 var routes = [
-  {path: '/about', component: ()=> import(/* webpackChunkName: "about" */ "@/views/about.vue")  },
   {path: '/', component: ()=> import(/* webpackChunkName: "home" */ "@/views/home.vue")  },
 
 ];

@@ -14,7 +14,7 @@ export const UTools =  {
    * @description 每当插件从后台进入到前台时，uTools将会主动调用这个方法
    * @param cb 回调函数
    */
-  onPluginEnter:'',
+  onPluginEnter:function (){},
 
   /**
    * @description 每当插件从前台进入到后台时，uTools将会主动调用这个方法
@@ -26,7 +26,7 @@ export const UTools =  {
    * @description 用户对插件进行分离操作时，uTools将会主动调用这个方法
    * @param cb 回调函数
    */
-  onPluginDetach:'',
+  onPluginDetach:function (){},
 
   /**
    * @description 当此插件的数据在其他设备上被更改后同步到此设备时，uTools将会主动调用这个方法

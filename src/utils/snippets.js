@@ -2,68 +2,97 @@ import dayjs from "dayjs";
 import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
+import store from '@/store'
 
 const timingMillisecond = 100 // 延迟时间
+
+// 顺序执行延迟函数
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * 上屏动作
  * @param code
  */
-function snippets(code) {
-  // 延迟等待处理函数
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+export function snippets(code) {
+  const snippets = window.utools.db.get(code)
+  if (!snippets) {
+    window.utools.showNotification('未找到该关键字')
+    window.utools.hideMainWindow()
+    window.utools.outPlugin()
+    return false;
+  }
+
+  // 手动输入内容后上屏
+  const is_input_content = checkIsInputContent(snippets.data.snippet)
+  if (is_input_content) {
+    window.utools.setExpendHeight(0)
+    window.utools.setSubInput(({text}) => {
+      // 跳转到about页面
+      if (text.trim().length > 0) {
+        store.state.sharedData = {text, snippets}
+      } else {
+        store.state.sharedData = {}
+      }
+    }, `${snippets.data.name}, 回车执行`)
+    return true;
+  }
+
+  autoSnippets(snippets)
+}
+
+
+/**
+ * 执行自动上屏动作
+ * @param snippets 关键字数据
+ * @param input_content 手动输入的内容
+ */
+export function autoSnippets(snippets, input_content = '') {
 
   (async function () {
-    const snippets = window.utools.db.get(code)
-    if (snippets) {
-      // 获取当前剪贴板内容
-      const current_clipboard_content = window.getClipboardContent()
-      const is_select_words = checkIsSelectWords(snippets.data.snippet)
-      let content = ''
-      if (is_select_words) {
-        // 需要获取划词选中内容
-        window.utools.hideMainWindow()
-        window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
-        await delay(100);
-        let select_words = window.getClipboardContent()
-        content = processingContent(snippets.data.snippet, current_clipboard_content, select_words)
-      } else {
-        content = processingContent(snippets.data.snippet, current_clipboard_content)
-      }
-      // 获取要移动到光标的位置
-      let cursor_position = getCursorPosition(content)
-      if (cursor_position > 0) {
-        // 将content中的所有 {cursor} 替换为空字符串
-        content = content.replace(/{cursor}/g, '')
-      }
-      const app_version = parseInt(window.utools.getAppVersion())
-      // 兼容旧版本3.x
-      if (app_version >= 4) {
-        window.utools.hideMainWindowPasteText(content)
-      } else {
-        window.utools.copyText(content)
-        window.utools.hideMainWindow()
-        window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
-      }
-      if (cursor_position > 0) {
-        await delay(timingMillisecond);
-        for (let i = 0; i < cursor_position; i++) {
-          window.utools.simulateKeyboardTap('left')
-        }
-        // 获取之前剪贴板内容
-        window.utools.copyText(current_clipboard_content)
-        window.utools.outPlugin()
-      } else {
-        await delay(timingMillisecond);
-        window.utools.copyText(current_clipboard_content)
-        window.utools.outPlugin()
-      }
-
-    } else {
-      window.utools.showNotification('未找到该关键字')
+    store.state.sharedData = {}
+    // 获取当前剪贴板内容
+    const current_clipboard_content = window.getClipboardContent()
+    const is_select_words = checkIsSelectWords(snippets.data.snippet)
+    let content = ''
+    if (is_select_words) {
+      // 需要获取划词选中内容
       window.utools.hideMainWindow()
+      window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
+      await delay(100);
+      let select_words = window.getClipboardContent()
+      content = processingContent(snippets.data.snippet, current_clipboard_content, select_words, input_content)
+    } else {
+      content = processingContent(snippets.data.snippet, current_clipboard_content, '', input_content)
+    }
+    // 获取要移动到光标的位置
+    let cursor_position = getCursorPosition(content)
+    if (cursor_position > 0) {
+      // 将content中的所有 {cursor} 替换为空字符串
+      content = content.replace(/{cursor}/g, '')
+    }
+    const app_version = parseInt(window.utools.getAppVersion())
+    // 兼容旧版本3.x
+    if (app_version >= 4) {
+      window.utools.hideMainWindowPasteText(content)
+    } else {
+      window.utools.copyText(content)
+      window.utools.hideMainWindow()
+      window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
+    }
+    if (cursor_position > 0) {
+      await delay(timingMillisecond);
+      for (let i = 0; i < cursor_position; i++) {
+        window.utools.simulateKeyboardTap('left')
+      }
+      // 获取之前剪贴板内容
+      window.utools.copyText(current_clipboard_content)
+      window.utools.outPlugin()
+    } else {
+      await delay(timingMillisecond);
+      window.utools.copyText(current_clipboard_content)
       window.utools.outPlugin()
     }
+
   })();
 }
 
@@ -72,9 +101,10 @@ function snippets(code) {
  * @param content
  * @param current_clipboard_content
  * @param select_words
+ * @param input_content
  * @returns {*}
  */
-function processingContent(content, current_clipboard_content, select_words = '') {
+function processingContent(content, current_clipboard_content, select_words = '', input_content = '') {
   // 将content中的所有 {datetime} 替换为当前时间
   content = content.replace(/{datetime}/g, dayjs().format('YYYY年MM月DD日 HH:mm:ss'))
   content = content.replace(/{date}/g, dayjs().format('YYYY年MM月DD日'))
@@ -113,6 +143,9 @@ function processingContent(content, current_clipboard_content, select_words = ''
   content = content.replace(/{selection:uppercase}/g, _.toUpper(select_words.trim()))
   content = content.replace(/{selection:camelcase}/g, _.camelCase(select_words.trim()))
   content = content.replace(/{selection:snakecase}/g, _.snakeCase(select_words.trim()))
+
+  // 将content中的所有 {input:content} 替换为输入的内容
+  content = content.replace(/{input:content}/g, input_content)
   return content
 }
 
@@ -127,6 +160,16 @@ function getCursorPosition(content) {
     return 0;
   }
   return content.length - index - 8
+}
+
+/**
+ * 检查是否需要输入自定义内容
+ * @param content
+ * @returns {boolean}
+ */
+function checkIsInputContent(content) {
+  const index = content.indexOf('{input:content}')
+  return !(index === -1)
 }
 
 /**
@@ -147,6 +190,3 @@ function checkIsSelectWords(content) {
   })
   return isSelectWords
 }
-
-
-export default snippets;

@@ -95,11 +95,15 @@ const placeholder_tags = [
     ]
   },
   {
-    "label": "光标",
+    "label": "其他",
     "value": [
       {
         "name": "光标位置",
         "value": "{cursor}"
+      },
+      {
+        "name": "手动输入内容",
+        "value": "{input:content}"
       }
     ]
   },

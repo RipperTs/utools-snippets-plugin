@@ -76,7 +76,7 @@
         </div>
         <div class="add-btn">
           <el-button-group>
-            <el-button size="mini" icon="el-icon-plus" @click="addSnippets"></el-button>
+            <el-button size="mini" icon="el-icon-plus" :disabled="collection_list.length <=0" @click="addSnippets"></el-button>
             <el-button size="mini" icon="el-icon-minus" :disabled="current_snippet_item === null"
                        @click="delSnippets"></el-button>
           </el-button-group>
@@ -145,6 +145,8 @@ import {
   getSnippetsEntity
 } from "@/entitys";
 import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
+import {mapState} from 'vuex'
+import {autoSnippets} from "@/utils/snippets";
 
 export default {
   components: {
@@ -169,17 +171,33 @@ export default {
       innerVisible: false,
     }
   },
+  computed: {
+    ...mapState(['sharedData'])
+  },
   created() {
     window.utools.onPluginOut(() => {
       this.dialogFormVisible = false
       this.innerVisible = false;
       this.$refs.collectionRef._initDialog()
     })
+    // 监听键盘事件
+    document.addEventListener('keydown', this.handleEvent);
   },
   mounted() {
     this.getCollectionList()
   },
   methods: {
+
+    handleEvent(e) {
+      if (e.isTrusted && e.keyCode === 13) {
+        const text = this.sharedData?.text || ''
+        if (text.trim() === '') return false;
+
+        autoSnippets(this.sharedData.snippets, this.sharedData.text)
+        return true;
+      }
+
+    },
 
     clickTag(tag) {
       this.form.snippet += tag.value;
@@ -468,6 +486,13 @@ export default {
       return true;
     },
   },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleEvent)
+  },
+  // vue页面卸载事件
+  destroyed() {
+    document.removeEventListener('keydown', this.handleEvent)
+  }
 
 }
 </script>
