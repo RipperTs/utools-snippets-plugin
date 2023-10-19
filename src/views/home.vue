@@ -202,6 +202,7 @@ export default {
         this.textareaPos.startPos = myField.selectionStart
         this.textareaPos.endPos = myField.selectionEnd
       }
+      console.log(this.textareaPos)
       this.innerVisible = true;
     },
 
@@ -242,14 +243,10 @@ export default {
       }
 
       const myField = document.querySelector('#textarea')
-      if (this.textareaPos.startPos === 0 && this.textareaPos.endPos === 0) {
-        this.form.snippet += tag.value;
-      } else {
-        this.form.snippet = this.form.snippet.substring(0, this.textareaPos.startPos) + tag.value + this.form.snippet.substring(this.textareaPos.endPos, this.form.snippet.length)
-        await this.$nextTick() // 这句是重点, 圈起来
-        myField.setSelectionRange(this.textareaPos.endPos + tag.value.length, this.textareaPos.endPos + tag.value.length)
-        myField.focus()
-      }
+      this.form.snippet = this.form.snippet.substring(0, this.textareaPos.startPos) + tag.value + this.form.snippet.substring(this.textareaPos.endPos, this.form.snippet.length)
+      await this.$nextTick() // 这句是重点, 圈起来
+      myField.setSelectionRange(this.textareaPos.endPos + tag.value.length, this.textareaPos.endPos + tag.value.length)
+      myField.focus()
       this.innerVisible = false;
     },
 
