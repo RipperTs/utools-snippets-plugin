@@ -79,19 +79,41 @@ export function autoSnippets(snippets, input_content = '') {
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
     }
+
     if (cursor_position > 0) {
       await delay(timingMillisecond);
       for (let i = 0; i < cursor_position; i++) {
         window.utools.simulateKeyboardTap('left')
       }
-      // 获取之前剪贴板内容
-      window.utools.copyText(current_clipboard_content)
-      window.utools.outPlugin()
-    } else {
+    }
+
+    // 执行后置动作
+    postAction(snippets, current_clipboard_content)
+
+  })();
+}
+
+/**
+ * 执行后置动作
+ * @param snippets
+ * @param current_clipboard_content
+ */
+function postAction(snippets, current_clipboard_content) {
+  (async function () {
+    const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
+    const is_enter = snippets.data?.is_enter || 2
+
+    if (is_enter === 1) {
+      await delay(timingMillisecond);
+      window.utools.simulateKeyboardTap('enter')
+    }
+
+    if (is_reduction_clipboard === 1) {
       await delay(timingMillisecond);
       window.utools.copyText(current_clipboard_content)
-      window.utools.outPlugin()
     }
+
+    window.utools.outPlugin()
 
   })();
 }

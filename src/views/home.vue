@@ -87,7 +87,7 @@
 
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
                :close-on-click-modal="false"
-               top="10vh"
+               top="3vh"
                :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
@@ -104,7 +104,7 @@
           <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
                     placeholder="在这里输入文本片段, 支持占位符"
                     v-model="form.snippet"></el-input>
-          <div>
+          <div class="snippet-btn-box">
             <el-button class="placeholder-btn" size="mini" @click="openInnerVisible()">{ }
             </el-button>
           </div>
@@ -115,6 +115,15 @@
               class="text-blue-600 font-medium cursor-pointer"
               @click="redirectPlugin">一步到位</span> 插件.</p>
           </div>
+        </el-form-item>
+
+        <el-form-item label="后置动作" :label-width="formLabelWidth">
+          <el-radio-group v-model="form.is_reduction_clipboard" size="mini">
+            <el-radio :label=1 border>还原剪贴板内容</el-radio>
+            <el-radio :label=2 border>保留剪贴板中文本片段 (方便手动粘贴)</el-radio>
+          </el-radio-group>
+          <el-checkbox label="敲击回车键" v-model="form.is_enter" size="mini" border
+                       class="mt-2.5"></el-checkbox>
         </el-form-item>
 
       </el-form>
@@ -164,7 +173,9 @@ export default {
       form: {
         name: '',
         keyword: '',
-        snippet: ''
+        snippet: '',
+        is_reduction_clipboard: 1,
+        is_enter: false,
       },
       formLabelWidth: '72px',
       current_snippet_item: null,
@@ -173,7 +184,7 @@ export default {
       textareaPos: {
         startPos: 0,
         endPos: 0
-      }
+      },
     }
   },
   computed: {
@@ -262,10 +273,13 @@ export default {
      * 双击文本片段
      */
     dbClickSnippet() {
+      const is_enter = this.current_snippet_item.data?.is_enter || 2
       this.form = {
         name: this.current_snippet_item.data.name,
         keyword: this.current_snippet_item.data.keyword,
-        snippet: this.current_snippet_item.data.snippet
+        snippet: this.current_snippet_item.data.snippet,
+        is_reduction_clipboard: this.current_snippet_item.data?.is_reduction_clipboard || 1,
+        is_enter: is_enter === 1,
       }
       this.dialogFormVisible = true
       this.is_edit = true
@@ -278,7 +292,9 @@ export default {
       this.form = {
         name: '',
         keyword: '',
-        snippet: ''
+        snippet: '',
+        is_reduction_clipboard: 1,
+        is_enter: false,
       }
       this.textareaPos = {
         startPos: 0,
@@ -393,7 +409,7 @@ export default {
         })
         return false;
       }
-      let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form.name, this.form.keyword, this.form.snippet)
+      let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form)
       let result = window.utools.db.put({
         _id: `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
         data: snippets
@@ -432,7 +448,7 @@ export default {
      * 编辑文本片段
      */
     editSnippet() {
-      let result = editSnippetsEntity(this.current_snippet_item, this.form.name, this.form.keyword, this.form.snippet)
+      let result = editSnippetsEntity(this.current_snippet_item, this.form)
       if (!result.ok) {
         this.$message({
           message: '修改失败',
@@ -632,5 +648,8 @@ export default {
 
 ::v-deep .el-dialog__header {
   padding: 0 !important;
+}
+::v-deep .el-dialog__body{
+  padding: 20px;
 }
 </style>
