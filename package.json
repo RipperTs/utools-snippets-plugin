@@ -1,6 +1,6 @@
 {
   "name": "automatic-snippets",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
