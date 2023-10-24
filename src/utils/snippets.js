@@ -134,7 +134,7 @@ function processingContent(content, current_clipboard_content, select_words = ''
   // 将content中的所有 {timestamp} 替换为当前时间戳
   content = content.replace(/{timestamp}/g, dayjs().unix())
   // 将content中的所有 {isodate:yyyy-MM-dd HH:mm:ss} 替换为当前时间
-  content = content.replace(/{isodate:(.*)}/g, function (match, format) {
+  content = content.replace(/{isodate:(.*?)}/g, function (match, format) {
     return dayjs().format(format)
   })
   // 将content中的所有 {clipboard} 替换为剪贴板内容
@@ -150,7 +150,7 @@ function processingContent(content, current_clipboard_content, select_words = ''
   // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
   content = content.replace(/{clipboard:trim}/g, current_clipboard_content.trim())
   // 将content中的所有 {clipboard:trim:xxx} 替换为剪贴板内容去掉首尾指定字符
-  content = content.replace(/{clipboard:trim:(.*)}/g, function (match, trim) {
+  content = content.replace(/{clipboard:trim:(.*?)}/g, function (match, trim) {
     return _.trim(current_clipboard_content, trim)
   })
   // 将content中的所有 {uuid} 替换为uuid
