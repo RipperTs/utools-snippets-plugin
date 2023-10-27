@@ -14,7 +14,7 @@
             <div class="desc mt-3">
               <p>导出的数据将会保存在 <span class="font-bold text-blue-600">{{
                   downloadPath
-                }}</span>, 文件名为 <span class="text-blue-600 font-bold">{{ fileName }}</span></p>
+                }}</span>, 文件名为 <span class="text-blue-600 font-bold">{{ fileName }}_xxx.json</span></p>
               <p>注意: 因导出的文件未经过加密处理, 公开分享此文件可能会导致个人隐私泄露.</p>
             </div>
             <div class="action-button mt-3">
@@ -37,7 +37,7 @@ export default {
     return {
       activeName: 'export',
       downloadPath: '',
-      fileName: 'snippets_data.json',
+      fileName: 'snippets_data',
     }
   },
 
@@ -58,7 +58,8 @@ export default {
       }
       // 将data转json字符串
       const dataStr = JSON.stringify(data)
-      const path = `${this.downloadPath}/${this.fileName}`
+      const fileName = `${this.fileName}_${new Date().getTime()}.json`
+      const path = `${this.downloadPath}/${fileName}`
       window.saveFile(path, dataStr, () => {
         window.utools.showNotification('导出成功, 文件已保存至下载目录')
         window.utools.shellShowItemInFolder(path)
