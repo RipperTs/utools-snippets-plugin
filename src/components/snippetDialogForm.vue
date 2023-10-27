@@ -6,14 +6,26 @@
                :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
-        <el-form-item label="名称" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.name"
-                    placeholder="请输入名称, 此名称为文本片段的说明"></el-input>
-        </el-form-item>
-        <el-form-item label="关键字" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.keyword"
-                    placeholder="请输入关键字, 此关键字为uTools输入的命令"></el-input>
-          <div class="remark mt-1.5">此关键字全局唯一, 所以需要注意不要重复定义!</div>
+        <div class="flex justify-start">
+          <el-form-item label="名称" :label-width="formLabelWidth">
+            <el-input size="mini" style="width: 220px;" v-model="form.name"
+                      placeholder="请输入名称, 为文本片段的说明"></el-input>
+          </el-form-item>
+          <el-form-item label="关键字" :label-width="formLabelWidth">
+            <el-input size="mini" style="width: 230px;" v-model="form.keyword"
+                      placeholder="请输入关键字, 为uTools输入的命令"></el-input>
+          </el-form-item>
+        </div>
+        <el-form-item label="所在分组" :label-width="formLabelWidth">
+          <el-select :value="currentSelectCollection._id" :disabled="!is_edit"
+                     @change="selectCollection" size="mini">
+            <el-option
+              v-for="(item,index) in collection_list"
+              :key="index"
+              :label="item.data.name"
+              :value="item._id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
@@ -84,6 +96,10 @@ export default {
       type: Object,
       default: () => null
     },
+    collection_list: {
+      type: Array,
+      default: () => []
+    },
   },
   components: {placeholder},
   data() {
@@ -101,10 +117,19 @@ export default {
         is_reduction_clipboard: 1,
         is_enter: false,
       },
+      currentSelectCollection: null,
     }
   },
 
   methods: {
+
+    // 选择分组
+    selectCollection(id) {
+      const collection = window.utools.db.get(id)
+      if (!collection) return false;
+
+      this.currentSelectCollection = collection
+    },
 
     // 关闭文本片段弹窗
     closeDialog() {
@@ -115,6 +140,7 @@ export default {
         is_reduction_clipboard: 1,
         is_enter: false,
       }
+      this.currentSelectCollection = this.current_collection_item
       this.$parent.closeDialog()
     },
 
@@ -169,7 +195,7 @@ export default {
     },
 
     // 提交表单内容
-    onSubmit(){
+    onSubmit() {
       if (!this._verify()) return false;
 
       if (!this.is_edit) {
@@ -232,7 +258,8 @@ export default {
      * 编辑文本片段
      */
     editSnippet() {
-      let result = editSnippetsEntity(this.current_snippet_item, this.form)
+      const collection_id = this.currentSelectCollection.data.id
+      let result = editSnippetsEntity(collection_id, this.current_snippet_item, this.form)
       if (!result.ok) {
         this.$message({
           message: '修改失败',
@@ -240,10 +267,11 @@ export default {
         })
         return false;
       }
+      changeCollectionNum(this.current_collection_item,2)
       if (this.current_snippet_item.data.status === 1) {
         window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
         window.utools.setFeature({
-          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`,
+          "code": `${snippet_prefix}/${collection_id}/${this.current_snippet_item.data.id}`,
           "explain": this.form.name,
           "cmds": [this.form.keyword]
         })
@@ -252,6 +280,7 @@ export default {
         message: '修改成功',
         type: 'success'
       })
+      changeCollectionNum(this.currentSelectCollection)
       this.$emit('close-dialog')
       this.$parent.getCollectionList()
     },

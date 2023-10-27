@@ -38,10 +38,11 @@
     <!--  添加/修改文本片段  -->
     <snippetDialogForm
       ref="snippetDialogForm"
+      :form="form"
       :dialog-form-visible="dialogFormVisible"
       :current_snippet_item="current_snippet_item"
+      :collection_list="collection_list"
       :is_edit="is_edit"
-      :form="form"
       :current_collection_item="current_collection_item"
       @close-dialog="dialogFormVisible = false"
     ></snippetDialogForm>
@@ -132,6 +133,8 @@ export default {
         is_reduction_clipboard: this.current_snippet_item.data?.is_reduction_clipboard || 1,
         is_enter: is_enter === 1,
       }
+
+      this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
       this.dialogFormVisible = true
       this.is_edit = true
     },
@@ -189,6 +192,8 @@ export default {
       } else {
         this.current_collection_item = this.collection_list[this.current_collection_index]
       }
+
+      this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
       this.getSnippetList()
     },
 

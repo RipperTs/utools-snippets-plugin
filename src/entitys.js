@@ -1,3 +1,5 @@
+import {snippet_prefix} from "@/utils";
+
 /**
  * 创建分组实体
  * @param name
@@ -99,11 +101,12 @@ export function changeSnippetsStatus(rawData, status = 1) {
  * 修改文本片段实体
  * @param rawData
  * @param formData
+ * @param collection_id
  * @returns {DbReturn}
  */
-export function editSnippetsEntity(rawData, formData) {
+export function editSnippetsEntity(collection_id, rawData, formData) {
   const snippetsEntity = {
-    collection_id: rawData.data.collection_id,
+    collection_id: collection_id,
     name: formData.name,
     keyword: formData.keyword,
     snippet: formData.snippet,
@@ -113,7 +116,15 @@ export function editSnippetsEntity(rawData, formData) {
     is_enter: formData.is_enter ? 1 : 2,
   }
 
-  return saveEntity(rawData, snippetsEntity)
+  let result = window.utools.db.remove(rawData)
+  if (result.ok) {
+    return window.utools.db.put({
+      _id: `${snippet_prefix}/${collection_id}/${rawData.data.id}`,
+      data: snippetsEntity
+    })
+  }
+  return result;
+
 }
 
 /**
