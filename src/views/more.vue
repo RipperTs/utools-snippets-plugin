@@ -1,5 +1,8 @@
 <template>
   <div class="more-main">
+    <div class="headers-box">
+      <el-button size="mini" icon="el-icon-back" @click="backHome">返回首页</el-button>
+    </div>
     <div class="chunk-box">
       <div class="label">数据备份</div>
       <div class="desc mt-3">
@@ -29,10 +32,10 @@
             <div class="desc mt-1.5">
               <el-radio-group v-model="importType">
                 <el-radio :label="1">全量导入 (删除所有原数据后导入新数据)</el-radio>
-                <el-radio :label="2">增量导入 (仅导入有差异的数据)</el-radio>
+                <el-tooltip class="item" effect="dark" content="开发中...敬请期待!" placement="bottom">
+                  <el-radio :disabled="true" :label="2">增量导入 (来自他人分享的文本片段)</el-radio>
+                </el-tooltip>
               </el-radio-group>
-              <p class="mt-3"><span class="text-red-600 font-bold" v-if="importType === 2">注意: 如果导入的数据中存在与本地相同的关键字, 那么本地的数据将会被覆盖.</span>
-              </p>
             </div>
             <div class="action-button mt-10">
               <el-button type="primary" size="mini" @click="importData">执行导入数据</el-button>
@@ -46,7 +49,7 @@
 </template>
 
 <script>
-import {collection_prefix, snippet_prefix} from "@/utils";
+import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
 
 export default {
   components: {},
@@ -64,6 +67,10 @@ export default {
   },
 
   methods: {
+
+    backHome(){
+      this.$router.push({path: '/'})
+    },
 
     // 导入数据
     importData() {
@@ -94,7 +101,13 @@ export default {
       // 检查文件内容是否是json格式
       try {
         const fileContentJson = JSON.parse(fileContent)
-        this.doImportData(fileContentJson)
+        this.$confirm(`数据格式检查通过, 确定要使用${this.importType === 1 ? '全量' : '增量'}方式导入数据吗?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.doImportData(fileContentJson)
+        });
       } catch (e) {
         this.$message.error('文件内容不是标准的JSON格式')
       }
@@ -108,31 +121,103 @@ export default {
       const import_collection_list = fileContentJson.collection_list
       const import_snippet_list = fileContentJson.snippet_list
       if (this.importType === 1) {
-        // 删除全部数据
-        this.removeAllData();
-        // 导入分组数据
-        import_collection_list.forEach((item) => {
+        this.fullDataImport(import_collection_list, import_snippet_list)
+        return false;
+      }
+      if (this.importType === 2) {
+        this.incrementalDataImport(import_collection_list, import_snippet_list)
+        return false;
+      }
+    },
+
+    /**
+     * 增量数据点导入
+     * @param import_collection_list
+     * @param import_snippet_list
+     */
+    incrementalDataImport(import_collection_list, import_snippet_list) {
+      // 导入分组数据
+      import_collection_list.forEach((item) => {
+        try {
+          if (window.window.db.get(item)) {
+            window.utools.db.put({
+              _id: item._id,
+              data: item.data,
+              _rev: item._rev
+            })
+          } else {
+            window.utools.db.put({
+              _id: item._id,
+              data: item.data
+            })
+          }
+        } catch (e) {
+          console.log(e)
+        }
+      })
+
+      import_snippet_list.forEach((item) => {
+        if (window.utools.db.get(item)) {
+          // 如果存在, 则更新
+          window.utools.removeFeature(item._id)
+          window.utools.setFeature({
+            "code": item._id,
+            "explain": item.data.name,
+            "cmds": [item.data.keyword]
+          })
           window.utools.db.put({
             _id: item._id,
-            data: item.data
+            data: item.data,
+            _rev: item._rev
           })
-        })
-        // 导入文本片段数据
-        import_snippet_list.forEach((item) => {
-          let result = window.utools.db.put({
-            _id: item._id,
-            data: item.data
-          })
-          if (result.ok) {
+        } else {
+          const keyword_exist = checkKeywordIsExist(item.data.keyword)
+          if (!keyword_exist) {
             window.utools.setFeature({
               "code": item._id,
               "explain": item.data.name,
               "cmds": [item.data.keyword]
             })
+            window.utools.db.put({
+              _id: item._id,
+              data: item.data
+            })
           }
+        }
+      })
+      this.$message.success('导入成功');
+    },
+
+    /**
+     * 全量数据导入
+     * @param import_collection_list
+     * @param import_snippet_list
+     */
+    fullDataImport(import_collection_list, import_snippet_list) {
+      // 删除全部数据
+      if(!this.removeAllData()) return false;
+      // 导入分组数据
+      import_collection_list.forEach((item) => {
+        window.utools.db.put({
+          _id: item._id,
+          data: item.data
         })
-        return false;
-      }
+      })
+      // 导入文本片段数据
+      import_snippet_list.forEach((item) => {
+        let result = window.utools.db.put({
+          _id: item._id,
+          data: item.data
+        })
+        if (result.ok) {
+          window.utools.setFeature({
+            "code": item._id,
+            "explain": item.data.name,
+            "cmds": [item.data.keyword]
+          })
+        }
+      })
+      this.$message.success('导入成功')
     },
 
     /**
@@ -149,8 +234,10 @@ export default {
           window.utools.removeFeature(item._id)
           window.utools.db.remove(item)
         })
+        return true;
       } catch (err) {
         this.$message.error(err)
+        return false;
       }
     },
 
@@ -181,6 +268,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.headers-box{
+  background: #fff;
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 6px;
+}
 .more-main {
   padding: 20px;
 }
@@ -194,10 +287,13 @@ export default {
     font-size: 16px;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
+    user-select: none;
   }
 
   .desc {
     font-size: 13px;
+    // 禁止选中
+    user-select: none;
   }
 
   .action-button {
