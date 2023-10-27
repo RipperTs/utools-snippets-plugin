@@ -14,3 +14,8 @@ window.saveFile = function (path, content, func, errFunc) {
     func && func()
   });
 }
+
+window.readFile = function (path) {
+  var data = fs.readFileSync(path);
+  return data.toString();
+}
