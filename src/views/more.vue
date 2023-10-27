@@ -23,7 +23,7 @@
               <p>注意: 因导出的文件未经过加密处理, 公开分享此文件可能会导致个人隐私泄露.</p>
             </div>
             <div class="action-button mt-10">
-              <el-button type="primary" size="mini" @click="exportData">开始导出数据</el-button>
+              <el-button type="primary" size="mini" @click="exportData">导出全部数据</el-button>
             </div>
           </el-tab-pane>
 
@@ -38,7 +38,7 @@
               </el-radio-group>
             </div>
             <div class="action-button mt-10">
-              <el-button type="primary" size="mini" @click="importData">执行导入数据</el-button>
+              <el-button type="primary" size="mini" @click="importData">开始导入数据</el-button>
             </div>
           </el-tab-pane>
 
