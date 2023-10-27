@@ -4,7 +4,7 @@
   "description": "帮助您随时随地使用最有用的文本（代码）片段。在任意位置键入关键字，即可将对应的文本片段内容插入到指定位置。",
   "author": "https://github.com/ripperts",
   "homepage": "https://github.com/ripperts/snippets",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "logo": "dist/logo.png",
   "main": "dist/index.html",
   "preload": "dist/preload.js",
