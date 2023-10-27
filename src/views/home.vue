@@ -1,5 +1,6 @@
 <template>
   <div class="container-main">
+    <!--  顶部  -->
     <div class="top-content">
       <el-image
         class="ml-3 mt-1.5"
@@ -12,76 +13,27 @@
       </div>
     </div>
 
+    <!--  主体页面布局  -->
     <div class="setting-container p-5">
+      <!--   左侧分组列表   -->
       <collection class="left-component"
                   ref="collectionRef"
                   :collection_list="collection_list"
                   :current_collection_index="current_collection_index"
                   :current_collection_item="current_collection_item"
                   @clickCollection="clickCollection"
-                  @changeList="changeCollectionList"
-      ></collection>
+                  @changeList="changeCollectionList"></collection>
       <div class="right-container rounded">
-        <div class="table-box">
-          <el-table
-            :data="snippet_list"
-            height="100%"
-            highlight-current-row
-            header-row-class-name="snippet-header-row"
-            header-cell-class-name="snippet-header-cell"
-            cell-class-name="snippet-cell"
-            @row-click="clickSnippet"
-            @row-dblclick="dbClickSnippet"
-            style="width: 100%;border-radius: 3px">
-            <el-table-column
-              width="120"
-              label="名称">
-              <template slot-scope="scope">
-                <div class="snippet-content">
-                  {{ scope.row.data.name }}
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              width="60"
-              align="center"
-              label="状态">
-              <template slot-scope="scope">
-                <el-switch
-                  :value="scope.row.data.status === 1"
-                  active-color="#13ce66"
-                  @change="changeStatus(scope.row)"
-                  inactive-color="#ff4949">
-                </el-switch>
-              </template>
-            </el-table-column>
-            <el-table-column
-              width="100"
-              label="关键字">
-              <template slot-scope="scope">
-                <div class="snippet-content">
-                  {{ scope.row.data.keyword }}
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="文本片段">
-              <template slot-scope="scope">
-                <div class="snippet-content">
-                  {{ scope.row.data.snippet }}
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <div class="add-btn">
-          <el-button-group>
-            <el-button size="mini" icon="el-icon-plus" :disabled="collection_list.length <=0"
-                       @click="addSnippets"></el-button>
-            <el-button size="mini" icon="el-icon-minus" :disabled="current_snippet_item === null"
-                       @click="delSnippets"></el-button>
-          </el-button-group>
-        </div>
+        <!--   右侧文本片段列表     -->
+        <snippets :snippet_list="snippet_list"
+                  :current_snippet_item="current_snippet_item"
+                  :collection_list="collection_list"
+                  :current_collection_item="current_collection_item"
+                  @add-snippets="addSnippets"
+                  @del-snippets="delSnippets"
+                  @change-status="changeStatus"
+                  @row-click="clickSnippet"
+                  @row-dblclick="dbClickSnippet"></snippets>
       </div>
     </div>
 
@@ -148,12 +100,8 @@
 <script>
 import collection from "@/components/collection.vue";
 import placeholder from "@/components/placeholder.vue";
-import {
-  changeCollectionNum,
-  changeSnippetsStatus,
-  editSnippetsEntity,
-  getSnippetsEntity
-} from "@/entitys";
+import snippets from "@/components/snippets.vue";
+import {changeCollectionNum, editSnippetsEntity, getSnippetsEntity} from "@/entitys";
 import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
 import {mapState} from 'vuex'
 import {autoSnippets} from "@/utils/snippets";
@@ -161,7 +109,8 @@ import {autoSnippets} from "@/utils/snippets";
 export default {
   components: {
     collection,
-    placeholder
+    placeholder,
+    snippets
   },
   data() {
     return {
@@ -213,7 +162,6 @@ export default {
         this.textareaPos.startPos = myField.selectionStart
         this.textareaPos.endPos = myField.selectionEnd
       }
-      console.log(this.textareaPos)
       this.innerVisible = true;
     },
 
@@ -226,11 +174,9 @@ export default {
       if (e.isTrusted && e.keyCode === 13) {
         const text = this.sharedData?.text || ''
         if (text.trim() === '') return false;
-
         autoSnippets(this.sharedData.snippets, this.sharedData.text)
         return true;
       }
-
     },
 
     /**
@@ -474,23 +420,9 @@ export default {
 
     /**
      * 改变文本片段的状态
-     * @param row
      * @returns {boolean}
      */
-    changeStatus(row) {
-      let status = row.data.status === 1 ? 0 : 1
-      let result = changeSnippetsStatus(row, status)
-      if (!result.ok) return false;
-
-      if (status === 0) {
-        window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${row.data.id}`)
-      } else {
-        window.utools.setFeature({
-          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${row.data.id}`,
-          "explain": row.data.name,
-          "cmds": [row.data.keyword]
-        })
-      }
+    changeStatus() {
       this.getCollectionList()
     },
 
@@ -546,10 +478,7 @@ export default {
       return true;
     },
   },
-  beforeDestroy() {
-    document.removeEventListener('keydown', this.handleEvent)
-  },
-  // vue页面卸载事件
+
   destroyed() {
     document.removeEventListener('keydown', this.handleEvent)
   }
@@ -593,12 +522,6 @@ export default {
   .right-container {
     width: 66%;
     margin-top: 1px;
-
-    .table-box {
-      height: 80vh;
-      // y超出部分滚动
-      overflow-y: auto;
-    }
   }
 }
 
@@ -616,15 +539,6 @@ export default {
   }
 }
 
-.el-switch {
-  transform: scale(0.6);
-}
-
-.snippet-content {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 
 .remark {
   font-size: 12px;
@@ -649,7 +563,8 @@ export default {
 ::v-deep .el-dialog__header {
   padding: 0 !important;
 }
-::v-deep .el-dialog__body{
+
+::v-deep .el-dialog__body {
   padding: 20px;
 }
 </style>
