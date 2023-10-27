@@ -17,7 +17,7 @@
           </el-form-item>
         </div>
         <el-form-item label="所在分组" :label-width="formLabelWidth">
-          <el-select :value="currentSelectCollection._id" :disabled="!is_edit"
+          <el-select :value="currentSelectCollection?._id" :disabled="!is_edit"
                      @change="selectCollection" size="mini">
             <el-option
               v-for="(item,index) in collection_list"
@@ -267,7 +267,7 @@ export default {
         })
         return false;
       }
-      changeCollectionNum(this.current_collection_item,2)
+
       if (this.current_snippet_item.data.status === 1) {
         window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
         window.utools.setFeature({
@@ -276,11 +276,16 @@ export default {
           "cmds": [this.form.keyword]
         })
       }
+
+      if (this.current_collection_item !== this.currentSelectCollection) {
+        changeCollectionNum(this.current_collection_item, 2)
+        changeCollectionNum(this.currentSelectCollection)
+      }
+
       this.$message({
         message: '修改成功',
         type: 'success'
       })
-      changeCollectionNum(this.currentSelectCollection)
       this.$emit('close-dialog')
       this.$parent.getCollectionList()
     },
