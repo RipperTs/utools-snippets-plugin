@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="right-top">
-        <el-button icon="el-icon-s-tools" size="mini" circle></el-button>
+        <el-button icon="el-icon-menu" size="mini" circle @click="toMore"></el-button>
       </div>
     </div>
   </div>
@@ -22,13 +22,11 @@
 
 <script>
 export default {
-  components: {},
-  data() {
-    return {}
+  methods: {
+    toMore(){
+      this.$router.push({path: '/more'})
+    },
   },
-  mounted() {
-  },
-  methods: {},
 
 }
 </script>
