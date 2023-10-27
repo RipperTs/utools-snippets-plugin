@@ -98,6 +98,24 @@ body {
     color: #777777;
 }
 
+.right-top .el-button--default {
+    background-color: #696868;
+    border: 1px solid #777676 !important;
+    color: #bbb;
+}
+
+.right-top .el-button--default:hover {
+    background-color: #565656;
+    color: #ccc;
+    border: 1px solid #5d5d5d !important;
+}
+
+.right-top .el-button--default.is-disabled {
+    background-color: #565656;
+    border: 1px solid #565656 !important;
+    color: #777777;
+}
+
 .el-dialog {
     background: #494848 !important;
     color: #ddd !important;
@@ -193,3 +211,26 @@ body {
     color: #fff;
 }
 
+
+.snippet-btn-box .el-button--default {
+    background-color: #676666;
+    border: 1px solid #777676 !important;
+    color: #bbb;
+}
+
+.snippet-btn-box .el-button--default:hover {
+    background-color: #565656;
+    color: #ddd;
+    border: 1px solid #5d5d5d !important;
+}
+
+.placeholder-tags .el-tag--mini{
+    background: #676666;
+    border: 1px solid #757474;
+    color: #ddd;
+}
+.placeholder-tags .el-tag--mini:hover{
+    background: #565656;
+    border: 1px solid #5d5d5d;
+    color: #ddd;
+}
