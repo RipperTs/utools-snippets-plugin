@@ -31,86 +31,37 @@
                   :current_collection_item="current_collection_item"
                   @add-snippets="addSnippets"
                   @del-snippets="delSnippets"
-                  @change-status="changeStatus"
                   @row-click="clickSnippet"
                   @row-dblclick="dbClickSnippet"></snippets>
       </div>
     </div>
-
-    <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
-               :close-on-click-modal="false"
-               top="3vh"
-               :show-close="false" width="80%"
-               @close="closeDialog">
-      <el-form :model="form">
-        <el-form-item label="名称" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.name" autofocus
-                    placeholder="请输入名称, 此名称为文本片段的说明"></el-input>
-        </el-form-item>
-        <el-form-item label="关键字" :label-width="formLabelWidth">
-          <el-input size="mini" v-model="form.keyword"
-                    placeholder="请输入关键字, 此关键字为uTools输入的命令"></el-input>
-          <div class="remark mt-1.5">此关键字全局唯一, 所以需要注意不要重复定义!</div>
-        </el-form-item>
-        <el-form-item label="文本片段" :label-width="formLabelWidth">
-          <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
-                    placeholder="在这里输入文本片段, 支持占位符"
-                    v-model="form.snippet"></el-input>
-          <div class="snippet-btn-box">
-            <el-button class="placeholder-btn" size="mini" @click="openInnerVisible()">{ }
-            </el-button>
-          </div>
-          <div class="remark" style="line-height: 20px;">
-            <p>您可以在文本片段中添加占位符, 可以更加灵活的对片段内容进行动态处理.</p>
-            <p>点击上方 { } 按钮选择要插入占位符, 即可在当前光标位置插入占位符.</p>
-            <p>如果需要更加高级的自动化扩展推荐使用 <span
-              class="text-blue-600 font-medium cursor-pointer"
-              @click="redirectPlugin">一步到位</span> 插件.</p>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="后置动作" :label-width="formLabelWidth">
-          <el-radio-group v-model="form.is_reduction_clipboard" size="mini">
-            <el-radio :label=1 border>还原剪贴板内容</el-radio>
-            <el-radio :label=2 border>保留剪贴板中文本片段 (方便手动粘贴)</el-radio>
-          </el-radio-group>
-          <el-checkbox label="敲击回车键" v-model="form.is_enter" size="mini" border
-                       class="mt-2.5"></el-checkbox>
-        </el-form-item>
-
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogFormVisible = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="onSubmit()">
-          {{ !is_edit ? '保 存' : '修 改' }}
-        </el-button>
-      </div>
-      <el-dialog
-        width="70%"
-        style="user-select: none;"
-        :show-close="false"
-        :visible.sync="innerVisible"
-        append-to-body>
-        <placeholder @clickTag="clickTag"></placeholder>
-      </el-dialog>
-    </el-dialog>
+    <!--  添加/修改文本片段  -->
+    <snippetDialogForm
+      ref="snippetDialogForm"
+      :dialog-form-visible="dialogFormVisible"
+      :current_snippet_item="current_snippet_item"
+      :is_edit="is_edit"
+      :form="form"
+      :current_collection_item="current_collection_item"
+      @close-dialog="dialogFormVisible = false"
+    ></snippetDialogForm>
   </div>
 </template>
 
 <script>
 import collection from "@/components/collection.vue";
-import placeholder from "@/components/placeholder.vue";
 import snippets from "@/components/snippets.vue";
-import {changeCollectionNum, editSnippetsEntity, getSnippetsEntity} from "@/entitys";
-import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
+import snippetDialogForm from "@/components/snippetDialogForm.vue";
+import {changeCollectionNum} from "@/entitys";
+import {collection_prefix, snippet_prefix} from "@/utils";
 import {mapState} from 'vuex'
 import {autoSnippets} from "@/utils/snippets";
 
 export default {
   components: {
     collection,
-    placeholder,
-    snippets
+    snippets,
+    snippetDialogForm
   },
   data() {
     return {
@@ -126,14 +77,8 @@ export default {
         is_reduction_clipboard: 1,
         is_enter: false,
       },
-      formLabelWidth: '72px',
       current_snippet_item: null,
       is_edit: false,
-      innerVisible: false,
-      textareaPos: {
-        startPos: 0,
-        endPos: 0
-      },
     }
   },
   computed: {
@@ -154,18 +99,6 @@ export default {
   methods: {
 
     /**
-     * 打开光标占位符弹窗
-     */
-    openInnerVisible() {
-      const myField = document.querySelector('#textarea')
-      if (myField.selectionStart || myField.selectionStart === 0) {
-        this.textareaPos.startPos = myField.selectionStart
-        this.textareaPos.endPos = myField.selectionEnd
-      }
-      this.innerVisible = true;
-    },
-
-    /**
      * 键盘事件(手动输入时候会启用)
      * @param e
      * @returns {boolean}
@@ -177,34 +110,6 @@ export default {
         autoSnippets(this.sharedData.snippets, this.sharedData.text)
         return true;
       }
-    },
-
-    /**
-     * 插入占位符
-     * @param tag
-     */
-    async clickTag(tag) {
-      if (this.form.snippet.indexOf('{cursor}') !== -1 && tag.value === '{cursor}') {
-        this.$message({
-          message: '只允许添加一个"光标位置"占位符',
-          type: 'warning'
-        })
-        return false;
-      }
-      if (this.form.snippet.indexOf('{input:content}') !== -1 && tag.value === '{input:content}') {
-        this.$message({
-          message: '只允许添加一个"手动输入内容"占位符',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      const myField = document.querySelector('#textarea')
-      this.form.snippet = this.form.snippet.substring(0, this.textareaPos.startPos) + tag.value + this.form.snippet.substring(this.textareaPos.endPos, this.form.snippet.length)
-      await this.$nextTick() // 这句是重点, 圈起来
-      myField.setSelectionRange(this.textareaPos.endPos + tag.value.length, this.textareaPos.endPos + tag.value.length)
-      myField.focus()
-      this.innerVisible = false;
     },
 
     /**
@@ -220,7 +125,7 @@ export default {
      */
     dbClickSnippet() {
       const is_enter = this.current_snippet_item.data?.is_enter || 2
-      this.form = {
+      this.$refs.snippetDialogForm.form = {
         name: this.current_snippet_item.data.name,
         keyword: this.current_snippet_item.data.keyword,
         snippet: this.current_snippet_item.data.snippet,
@@ -235,17 +140,6 @@ export default {
      * 关闭添加文本片段弹窗
      */
     closeDialog() {
-      this.form = {
-        name: '',
-        keyword: '',
-        snippet: '',
-        is_reduction_clipboard: 1,
-        is_enter: false,
-      }
-      this.textareaPos = {
-        startPos: 0,
-        endPos: 0
-      }
       this.is_edit = false
     },
 
@@ -328,105 +222,6 @@ export default {
     },
 
     /**
-     * 提交保存文本片段
-     * @returns {boolean}
-     */
-    onSubmit() {
-      if (!this._verify()) return false;
-
-      if (!this.is_edit) {
-        this.createSnippet()
-        return false;
-      }
-
-      this.editSnippet()
-    },
-
-    /**
-     * 创建文本片段
-     * @returns {boolean}
-     */
-    createSnippet() {
-      const keyword_exist = checkKeywordIsExist(this.form.keyword)
-      if (keyword_exist) {
-        this.$message({
-          message: '关键字已被占用',
-          type: 'warning'
-        })
-        return false;
-      }
-      let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form)
-      let result = window.utools.db.put({
-        _id: `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
-        data: snippets
-      })
-
-      if (result.ok) {
-        this.$message({
-          message: '保存成功',
-          type: 'success'
-        })
-        changeCollectionNum(this.current_collection_item)
-        this.getCollectionList()
-        let feature_result = window.utools.setFeature({
-          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
-          "explain": this.form.name,
-          "cmds": [this.form.keyword]
-        })
-        if (!feature_result) {
-          window.utools.db.remove(`${snippet_prefix}/${snippets.id}`)
-          this.$message({
-            message: '保存失败了',
-            type: 'error'
-          })
-          return false;
-        }
-        this.dialogFormVisible = false
-      } else {
-        this.$message({
-          message: '保存失败',
-          type: 'error'
-        })
-      }
-    },
-
-    /**
-     * 编辑文本片段
-     */
-    editSnippet() {
-      let result = editSnippetsEntity(this.current_snippet_item, this.form)
-      if (!result.ok) {
-        this.$message({
-          message: '修改失败',
-          type: 'error'
-        })
-        return false;
-      }
-      if (this.current_snippet_item.data.status === 1) {
-        window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
-        window.utools.setFeature({
-          "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`,
-          "explain": this.form.name,
-          "cmds": [this.form.keyword]
-        })
-      }
-      this.$message({
-        message: '修改成功',
-        type: 'success'
-      })
-      this.dialogFormVisible = false
-      this.getCollectionList()
-    },
-
-    /**
-     * 改变文本片段的状态
-     * @returns {boolean}
-     */
-    changeStatus() {
-      this.getCollectionList()
-    },
-
-    /**
      * 点击分组列表的事件
      * @param item
      * @param index
@@ -438,45 +233,7 @@ export default {
       this.getSnippetList()
     },
 
-    redirectPlugin() {
-      window.utools.redirect('一步到位')
-    },
 
-    _verify() {
-      if (this.form.name === '') {
-        this.$message({
-          message: '名称不能为空',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      if (this.form.keyword.length > 30) {
-        this.$message({
-          message: '关键字不能超过30个字符',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      if (this.form.keyword === '') {
-        this.$message({
-          message: '关键字不能为空',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      if (this.form.snippet === '') {
-        this.$message({
-          message: '文本片段不能为空',
-          type: 'warning'
-        })
-        return false;
-      }
-
-      return true;
-    },
   },
 
   destroyed() {
@@ -539,13 +296,6 @@ export default {
   }
 }
 
-
-.remark {
-  font-size: 12px;
-  color: #999;
-  line-height: 18px;
-  margin-top: 5px;
-}
 
 ::v-deep .el-table__body tr.current-row > td.el-table__cell {
   background-color: var(--table-cell-click) !important;
