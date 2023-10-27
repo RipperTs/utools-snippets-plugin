@@ -127,48 +127,35 @@ function postAction(snippets, current_clipboard_content) {
  * @returns {*}
  */
 function processingContent(content, current_clipboard_content, select_words = '', input_content = '') {
-  // 将content中的所有 {datetime} 替换为当前时间
-  content = content.replace(/{datetime}/g, dayjs().format('YYYY年MM月DD日 HH:mm:ss'))
-  content = content.replace(/{date}/g, dayjs().format('YYYY年MM月DD日'))
-  content = content.replace(/{time}/g, dayjs().format('HH:mm:ss'))
-  // 将content中的所有 {timestamp} 替换为当前时间戳
-  content = content.replace(/{timestamp}/g, dayjs().unix())
-  // 将content中的所有 {isodate:yyyy-MM-dd HH:mm:ss} 替换为当前时间
-  content = content.replace(/{isodate:(.*?)}/g, function (match, format) {
-    return dayjs().format(format)
-  })
-  // 将content中的所有 {clipboard} 替换为剪贴板内容
-  content = content.replace(/{clipboard}/g, current_clipboard_content)
-  // 将content中的所有 {clipboard:lowercase} 替换为剪贴板内容转小写
-  content = content.replace(/{clipboard:lowercase}/g, _.lowerCase(current_clipboard_content))
-  // 将content中的所有 {clipboard:uppercase} 替换为剪贴板内容转大写
-  content = content.replace(/{clipboard:uppercase}/g, _.toUpper(current_clipboard_content))
-  // 将content中的所有 {clipboard:camelcase} 替换为剪贴板内容转驼峰
-  content = content.replace(/{clipboard:camelcase}/g, _.camelCase(current_clipboard_content))
-  // 将content中的所有 {clipboard:snakecase} 替换为剪贴板内容转下划线
-  content = content.replace(/{clipboard:snakecase}/g, _.snakeCase(current_clipboard_content))
-  // 将content中的所有 {clipboard:trim} 替换为剪贴板内容去掉首尾空格
-  content = content.replace(/{clipboard:trim}/g, current_clipboard_content.trim())
-  // 将content中的所有 {clipboard:trim:xxx} 替换为剪贴板内容去掉首尾指定字符
-  content = content.replace(/{clipboard:trim:(.*?)}/g, function (match, trim) {
-    return _.trim(current_clipboard_content, trim)
-  })
-  // 将content中的所有 {uuid} 替换为uuid
-  content = content.replace(/{uuid}/g, uuidv4())
-  // 将content中的所有 {random:1..10} 替换为随机数
-  content = content.replace(/{random:(\d+)..(\d+)}/g, function (match, min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  })
+  const replacements = [
+    { pattern: /{datetime}/g, replacement: dayjs().format('YYYY年MM月DD日 HH:mm:ss') },
+    { pattern: /{date}/g, replacement: dayjs().format('YYYY年MM月DD日') },
+    { pattern: /{time}/g, replacement: dayjs().format('HH:mm:ss') },
+    { pattern: /{timestamp}/g, replacement: dayjs().unix() },
+    { pattern: /{isodate:(.*?)}/g, replacement: (match, format) => dayjs().format(format) },
+    { pattern: /{clipboard}/g, replacement: current_clipboard_content },
+    { pattern: /{clipboard:lowercase}/g, replacement: _.lowerCase(current_clipboard_content) },
+    { pattern: /{clipboard:uppercase}/g, replacement: _.toUpper(current_clipboard_content) },
+    { pattern: /{clipboard:camelcase}/g, replacement: _.camelCase(current_clipboard_content) },
+    { pattern: /{clipboard:snakecase}/g, replacement: _.snakeCase(current_clipboard_content) },
+    { pattern: /{clipboard:trim}/g, replacement: current_clipboard_content.trim() },
+    { pattern: /{clipboard:trim:(.*?)}/g, replacement: (match, trim) => _.trim(current_clipboard_content, trim) },
+    { pattern: /{uuid}/g, replacement: uuidv4() },
+    { pattern: /{random:(\d+)..(\d+)}/g, replacement: (match, min, max) => Math.floor(Math.random() * (max - min + 1) + min) },
+    { pattern: /{selection}/g, replacement: select_words.trim() },
+    { pattern: /{selection:lowercase}/g, replacement: _.lowerCase(select_words.trim()) },
+    { pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim()) },
+    { pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim()) },
+    { pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim()) },
+    { pattern: /{input:content}/g, replacement: input_content }
+  ];
 
-  content = content.replace(/{selection}/g, select_words.trim())
-  content = content.replace(/{selection:lowercase}/g, _.lowerCase(select_words.trim()))
-  content = content.replace(/{selection:uppercase}/g, _.toUpper(select_words.trim()))
-  content = content.replace(/{selection:camelcase}/g, _.camelCase(select_words.trim()))
-  content = content.replace(/{selection:snakecase}/g, _.snakeCase(select_words.trim()))
+  let processedContent = content;
+  replacements.forEach(({ pattern, replacement }) => {
+    processedContent = processedContent.replace(pattern, replacement);
+  });
 
-  // 将content中的所有 {input:content} 替换为输入的内容
-  content = content.replace(/{input:content}/g, input_content)
-  return content
+  return processedContent;
 }
 
 /**
