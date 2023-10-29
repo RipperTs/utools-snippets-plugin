@@ -2,7 +2,7 @@
   <div class="snippets-dialog-form">
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
                :close-on-click-modal="false"
-               top="3vh"
+               :top="is_edit ? '3vh':'6vh'"
                :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
@@ -16,8 +16,8 @@
                       placeholder="请输入关键字, 为uTools输入的命令"></el-input>
           </el-form-item>
         </div>
-        <el-form-item label="所在分组" :label-width="formLabelWidth">
-          <el-select :value="currentSelectCollection?._id" :disabled="!is_edit"
+        <el-form-item label="所在分组" :label-width="formLabelWidth" v-if="is_edit">
+          <el-select :value="currentSelectCollection?._id"
                      @change="selectCollection" size="mini">
             <el-option
               v-for="(item,index) in collection_list"

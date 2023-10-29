@@ -6,7 +6,7 @@
     <div class="chunk-box">
       <div class="label">数据备份</div>
       <div class="desc mt-3">
-        <p>如果您是 uTools 会员直接可享受自动多端数据同步,无需再进行手动操作!</p>
+        <p>如果您是 uTools 会员, 在有网络的前提下可自动进行多端数据同步,无需再进行手动操作!</p>
         <p>为了避免造成原数据丢失,请在导入之前先进行一遍导出操作!</p>
       </div>
       <div class="action-button mt-3">
@@ -30,10 +30,10 @@
 
           <el-tab-pane label="数据导入" name="import">
             <div class="desc mt-1.5">
-              <el-radio-group v-model="importType">
-                <el-radio :label="1">全量导入 (删除所有原数据后导入新数据)</el-radio>
+              <el-radio-group size="mini" v-model="importType">
+                <el-radio size="mini" :label="1">全量导入 (删除所有原数据后导入新数据)</el-radio>
                 <el-tooltip class="item" effect="dark" content="开发中...敬请期待!" placement="bottom">
-                  <el-radio :disabled="true" :label="2">增量导入 (来自他人分享的文本片段)</el-radio>
+                  <el-radio size="mini" :disabled="true" :label="2">增量导入 (来自他人分享的文本片段)</el-radio>
                 </el-tooltip>
               </el-radio-group>
             </div>
@@ -69,7 +69,7 @@ export default {
   methods: {
 
     backHome(){
-      this.$router.push({path: '/'})
+      this.$router.back();
     },
 
     // 导入数据
@@ -218,6 +218,7 @@ export default {
         }
       })
       this.$message.success('导入成功')
+      this.$router.back()
     },
 
     /**
