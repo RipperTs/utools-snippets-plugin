@@ -234,3 +234,46 @@ body {
     border: 1px solid #5d5d5d;
     color: #ddd;
 }
+
+.headers-box{
+    background: var(--color-bg) !important;
+}
+
+.headers-box .el-button--default {
+    background-color: #575656;
+    border: 1px solid #676666 !important;
+    color: #ccc;
+}
+.headers-box .el-button--default:hover {
+    background-color: #464646;
+    color: #ddd;
+    border: 1px solid #575656 !important;
+}
+
+.chunk-box{
+    background: var(--color-bg) !important;
+    color: #ddd;
+}
+
+.chunk-box .label{
+    border-bottom: 1px solid #707070 !important;
+}
+
+.chunk-box .el-button--primary {
+    background-color: #575656;
+    border-color: #575656;
+    color: #ccc;
+}
+
+.chunk-box .el-button--primary:hover {
+    background-color: #464646;
+    border-color: #575656;
+    color: #ddd;
+}
+
+.chunk-box .el-tabs__item{
+    color: #919090 !important;
+}
+.chunk-box .el-tabs__item.is-active{
+    color: #eee !important;
+}
