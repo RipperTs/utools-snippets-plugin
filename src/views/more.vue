@@ -64,6 +64,9 @@ export default {
 
   created() {
     this.downloadPath = window.utools.getPath('downloads')
+    window.utools.onPluginOut(() => {
+      this.$router.back()
+    })
   },
 
   methods: {
