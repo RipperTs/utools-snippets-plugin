@@ -147,7 +147,8 @@ function processingContent(content, current_clipboard_content, select_words = ''
     { pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim()) },
     { pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim()) },
     { pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim()) },
-    { pattern: /{input:content}/g, replacement: input_content }
+    { pattern: /{input:content}/g, replacement: input_content },
+    { pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num) }
   ];
 
   let processedContent = content;

@@ -104,6 +104,10 @@ const placeholder_tags = [
       {
         "name": "手动输入内容",
         "value": "{input:content}"
+      },
+      {
+        "name": "内网ip",
+        "value": "{ip:0}"
       }
     ]
   },
