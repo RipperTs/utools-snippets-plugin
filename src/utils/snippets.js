@@ -128,31 +128,38 @@ function postAction(snippets, current_clipboard_content) {
  */
 function processingContent(content, current_clipboard_content, select_words = '', input_content = '') {
   const replacements = [
-    { pattern: /{datetime}/g, replacement: dayjs().format('YYYY年MM月DD日 HH:mm:ss') },
-    { pattern: /{date}/g, replacement: dayjs().format('YYYY年MM月DD日') },
-    { pattern: /{time}/g, replacement: dayjs().format('HH:mm:ss') },
-    { pattern: /{timestamp}/g, replacement: dayjs().unix() },
-    { pattern: /{isodate:(.*?)}/g, replacement: (match, format) => dayjs().format(format) },
-    { pattern: /{clipboard}/g, replacement: current_clipboard_content },
-    { pattern: /{clipboard:lowercase}/g, replacement: _.lowerCase(current_clipboard_content) },
-    { pattern: /{clipboard:uppercase}/g, replacement: _.toUpper(current_clipboard_content) },
-    { pattern: /{clipboard:camelcase}/g, replacement: _.camelCase(current_clipboard_content) },
-    { pattern: /{clipboard:snakecase}/g, replacement: _.snakeCase(current_clipboard_content) },
-    { pattern: /{clipboard:trim}/g, replacement: current_clipboard_content.trim() },
-    { pattern: /{clipboard:trim:(.*?)}/g, replacement: (match, trim) => _.trim(current_clipboard_content, trim) },
-    { pattern: /{uuid}/g, replacement: uuidv4() },
-    { pattern: /{random:(\d+)..(\d+)}/g, replacement: (match, min, max) => Math.floor(Math.random() * (max - min + 1) + min) },
-    { pattern: /{selection}/g, replacement: select_words.trim() },
-    { pattern: /{selection:lowercase}/g, replacement: _.lowerCase(select_words.trim()) },
-    { pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim()) },
-    { pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim()) },
-    { pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim()) },
-    { pattern: /{input:content}/g, replacement: input_content },
-    { pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num) }
+    {pattern: /{datetime}/g, replacement: dayjs().format('YYYY年MM月DD日 HH:mm:ss')},
+    {pattern: /{date}/g, replacement: dayjs().format('YYYY年MM月DD日')},
+    {pattern: /{time}/g, replacement: dayjs().format('HH:mm:ss')},
+    {pattern: /{timestamp}/g, replacement: dayjs().unix()},
+    {pattern: /{isodate:(.*?)}/g, replacement: (match, format) => dayjs().format(format)},
+    {pattern: /{clipboard}/g, replacement: current_clipboard_content},
+    {pattern: /{clipboard:lowercase}/g, replacement: _.lowerCase(current_clipboard_content)},
+    {pattern: /{clipboard:uppercase}/g, replacement: _.toUpper(current_clipboard_content)},
+    {pattern: /{clipboard:camelcase}/g, replacement: _.camelCase(current_clipboard_content)},
+    {pattern: /{clipboard:snakecase}/g, replacement: _.snakeCase(current_clipboard_content)},
+    {pattern: /{clipboard:trim}/g, replacement: current_clipboard_content.trim()},
+    {
+      pattern: /{clipboard:trim:(.*?)}/g,
+      replacement: (match, trim) => _.trim(current_clipboard_content, trim)
+    },
+    {pattern: /{uuid}/g, replacement: uuidv4()},
+    {
+      pattern: /{random:(\d+)..(\d+)}/g,
+      replacement: (match, min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+    },
+    {pattern: /{selection}/g, replacement: select_words.trim()},
+    {pattern: /{selection:lowercase}/g, replacement: _.lowerCase(select_words.trim())},
+    {pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim())},
+    {pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim())},
+    {pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim())},
+    {pattern: /{input:content}/g, replacement: input_content},
+    {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
+    {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
   ];
 
   let processedContent = content;
-  replacements.forEach(({ pattern, replacement }) => {
+  replacements.forEach(({pattern, replacement}) => {
     processedContent = processedContent.replace(pattern, replacement);
   });
 
@@ -199,4 +206,22 @@ function checkIsSelectWords(content) {
     }
   })
   return isSelectWords
+}
+
+
+/**
+ * 获取剪贴板文件路径
+ * @param num
+ * @returns {string}
+ */
+function getClipboardFiles(num = 0) {
+  try {
+    const files = window.utools.getCopyedFiles();
+    if (!files || files.length === 0) {
+      return "";
+    }
+    return files[num].path;
+  } catch (e) {
+    return "";
+  }
 }

@@ -54,6 +54,10 @@ const placeholder_tags = [
         "name": "剪贴板删除首尾指定字符",
         "value": "{clipboard:trim:xxx}"
       },
+      {
+        "name": "剪贴板文件路径",
+        "value": "{clipboard:file:0}"
+      },
     ]
   },
   {
