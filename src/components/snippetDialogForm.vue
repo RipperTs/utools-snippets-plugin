@@ -166,13 +166,6 @@ export default {
         })
         return false;
       }
-      if (this.form.snippet.indexOf('{input:content}') !== -1 && tag.value === '{input:content}') {
-        this.$message({
-          message: '只允许添加一个"手动输入内容"占位符',
-          type: 'warning'
-        })
-        return false;
-      }
 
       const myField = document.querySelector('#textarea')
       this.form.snippet = this.form.snippet.substring(0, this.textareaPos.startPos) + tag.value + this.form.snippet.substring(this.textareaPos.endPos, this.form.snippet.length)
