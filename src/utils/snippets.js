@@ -134,7 +134,7 @@ function processingContent(content, current_clipboard_content, select_words = ''
     {pattern: /{timestamp}/g, replacement: dayjs().unix()},
     {pattern: /{isodate:(.*?)}/g, replacement: (match, format) => dayjs().format(format)},
     {pattern: /{clipboard}/g, replacement: current_clipboard_content},
-    {pattern: /{clipboard:lowercase}/g, replacement: _.lowerCase(current_clipboard_content)},
+    {pattern: /{clipboard:lowercase}/g, replacement: _.toLower(current_clipboard_content)},
     {pattern: /{clipboard:uppercase}/g, replacement: _.toUpper(current_clipboard_content)},
     {pattern: /{clipboard:camelcase}/g, replacement: _.camelCase(current_clipboard_content)},
     {pattern: /{clipboard:snakecase}/g, replacement: _.snakeCase(current_clipboard_content)},
@@ -149,7 +149,7 @@ function processingContent(content, current_clipboard_content, select_words = ''
       replacement: (match, min, max) => Math.floor(Math.random() * (max - min + 1) + min)
     },
     {pattern: /{selection}/g, replacement: select_words.trim()},
-    {pattern: /{selection:lowercase}/g, replacement: _.lowerCase(select_words.trim())},
+    {pattern: /{selection:lowercase}/g, replacement: _.toLower(select_words.trim())},
     {pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim())},
     {pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim())},
     {pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim())},
