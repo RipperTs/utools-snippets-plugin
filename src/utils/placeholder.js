@@ -81,23 +81,23 @@ const placeholder_tags = [
     "label": "划词选中",
     "value": [
       {
-        "name": "当前选中",
+        "name": "当前选中文本",
         "value": "{selection}"
       },
       {
-        "name": "当前选中转小写",
+        "name": "转小写",
         "value": "{selection:lowercase}"
       },
       {
-        "name": "当前选中转大写",
+        "name": "转大写",
         "value": "{selection:uppercase}"
       },
       {
-        "name": "当前选中转驼峰",
+        "name": "转驼峰",
         "value": "{selection:camelcase}"
       },
       {
-        "name": "当前选中转下划线",
+        "name": "转下划线",
         "value": "{selection:snakecase}"
       }
     ]
