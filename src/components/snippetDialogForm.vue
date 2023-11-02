@@ -24,7 +24,7 @@
             </el-select>
           </el-form-item>
         </div>
-        <el-form-item label="关键字" :label-width="formLabelWidth">
+        <el-form-item label="关键字" class="keyword-box" :label-width="formLabelWidth">
           <el-tag
             :key="tag"
             v-for="tag in keywordList"

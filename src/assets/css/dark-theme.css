@@ -21,27 +21,27 @@ body {
 }
 
 .el-dialog .el-button--primary {
-    background-color: var(--color-bg);
-    border-color: var(--color-bg);
+    background-color: #303133;
+    border-color: #303133;
     color: #fff;
 }
 
 .el-dialog .el-button--primary:hover {
-    background-color: var(--color-bg);
-    border-color: #999;
+    background-color: #353738;
+    border-color: #4f4e4e;
     color: #ddd;
 }
 
 .el-dialog .el-button--default {
-    background-color: #ddd;
-    border-color: #ddd;
-    color: #999;
+    background-color: #5e5e5e;
+    border-color: #6c6c6c;
+    color: #bbb;
 }
 
 .el-dialog .el-button--default:hover {
-    background-color: #ddd;
-    border-color: #eee;
-    color: #777;
+    background-color: #807f7f;
+    border-color: #818080;
+    color: #ccc;
 }
 
 .left-container .title {
@@ -224,18 +224,39 @@ body {
     border: 1px solid #5d5d5d !important;
 }
 
-.placeholder-tags .el-tag--mini{
+.placeholder-tags .el-tag--mini {
     background: #676666;
     border: 1px solid #757474;
     color: #ddd;
 }
-.placeholder-tags .el-tag--mini:hover{
+
+.placeholder-tags .el-tag--mini:hover {
     background: #565656;
     border: 1px solid #5d5d5d;
     color: #ddd;
 }
 
-.headers-box{
+.keyword-box .el-tag--small {
+    background: #7a7979;
+    border: 1px solid #757474;
+    color: #ddd;
+}
+
+.keyword-box .el-tag--small:hover {
+    background: #565656;
+    border: 1px solid #5d5d5d;
+    color: #ddd;
+}
+
+.keyword-box .el-tag__close {
+    color: #ddd;
+}
+
+.keyword-box .el-tag__close:hover {
+    color: var(--color-bg);
+}
+
+.headers-box {
     background: var(--color-bg) !important;
 }
 
@@ -244,18 +265,19 @@ body {
     border: 1px solid #676666 !important;
     color: #ccc;
 }
+
 .headers-box .el-button--default:hover {
     background-color: #464646;
     color: #ddd;
     border: 1px solid #575656 !important;
 }
 
-.chunk-box{
+.chunk-box {
     background: var(--color-bg) !important;
     color: #ddd;
 }
 
-.chunk-box .label{
+.chunk-box .label {
     border-bottom: 1px solid #707070 !important;
 }
 
@@ -271,9 +293,10 @@ body {
     color: #ddd;
 }
 
-.chunk-box .el-tabs__item{
+.chunk-box .el-tabs__item {
     color: #919090 !important;
 }
-.chunk-box .el-tabs__item.is-active{
+
+.chunk-box .el-tabs__item.is-active {
     color: #eee !important;
 }
