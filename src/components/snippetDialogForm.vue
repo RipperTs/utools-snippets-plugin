@@ -2,30 +2,57 @@
   <div class="snippets-dialog-form">
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
                :close-on-click-modal="false"
-               :top="is_edit ? '3vh':'6vh'"
+               top="3vh"
                :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
         <div class="flex justify-start">
-          <el-form-item label="名称" :label-width="formLabelWidth">
+          <el-form-item label="说明" :label-width="formLabelWidth">
             <el-input size="mini" style="width: 220px;" v-model="form.name"
                       placeholder="请输入名称, 为文本片段的说明"></el-input>
           </el-form-item>
-          <el-form-item label="关键字" :label-width="formLabelWidth">
-            <el-input size="mini" style="width: 230px;" v-model="form.keyword"
-                      placeholder="请输入关键字, 为uTools输入的命令"></el-input>
+          <el-form-item label="所在分组" style="margin-left: 15px;" :label-width="formLabelWidth"
+                        v-if="is_edit">
+            <el-select :value="currentSelectCollection?._id"
+                       @change="selectCollection" size="mini">
+              <el-option
+                v-for="(item,index) in collection_list"
+                :key="index"
+                :label="item.data.name"
+                :value="item._id">
+              </el-option>
+            </el-select>
           </el-form-item>
         </div>
-        <el-form-item label="所在分组" :label-width="formLabelWidth" v-if="is_edit">
-          <el-select :value="currentSelectCollection?._id"
-                     @change="selectCollection" size="mini">
-            <el-option
-              v-for="(item,index) in collection_list"
-              :key="index"
-              :label="item.data.name"
-              :value="item._id">
-            </el-option>
-          </el-select>
+        <el-form-item label="关键字" :label-width="formLabelWidth">
+          <el-tag
+            :key="tag"
+            v-for="tag in keywordList"
+            v-if="keywordList.length > 0"
+            closable
+            @close="handleClose(tag)"
+            :disable-transitions="false">
+            {{ tag }}
+          </el-tag>
+          <template v-if="keywordList.length < 3">
+            <el-input
+              class="input-new-tag"
+              :style="{marginLeft: keywordList.length === 0 ? '0px' : '10px',width: keywordList.length === 0 ? '240px' : '110px'}"
+              v-if="keywordList.length === 0 || inputVisible"
+              v-model="inputValue"
+              ref="saveTagInput"
+              size="mini"
+              placeholder="请输入关键字"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag" size="mini" @click="showInput">+ 继续添加
+            </el-button>
+          </template>
+          <div class="remark" style="line-height: 20px;">
+            <p>回车可以继续添加关键字, 最多支持添加三个关键字.</p>
+          </div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
@@ -76,7 +103,7 @@
 <script>
 import placeholder from "@/components/placeholder.vue";
 import {changeCollectionNum, editSnippetsEntity, getSnippetsEntity} from "@/entitys";
-import {checkKeywordIsExist, snippet_prefix} from "@/utils";
+import {snippet_prefix} from "@/utils";
 
 export default {
   props: {
@@ -118,10 +145,49 @@ export default {
         is_enter: false,
       },
       currentSelectCollection: null,
+      inputVisible: false,
+      inputValue: '',
+    }
+  },
+
+  computed: {
+    keywordList() {
+      return this.form.keyword.split(',').filter(item => item !== '')
     }
   },
 
   methods: {
+
+    /**
+     * 关闭关键字标签
+     * @param tag
+     */
+    handleClose(tag) {
+      this.keywordList.splice(this.keywordList.indexOf(tag), 1);
+      if (this.keywordList.length === 0) {
+        this.inputVisible = true;
+        return this.form.keyword = ''
+      }
+      this.form.keyword = this.keywordList.join(',')
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      // eslint-disable-next-line no-unused-vars
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        if (this.keywordList.indexOf(inputValue) !== -1) return false;
+        this.keywordList.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    },
 
     // 选择分组
     selectCollection(id) {
@@ -191,6 +257,7 @@ export default {
     onSubmit() {
       if (!this._verify()) return false;
 
+      this.form.keyword = this.keywordList.join(',')
       if (!this.is_edit) {
         this.createSnippet()
         return false;
@@ -204,14 +271,6 @@ export default {
      * @returns {boolean}
      */
     createSnippet() {
-      const keyword_exist = checkKeywordIsExist(this.form.keyword)
-      if (keyword_exist) {
-        this.$message({
-          message: '关键字已被占用',
-          type: 'warning'
-        })
-        return false;
-      }
       let snippets = getSnippetsEntity(this.current_collection_item.data.id, this.form)
       let result = window.utools.db.put({
         _id: `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
@@ -228,7 +287,7 @@ export default {
         let feature_result = window.utools.setFeature({
           "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
           "explain": this.form.name,
-          "cmds": [this.form.keyword]
+          "cmds": this.keywordList
         })
         if (!feature_result) {
           window.utools.db.remove(`${snippet_prefix}/${snippets.id}`)
@@ -266,7 +325,7 @@ export default {
         window.utools.setFeature({
           "code": `${snippet_prefix}/${collection_id}/${this.current_snippet_item.data.id}`,
           "explain": this.form.name,
-          "cmds": [this.form.keyword]
+          "cmds": this.keywordList
         })
       }
 
@@ -293,21 +352,24 @@ export default {
         return false;
       }
 
-      if (this.form.keyword.length > 30) {
-        this.$message({
-          message: '关键字不能超过30个字符',
-          type: 'warning'
-        })
-        return false;
-      }
 
-      if (this.form.keyword === '') {
+      if (this.keywordList.length === 0) {
         this.$message({
           message: '关键字不能为空',
           type: 'warning'
         })
         return false;
       }
+
+      this.keywordList.forEach(item => {
+        if (item.length > 30) {
+          this.$message({
+            message: '关键字长度不能超过30个字符',
+            type: 'warning'
+          })
+          return false;
+        }
+      })
 
       if (this.form.snippet === '') {
         this.$message({
@@ -340,7 +402,22 @@ export default {
   align-items: center;
   margin-top: 2px;
 }
-::v-deep .el-dialog__header{
+
+::v-deep .el-dialog__header {
   display: none;
+}
+
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+
+.button-new-tag {
+  margin-left: 10px;
+}
+
+.input-new-tag {
+  width: 110px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>

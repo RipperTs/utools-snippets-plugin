@@ -14,7 +14,7 @@
           style="width: 100%;border-radius: 3px">
           <el-table-column
             width="120"
-            label="名称">
+            label="片段说明">
             <template slot-scope="scope">
               <div class="snippet-content">
                 {{ scope.row.data.name }}
