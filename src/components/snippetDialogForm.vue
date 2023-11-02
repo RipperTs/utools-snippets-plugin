@@ -63,7 +63,7 @@
       <el-dialog
         width="70%"
         style="user-select: none;"
-        :show-close="false"
+        top="10vh"
         :visible.sync="innerVisible"
         @close="closeInnerDialog"
         append-to-body>
@@ -339,5 +339,8 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 2px;
+}
+::v-deep .el-dialog__header{
+  display: none;
 }
 </style>

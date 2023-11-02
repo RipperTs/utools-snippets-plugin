@@ -63,7 +63,7 @@ export default {
     // 每行首个元素左边距为0
     margin-left: 15px;
 
-    &:nth-child(5n+1) {
+    &:nth-child(6n+1) {
       margin-left: 0px;
     }
 

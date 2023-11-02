@@ -156,6 +156,7 @@ function processingContent(content, current_clipboard_content, select_words = ''
     {pattern: /{input:content}/g, replacement: input_content},
     {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
     {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
+    {pattern: /{clipboard:number}/g, replacement: () => toNumber(current_clipboard_content)},
   ];
 
   let processedContent = content;
@@ -224,4 +225,23 @@ function getClipboardFiles(num = 0) {
   } catch (e) {
     return "";
   }
+}
+
+/**
+ * 将字符串转换为数字
+ * '16,2739.01' -> 162739.01
+ * @param value
+ * @returns {number|number}
+ */
+function toNumber(value) {
+  value = value.trim();
+  const n = parseFloat(value.replaceAll(',', ''))
+  if (isNaN(n)) {
+    return 0;
+  }
+  // 查看是否有小数点, 如果有小数点, 则保留与原来相同的小数点位数
+  if (value.indexOf('.') !== -1) {
+    return n.toFixed(value.split('.')[1].length)
+  }
+  return n
 }

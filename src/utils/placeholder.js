@@ -27,35 +27,39 @@ const placeholder_tags = [
     "label": "剪贴板",
     "value": [
       {
-        "name": "剪贴板",
+        "name": "文本内容",
         "value": "{clipboard}"
       },
       {
-        "name": "剪贴板转小写",
+        "name": "转小写",
         "value": "{clipboard:lowercase}"
       },
       {
-        "name": "剪贴板转大写",
+        "name": "转大写",
         "value": "{clipboard:uppercase}"
       },
       {
-        "name": "剪贴板转驼峰",
+        "name": "转驼峰",
         "value": "{clipboard:camelcase}"
       },
       {
-        "name": "剪贴板转下划线",
+        "name": "转下划线",
         "value": "{clipboard:snakecase}"
       },
       {
-        "name": "剪贴板删除首尾空格",
+        "name": "删除首尾空格",
         "value": "{clipboard:trim}"
       },
       {
-        "name": "剪贴板删除首尾指定字符",
+        "name": "删除首尾指定字符",
         "value": "{clipboard:trim:xxx}"
       },
       {
-        "name": "剪贴板文件路径",
+        "name": "数字转常规",
+        "value": "{clipboard:number}"
+      },
+      {
+        "name": "文件路径",
         "value": "{clipboard:file:0}"
       },
     ]
