@@ -70,11 +70,11 @@
               @click="redirectPlugin">一步到位</span> 插件.</p>
           </div>
         </el-form-item>
-
         <el-form-item label="后置动作" :label-width="formLabelWidth">
           <el-radio-group v-model="form.is_reduction_clipboard" size="mini">
             <el-radio :label=1 border>还原剪贴板内容</el-radio>
-            <el-radio :label=2 border>保留剪贴板中文本片段 (方便手动粘贴)</el-radio>
+            <el-radio :label=2 border>保留剪贴板内容 (方便手动粘贴)</el-radio>
+            <el-radio :label=3 border>仅复制文本片段</el-radio>
           </el-radio-group>
           <el-checkbox label="敲击回车键" v-model="form.is_enter" size="mini" border
                        class="mt-2.5"></el-checkbox>
@@ -419,5 +419,8 @@ export default {
   width: 110px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+.el-radio{
+  margin-right: 0px;
 }
 </style>

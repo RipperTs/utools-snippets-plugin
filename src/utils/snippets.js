@@ -4,7 +4,7 @@ import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
 import store from '@/store'
 
-const timingMillisecond = 100 // 延迟时间
+const timingMillisecond = 20 // 延迟时间
 
 // 顺序执行延迟函数
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -47,7 +47,6 @@ export function snippets(code) {
  * @param input_content 手动输入的内容
  */
 export function autoSnippets(snippets, input_content = '') {
-
   (async function () {
     store.state.sharedData = {}
     // 获取当前剪贴板内容
@@ -70,15 +69,9 @@ export function autoSnippets(snippets, input_content = '') {
       // 将content中的所有 {cursor} 替换为空字符串
       content = content.replace(/{cursor}/g, '')
     }
-    const app_version = parseInt(window.utools.getAppVersion())
-    // 兼容旧版本3.x
-    if (app_version >= 4) {
-      window.utools.hideMainWindowPasteText(content)
-    } else {
-      window.utools.copyText(content)
-      window.utools.hideMainWindow()
-      window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
-    }
+
+    // 粘贴文本片段动作
+    pasteText(snippets, content)
 
     if (cursor_position > 0) {
       await delay(timingMillisecond);
@@ -91,6 +84,31 @@ export function autoSnippets(snippets, input_content = '') {
     postAction(snippets, current_clipboard_content)
 
   })();
+}
+
+
+/**
+ * 粘贴文本片段动作
+ * @param snippets
+ * @param content
+ */
+function pasteText(snippets, content) {
+  const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
+  // 仅复制文本片段内容
+  if (is_reduction_clipboard === 3) {
+    window.utools.copyText(content)
+    window.utools.hideMainWindow()
+    return false;
+  }
+  const app_version = parseInt(window.utools.getAppVersion())
+  // 兼容旧版本3.x
+  if (app_version >= 4) {
+    window.utools.hideMainWindowPasteText(content)
+  } else {
+    window.utools.copyText(content)
+    window.utools.hideMainWindow()
+    window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
+  }
 }
 
 /**
