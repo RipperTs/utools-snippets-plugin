@@ -4,7 +4,7 @@ import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
 import store from '@/store'
 
-const timingMillisecond = 20 // 延迟时间
+const timingMillisecond = 50 // 延迟时间
 
 // 顺序执行延迟函数
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -57,7 +57,7 @@ export function autoSnippets(snippets, input_content = '') {
       // 需要获取划词选中内容
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
-      await delay(100);
+      await delay(timingMillisecond);
       let select_words = window.getClipboardContent()
       content = processingContent(snippets.data.snippet, current_clipboard_content, select_words, input_content)
     } else {
@@ -70,6 +70,7 @@ export function autoSnippets(snippets, input_content = '') {
       content = content.replace(/{cursor}/g, '')
     }
 
+    await delay(timingMillisecond);
     // 粘贴文本片段动作
     pasteText(snippets, content)
 
