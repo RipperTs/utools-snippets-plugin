@@ -339,7 +339,7 @@ export default {
         type: 'success'
       })
       this.$emit('close-dialog')
-      this.$parent.getCollectionList()
+      this.$parent.doSearchSnippets()
     },
 
 
