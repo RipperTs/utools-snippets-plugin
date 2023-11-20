@@ -1,7 +1,7 @@
 <template>
   <div class="container-main">
     <!--  顶部  -->
-    <Headers />
+    <Headers/>
 
     <!--  主体页面布局  -->
     <div class="setting-container p-5">
@@ -48,6 +48,7 @@ import {collection_prefix, snippet_prefix} from "@/utils";
 import {mapState} from 'vuex'
 import {autoSnippets} from "@/utils/snippets";
 import Headers from "@/components/headers.vue";
+import store from "@/store";
 
 export default {
   components: {
@@ -75,10 +76,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['sharedData'])
+    ...mapState(['sharedData', 'inputContent'])
   },
   created() {
+    let that = this;
+    this.$store.watch(
+      state => state.inputContent, // 监听的状态值
+      () => {
+        that.doSearchSnippets()
+      }
+    );
     window.utools.onPluginOut(() => {
+      store.state.inputContent = ""
       this.dialogFormVisible = false
       this.innerVisible = false;
       this.$refs.collectionRef._initDialog()
@@ -99,10 +108,45 @@ export default {
     handleEvent(e) {
       if (e.isTrusted && e.keyCode === 13) {
         const text = this.sharedData?.text || ''
-        if (text.trim() === '') return false;
-        autoSnippets(this.sharedData.snippets, this.sharedData.text)
-        return true;
+        if (text.trim() !== '') {
+          autoSnippets(this.sharedData.snippets, this.sharedData.text)
+          return true;
+        }
       }
+    },
+
+    doSearchSnippets() {
+      if (this.inputContent.trim() === '') {
+        this.getCollectionList()
+        return false;
+      }
+      // 获取所有的文本片段列表
+      const snippet_list = window.utools.db.allDocs(snippet_prefix)
+      if (snippet_list.length === 0) {
+        return false;
+      }
+      let search_snippet = []
+      snippet_list.forEach(item => {
+        if (item.data.snippet.indexOf(this.inputContent) !== -1) {
+          search_snippet.push(item)
+        }
+      })
+      let filter_search_snippet = Array.from(
+        search_snippet.reduce((map, obj) => map.set(obj.data.collection_id, obj), new Map()).values()
+      );
+
+      // 筛选出分组列表
+      let collection_list = []
+      filter_search_snippet.forEach(item => {
+        collection_list.push(window.utools.db.get(`${collection_prefix}/${item.data.collection_id}`))
+      })
+
+      this.collection_list = collection_list
+      this.current_collection_index = 0
+      this.current_collection_item = collection_list[this.current_collection_index]
+      this.current_snippet_item = null
+      this.getSnippetList()
+
     },
 
     /**
@@ -193,7 +237,20 @@ export default {
      * 获取文本片段
      */
     getSnippetList() {
-      this.snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item?.data?.id}`)
+      const snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item?.data?.id}`)
+      if (this.inputContent.trim() === '') {
+        this.snippet_list = snippet_list
+        return false;
+      }
+
+      // 搜索文本片段
+      let search_snippet = []
+      snippet_list.forEach(item => {
+        if (item.data.snippet.indexOf(this.inputContent) !== -1) {
+          search_snippet.push(item)
+        }
+      })
+      this.snippet_list = search_snippet
     },
 
     /**

@@ -24,6 +24,7 @@
 export default {
   methods: {
     toMore(){
+      window.utools.removeSubInput();
       this.$router.push({path: '/more'})
     },
   },

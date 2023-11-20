@@ -23,9 +23,7 @@ Vue.use(ElementUI, {size: 'small'});
 Vue.prototype.$dayjs = dayjs;
 
 if (window.utools) {
-
   window.utools.onPluginEnter(({code, type, payload}) => {
-
     console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
 
     if (window.utools.isDarkColors()) {
@@ -37,7 +35,14 @@ if (window.utools) {
     Vue.prototype.$pluginType = type
     Vue.prototype.$pluginPayload = payload
 
-    if (code !== 'snippets') snippets(code)
+    if (code !== 'snippets') {
+      window.utools.removeSubInput()
+      snippets(code)
+    } else {
+      window.utools.setSubInput(({text}) => {
+        store.state.inputContent = text
+      }, '根据文本片段内容进行模糊搜索, 回车确认')
+    }
 
   });
 

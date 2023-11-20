@@ -50,6 +50,7 @@
 
 <script>
 import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
+import store from "@/store";
 
 export default {
   components: {},
@@ -72,6 +73,10 @@ export default {
   methods: {
 
     backHome(){
+      store.state.inputContent = ""
+      window.utools.setSubInput(({text}) => {
+        store.state.inputContent = text
+      }, '根据文本片段内容进行模糊搜索, 回车确认')
       this.$router.back();
     },
 
