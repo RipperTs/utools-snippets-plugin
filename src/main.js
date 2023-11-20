@@ -41,7 +41,7 @@ if (window.utools) {
     } else {
       window.utools.setSubInput(({text}) => {
         store.state.inputContent = text
-      }, '根据文本片段内容进行模糊搜索, 回车确认')
+      }, '根据文本片段内容进行模糊搜索')
     }
 
   });
