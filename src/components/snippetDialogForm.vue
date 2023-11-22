@@ -71,7 +71,7 @@
           </el-radio-group>
           <div class="remark">
             <p v-if="form.paste_method=== 1">常规的粘贴场景, 兼容性更好, 适用于绝大多数的应用场景. 原理是按下键盘 {{ is_macos? 'command' : 'ctrl' }} + v</p>
-            <p v-if="form.paste_method=== 2">可解决在 XShell/Git Bash 等软件无法使用快捷键粘贴的情况 <span class="text-blue-500 font-medium">*仅适用于单行文本片段</span></p>
+            <p v-if="form.paste_method=== 2">可解决在 XShell 等软件无法使用快捷键粘贴的情况 <span class="text-blue-500 font-medium">*仅适用于单行文本片段</span></p>
           </div>
         </el-form-item>
         <el-form-item label="后置动作" :label-width="formLabelWidth">
