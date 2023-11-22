@@ -50,9 +50,6 @@
             <el-button v-else class="button-new-tag" size="mini" @click="showInput">+ 继续添加
             </el-button>
           </template>
-          <div class="remark" style="line-height: 20px;">
-            <p>回车可以继续添加关键字, 最多支持添加三个关键字.</p>
-          </div>
         </el-form-item>
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
@@ -62,12 +59,19 @@
             <el-button class="placeholder-btn" size="mini" @click="openInnerVisible()">{ }
             </el-button>
           </div>
-          <div class="remark" style="line-height: 20px;">
+          <div class="remark" style="line-height: 1.2rem;">
             <p>您可以在文本片段中添加占位符, 可以更加灵活的对片段内容进行动态处理.</p>
             <p>点击上方 { } 按钮选择要插入占位符, 即可在当前光标位置插入占位符.</p>
-            <p>如果需要更加高级的自动化扩展推荐使用 <span
-              class="text-blue-600 font-medium cursor-pointer"
-              @click="redirectPlugin">一步到位</span> 插件.</p>
+          </div>
+        </el-form-item>
+        <el-form-item label="粘贴方式" :label-width="formLabelWidth">
+          <el-radio-group v-model="form.paste_method" size="mini">
+            <el-radio :label=1 border>模拟快捷键</el-radio>
+            <el-radio :label=2 border>键盘输入</el-radio>
+          </el-radio-group>
+          <div class="remark">
+            <p v-if="form.paste_method=== 1">常规的粘贴场景, 兼容性更好, 适用于绝大多数的应用场景. 原理是按下键盘 {{ is_macos? 'command' : 'ctrl' }} + v</p>
+            <p v-if="form.paste_method=== 2">可解决在 XShell/Git Bash 等软件无法使用快捷键粘贴的情况 <span class="text-blue-500 font-medium">*仅适用于单行文本片段</span></p>
           </div>
         </el-form-item>
         <el-form-item label="后置动作" :label-width="formLabelWidth">
@@ -76,7 +80,7 @@
             <el-radio :label=2 border>保留剪贴板内容 (方便手动粘贴)</el-radio>
             <el-radio :label=3 border>仅复制文本片段</el-radio>
           </el-radio-group>
-          <el-checkbox label="敲击回车键" v-model="form.is_enter" size="mini" border
+          <el-checkbox label="模拟敲击回车键" v-model="form.is_enter" size="mini" border
                        class="mt-2.5"></el-checkbox>
         </el-form-item>
 
@@ -143,10 +147,12 @@ export default {
         snippet: '',
         is_reduction_clipboard: 1,
         is_enter: false,
+        paste_method: 1,
       },
       currentSelectCollection: null,
       inputVisible: false,
       inputValue: '',
+      is_macos:false,
     }
   },
 
@@ -154,6 +160,10 @@ export default {
     keywordList() {
       return this.form.keyword.split(',').filter(item => item !== '')
     }
+  },
+
+  created() {
+    this.is_macos = window.utools.isMacOS()
   },
 
   methods: {
@@ -205,6 +215,7 @@ export default {
         snippet: '',
         is_reduction_clipboard: 1,
         is_enter: false,
+        paste_method: 1,
       }
       this.currentSelectCollection = this.current_collection_item
       this.$parent.closeDialog()
@@ -422,5 +433,8 @@ export default {
 }
 .el-radio{
   margin-right: 0px;
+}
+.el-form-item--mini.el-form-item, .el-form-item--small.el-form-item{
+  margin-bottom: 12px;
 }
 </style>

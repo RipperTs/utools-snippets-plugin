@@ -72,6 +72,7 @@ export function getSnippetsEntity(collection_id, form_data) {
     status: 1,
     is_reduction_clipboard: form_data.is_reduction_clipboard, // 是否还原粘贴板内容,1:还原,2:不还原 ,默认还原
     is_enter: form_data.is_enter ? 1 : 2, // 是否回车执行,1:回车执行,2:不回车执行 ,默认回车执行
+    paste_method: form_data.paste_method, // 粘贴方式,1:模拟快捷键,2:键盘输入
   }
 }
 
@@ -92,6 +93,7 @@ export function changeSnippetsStatus(rawData, status = 1) {
     status: status,
     is_reduction_clipboard: rawData.data?.is_reduction_clipboard || 1,
     is_enter: rawData.data?.is_enter || 2,
+    paste_method: rawData.data?.paste_method || 1,
   }
 
   return saveEntity(rawData, snippetsEntity)
@@ -114,6 +116,7 @@ export function editSnippetsEntity(collection_id, rawData, formData) {
     status: rawData.data.status,
     is_reduction_clipboard: formData.is_reduction_clipboard,
     is_enter: formData.is_enter ? 1 : 2,
+    paste_method: formData.paste_method,
   }
 
   let result = window.utools.db.remove(rawData)

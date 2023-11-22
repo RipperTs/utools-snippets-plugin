@@ -101,14 +101,15 @@ function pasteText(snippets, content) {
     window.utools.hideMainWindow()
     return false;
   }
-  const app_version = parseInt(window.utools.getAppVersion())
-  // 兼容旧版本3.x
-  if (app_version >= 4) {
+  // 获取粘贴方式
+  const paste_method = snippets.data?.paste_method || 1
+  if (paste_method === 1) {
     window.utools.hideMainWindowPasteText(content)
-  } else {
-    window.utools.copyText(content)
-    window.utools.hideMainWindow()
-    window.utools.simulateKeyboardTap('v', window.utools.isMacOS() ? 'command' : 'ctrl')
+    return true;
+  }
+  if (paste_method === 2) {
+    window.utools.hideMainWindowTypeString(content)
+    return true;
   }
 }
 

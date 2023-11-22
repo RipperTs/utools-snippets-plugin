@@ -28,7 +28,6 @@
     <!--  添加/修改文本片段  -->
     <snippetDialogForm
       ref="snippetDialogForm"
-      :form="form"
       :dialog-form-visible="dialogFormVisible"
       :current_snippet_item="current_snippet_item"
       :collection_list="collection_list"
@@ -64,13 +63,6 @@ export default {
       collection_list: [],
       snippet_list: [],
       dialogFormVisible: false,
-      form: {
-        name: '',
-        keyword: '',
-        snippet: '',
-        is_reduction_clipboard: 1,
-        is_enter: false,
-      },
       current_snippet_item: null,
       is_edit: false,
     }
@@ -168,6 +160,7 @@ export default {
         snippet: this.current_snippet_item.data.snippet,
         is_reduction_clipboard: this.current_snippet_item.data?.is_reduction_clipboard || 1,
         is_enter: is_enter === 1,
+        paste_method: this.current_snippet_item.data?.paste_method || 1,
       }
 
       this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
