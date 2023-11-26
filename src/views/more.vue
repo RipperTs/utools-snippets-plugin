@@ -32,8 +32,11 @@
             <div class="desc mt-1.5">
               <el-radio-group size="mini" v-model="importType">
                 <el-radio size="mini" :label="1">全量导入 (删除所有原数据后导入新数据)</el-radio>
-                <el-tooltip class="item" effect="dark" content="开发中...敬请期待!" placement="bottom">
-                  <el-radio size="mini" :disabled="true" :label="2">增量导入 (来自他人分享的文本片段)</el-radio>
+                <el-tooltip class="item" effect="dark" content="开发中...敬请期待!"
+                            placement="bottom">
+                  <el-radio size="mini" :disabled="true" :label="2">增量导入
+                    (来自他人分享的文本片段)
+                  </el-radio>
                 </el-tooltip>
               </el-radio-group>
             </div>
@@ -72,11 +75,11 @@ export default {
 
   methods: {
 
-    backHome(){
+    backHome() {
       store.state.inputContent = ""
       window.utools.setSubInput(({text}) => {
         store.state.inputContent = text
-      }, '根据文本片段内容进行模糊搜索')
+      }, '根据文本片段内容进行模糊搜索', false)
       this.$router.back();
     },
 
@@ -203,7 +206,7 @@ export default {
      */
     fullDataImport(import_collection_list, import_snippet_list) {
       // 删除全部数据
-      if(!this.removeAllData()) return false;
+      if (!this.removeAllData()) return false;
       // 导入分组数据
       import_collection_list.forEach((item) => {
         window.utools.db.put({
@@ -277,12 +280,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.headers-box{
+.headers-box {
   background: #fff;
   margin-bottom: 16px;
   padding: 10px;
   border-radius: 6px;
 }
+
 .more-main {
   padding: 20px;
 }

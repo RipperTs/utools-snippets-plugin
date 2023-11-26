@@ -1,4 +1,3 @@
-// 该文件由gen-router.js自动生成，请勿手动修改
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 

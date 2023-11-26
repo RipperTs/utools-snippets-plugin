@@ -4,7 +4,7 @@ import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
 import store from '@/store'
 
-const timingMillisecond = 50 // 延迟时间
+const timingMillisecond = 45 // 延迟时间
 
 // 顺序执行延迟函数
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -33,7 +33,7 @@ export function snippets(code) {
       } else {
         store.state.sharedData = {}
       }
-    }, `${snippets.data.name}, 回车执行`)
+    }, `${snippets.data.name}, 回车确认`)
     return true;
   }
 

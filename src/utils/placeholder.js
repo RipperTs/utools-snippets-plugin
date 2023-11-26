@@ -1,3 +1,7 @@
+/**
+ * 动态占位符列表
+ */
+
 const placeholder_tags = [
   {
     "label": "日期和时间",

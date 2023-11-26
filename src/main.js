@@ -24,7 +24,6 @@ Vue.prototype.$dayjs = dayjs;
 
 if (window.utools) {
   window.utools.onPluginEnter(({code, type, payload}) => {
-    console.log('用户进入插件应用', `code:${code}`, `type:${type}`, `关键字:${payload}`)
 
     if (window.utools.isDarkColors()) {
       // 加载深色模式样式
@@ -47,7 +46,6 @@ if (window.utools) {
   });
 
   window.utools.onPluginDetach(() => {
-    console.log('分离插件')
     Vue.prototype.$pluginDetach = true
   })
 
