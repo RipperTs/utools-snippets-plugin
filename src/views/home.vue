@@ -105,6 +105,19 @@ export default {
           return true;
         }
       }
+
+      let ctrl = null;
+      if (window.utools.isMacOS()) {
+        ctrl = e.metaKey;
+      } else {
+        ctrl = e.ctrlKey;
+      }
+
+      if (ctrl && e.keyCode === 70) {
+        //   如果是ctrl+f
+        window.utools.subInputSelect();
+      }
+
     },
 
     doSearchSnippets() {
