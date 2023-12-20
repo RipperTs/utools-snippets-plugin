@@ -26,13 +26,15 @@ window.getIPAddress = function (num = 0) {
     const netInfo = os.networkInterfaces();
     const netInfoNames = Object.keys(netInfo);
     let ips = [];
-    netInfoNames.forEach(n => {
+
+    for (const n of netInfoNames) {
       netInfo[n].some(i => {
         if (i.family === 'IPv4' && i.address !== '127.0.0.1') {
           return ips.push({name: n, ip: i.address});
         }
       });
-    });
+    }
+
     return ips[num].ip;
   } catch (e) {
     return "";

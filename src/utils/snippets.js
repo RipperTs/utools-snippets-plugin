@@ -54,18 +54,18 @@ export function autoSnippets(snippets, input_content = '') {
     store.state.sharedData = {}
     // 检查是否有获取划词选中内容的占位符
     let content = ''
-    if (checkIsSelectWords(snippets.data.snippet)) {
+    if (await checkIsSelectWords(snippets.data.snippet)) {
       // 需要获取划词选中内容
       window.utools.hideMainWindow()
       window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
       await delay(100);
       let select_words = window.getClipboardContent()
-      content = processingContent(snippets.data.snippet, start_clipboard_content, select_words, input_content)
+      content = await processingContent(snippets.data.snippet, start_clipboard_content, select_words, input_content)
     } else {
-      content = processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
+      content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
     }
     // 获取要移动到光标的位置
-    let cursor_position = getCursorPosition(content)
+    let cursor_position = await getCursorPosition(content)
     if (cursor_position > 0) {
       // 将content中的所有 {cursor} 替换为空字符串
       content = content.replace(/{cursor}/g, '')
@@ -73,17 +73,17 @@ export function autoSnippets(snippets, input_content = '') {
 
     await delay(100);
     // 粘贴文本片段动作
-    pasteText(snippets, content)
+    await pasteText(snippets, content)
 
     if (cursor_position > 0) {
-      await delay(80);
+      await delay(20);
       for (let i = 0; i < cursor_position; i++) {
         window.utools.simulateKeyboardTap('left')
       }
     }
 
     // 执行后置动作
-    postAction(snippets, start_clipboard_content)
+    await postAction(snippets, start_clipboard_content)
 
   })();
 }
@@ -94,7 +94,7 @@ export function autoSnippets(snippets, input_content = '') {
  * @param snippets
  * @param content
  */
-function pasteText(snippets, content) {
+async function pasteText(snippets, content) {
   const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
   // 仅复制文本片段内容
   if (is_reduction_clipboard === 3) {
@@ -119,7 +119,7 @@ function pasteText(snippets, content) {
  * @param snippets
  * @param start_clipboard_content
  */
-function postAction(snippets, start_clipboard_content) {
+async function postAction(snippets, start_clipboard_content) {
   (async function () {
     const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
     const is_enter = snippets.data?.is_enter || 2
@@ -148,7 +148,7 @@ function postAction(snippets, start_clipboard_content) {
  * @param input_content
  * @returns {*}
  */
-function processingContent(content, start_clipboard_content, select_words = '', input_content = '') {
+async function processingContent(content, start_clipboard_content, select_words = '', input_content = '') {
   const replacements = [
     {pattern: /{datetime}/g, replacement: dayjs().format('YYYY年MM月DD日 HH:mm:ss')},
     {pattern: /{date}/g, replacement: dayjs().format('YYYY年MM月DD日')},
@@ -182,9 +182,9 @@ function processingContent(content, start_clipboard_content, select_words = '', 
   ];
 
   let processedContent = content;
-  replacements.forEach(({pattern, replacement}) => {
-    processedContent = processedContent.replace(pattern, replacement);
-  });
+  for (const item of replacements) {
+    processedContent = processedContent.replace(item.pattern, item.replacement);
+  }
 
   return processedContent;
 }
@@ -194,7 +194,7 @@ function processingContent(content, start_clipboard_content, select_words = '', 
  * @param content
  * @returns {number}
  */
-function getCursorPosition(content) {
+async function getCursorPosition(content) {
   const index = content.indexOf('{cursor}')
   if (index === -1) {
     return 0;
@@ -217,17 +217,17 @@ function checkIsInputContent(content) {
  * @param content
  * @returns {boolean}
  */
-function checkIsSelectWords(content) {
+async function checkIsSelectWords(content) {
   let isSelectWords = false
-  placeholder_tags.forEach((item) => {
+  for (const item of placeholder_tags) {
     if (item.label === '划词选中') {
-      item.value.forEach((item) => {
-        if (content.indexOf(item.value) !== -1) {
+      for (const i of item.value) {
+        if (content.indexOf(i.value) !== -1) {
           isSelectWords = true;
         }
-      })
+      }
     }
-  })
+  }
   return isSelectWords
 }
 
