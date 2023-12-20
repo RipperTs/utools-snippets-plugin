@@ -64,6 +64,7 @@ export function autoSnippets(snippets, input_content = '') {
     } else {
       content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
     }
+    console.log("内容", content)
     // 获取要移动到光标的位置
     let cursor_position = await getCursorPosition(content)
     if (cursor_position > 0) {
@@ -73,6 +74,7 @@ export function autoSnippets(snippets, input_content = '') {
 
     await delay(100);
     // 粘贴文本片段动作
+    console.log("粘贴文本片段动作")
     await pasteText(snippets, content)
 
     if (cursor_position > 0) {
@@ -105,11 +107,15 @@ async function pasteText(snippets, content) {
   // 获取粘贴方式
   const paste_method = snippets.data?.paste_method || 1
   if (paste_method === 1) {
+    console.log("粘贴文本", content)
     window.utools.hideMainWindowPasteText(content)
+    console.log("粘贴文本完成")
     return true;
   }
   if (paste_method === 2) {
+    console.log("粘贴文本", content)
     window.utools.hideMainWindowTypeString(content)
+    console.log("粘贴文本完成")
     return true;
   }
 }
@@ -186,7 +192,7 @@ async function processingContent(content, start_clipboard_content, select_words 
     for (let i = 1; i <= input_content_list.length; i++) {
       replacements.push({
         pattern: new RegExp(`{input:content:${i}}`, 'g'),
-        replacement: input_content_list[i-1]
+        replacement: input_content_list[i - 1]
       })
     }
   } else {
@@ -198,8 +204,7 @@ async function processingContent(content, start_clipboard_content, select_words 
     processedContent = processedContent.replace(item.pattern, item.replacement);
   }
 
-  // 将所有未匹配到的占位符替换为空字符串
-  processedContent = processedContent.replace(/{(.*?)}/g, '')
+  processedContent = processedContent.replace(/{input:content:(.*?)}/g, '')
 
   return processedContent;
 }
