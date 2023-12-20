@@ -198,6 +198,9 @@ async function processingContent(content, start_clipboard_content, select_words 
     processedContent = processedContent.replace(item.pattern, item.replacement);
   }
 
+  // 将所有未匹配到的占位符替换为空字符串
+  processedContent = processedContent.replace(/{(.*?)}/g, '')
+
   return processedContent;
 }
 
