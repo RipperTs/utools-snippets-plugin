@@ -49,42 +49,39 @@ export function snippets(code) {
  * @param snippets 关键字数据
  * @param input_content 手动输入的内容
  */
-export function autoSnippets(snippets, input_content = '') {
-  (async function () {
-    store.state.sharedData = {}
-    // 检查是否有获取划词选中内容的占位符
-    let content = ''
-    if (await checkIsSelectWords(snippets.data.snippet)) {
-      // 需要获取划词选中内容
-      window.utools.hideMainWindow()
-      window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
-      await delay(100);
-      let select_words = window.getClipboardContent()
-      content = await processingContent(snippets.data.snippet, start_clipboard_content, select_words, input_content)
-    } else {
-      content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
+export async function autoSnippets(snippets, input_content = '') {
+  store.state.sharedData = {}
+  // 检查是否有获取划词选中内容的占位符
+  let content = ''
+  if (await checkIsSelectWords(snippets.data.snippet)) {
+    // 需要获取划词选中内容
+    window.utools.hideMainWindow()
+    window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
+    await delay(100);
+    let select_words = window.getClipboardContent()
+    content = await processingContent(snippets.data.snippet, start_clipboard_content, select_words, input_content)
+  } else {
+    content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
+  }
+  // 获取要移动到光标的位置
+  let cursor_position = await getCursorPosition(content)
+  if (cursor_position > 0) {
+    // 将content中的所有 {cursor} 替换为空字符串
+    content = content.replace(/{cursor}/g, '')
+  }
+
+  // 粘贴文本内容
+  await pasteText(snippets, content)
+
+  if (cursor_position > 0) {
+    await delay(20);
+    for (let i = 0; i < cursor_position; i++) {
+      window.utools.simulateKeyboardTap('left')
     }
-    // 获取要移动到光标的位置
-    let cursor_position = await getCursorPosition(content)
-    if (cursor_position > 0) {
-      // 将content中的所有 {cursor} 替换为空字符串
-      content = content.replace(/{cursor}/g, '')
-    }
+  }
 
-    // 粘贴文本内容
-    await pasteText(snippets, content)
-
-    if (cursor_position > 0) {
-      await delay(20);
-      for (let i = 0; i < cursor_position; i++) {
-        window.utools.simulateKeyboardTap('left')
-      }
-    }
-
-    // 执行后置动作
-    await postAction(snippets, start_clipboard_content)
-
-  })();
+  // 执行后置动作
+  await postAction(snippets, start_clipboard_content)
 }
 
 
@@ -97,7 +94,6 @@ async function pasteText(snippets, content) {
   const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
   window.utools.hideMainWindow()
 
-  await delay(50);
   // 仅复制文本片段内容
   if (is_reduction_clipboard === 3) {
     window.utools.copyText(content)
@@ -125,12 +121,16 @@ async function postAction(snippets, start_clipboard_content) {
   const is_enter = snippets.data?.is_enter || 2
 
   if (is_enter === 1) {
+    await delay(50);
     window.utools.simulateKeyboardTap('enter')
   }
 
   if (is_reduction_clipboard === 1) {
+    await delay(100);
     window.utools.copyText(start_clipboard_content)
   }
+
+  window.utools.outPlugin()
 
 }
 
