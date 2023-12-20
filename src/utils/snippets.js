@@ -64,7 +64,6 @@ export function autoSnippets(snippets, input_content = '') {
     } else {
       content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
     }
-    console.log("内容", content)
     // 获取要移动到光标的位置
     let cursor_position = await getCursorPosition(content)
     if (cursor_position > 0) {
@@ -72,9 +71,7 @@ export function autoSnippets(snippets, input_content = '') {
       content = content.replace(/{cursor}/g, '')
     }
 
-    await delay(100);
-    // 粘贴文本片段动作
-    console.log("粘贴文本片段动作")
+    // 粘贴文本内容
     await pasteText(snippets, content)
 
     if (cursor_position > 0) {
@@ -98,24 +95,22 @@ export function autoSnippets(snippets, input_content = '') {
  */
 async function pasteText(snippets, content) {
   const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
+  window.utools.hideMainWindow()
+
+  await delay(50);
   // 仅复制文本片段内容
   if (is_reduction_clipboard === 3) {
     window.utools.copyText(content)
-    window.utools.hideMainWindow()
     return false;
   }
   // 获取粘贴方式
   const paste_method = snippets.data?.paste_method || 1
   if (paste_method === 1) {
-    console.log("粘贴文本", content)
     window.utools.hideMainWindowPasteText(content)
-    console.log("粘贴文本完成")
     return true;
   }
   if (paste_method === 2) {
-    console.log("粘贴文本", content)
     window.utools.hideMainWindowTypeString(content)
-    console.log("粘贴文本完成")
     return true;
   }
 }
@@ -126,24 +121,17 @@ async function pasteText(snippets, content) {
  * @param start_clipboard_content
  */
 async function postAction(snippets, start_clipboard_content) {
-  (async function () {
-    const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
-    const is_enter = snippets.data?.is_enter || 2
+  const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
+  const is_enter = snippets.data?.is_enter || 2
 
-    if (is_enter === 1) {
-      await delay(20);
-      window.utools.simulateKeyboardTap('enter')
-    }
+  if (is_enter === 1) {
+    window.utools.simulateKeyboardTap('enter')
+  }
 
-    if (is_reduction_clipboard === 1) {
-      await delay(20);
-      window.utools.copyText(start_clipboard_content)
-    }
+  if (is_reduction_clipboard === 1) {
+    window.utools.copyText(start_clipboard_content)
+  }
 
-    await delay(50);
-    window.utools.outPlugin()
-
-  })();
 }
 
 /**
