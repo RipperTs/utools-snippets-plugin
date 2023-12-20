@@ -35,7 +35,7 @@ export function snippets(code) {
       } else {
         store.state.sharedData = {}
       }
-    }, `${snippets.data.name}, 回车确认`)
+    }, `${snippets.data.name} · 多个参数使用,分隔 · 回车确认`)
     return true;
   }
 
@@ -175,11 +175,23 @@ async function processingContent(content, start_clipboard_content, select_words 
     {pattern: /{selection:uppercase}/g, replacement: _.toUpper(select_words.trim())},
     {pattern: /{selection:camelcase}/g, replacement: _.camelCase(select_words.trim())},
     {pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim())},
-    {pattern: /{input:content}/g, replacement: input_content},
     {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
     {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
     {pattern: /{clipboard:number}/g, replacement: () => toNumber(start_clipboard_content)},
   ];
+
+  // 多个输入占位符
+  let input_content_list = input_content.split(',')
+  if (input_content_list.length > 1) {
+    for (let i = 1; i <= input_content_list.length; i++) {
+      replacements.push({
+        pattern: new RegExp(`{input:content:${i}}`, 'g'),
+        replacement: input_content_list[i-1]
+      })
+    }
+  } else {
+    replacements.push({pattern: /{input:content}/g, replacement: input_content})
+  }
 
   let processedContent = content;
   for (const item of replacements) {
@@ -209,7 +221,11 @@ async function getCursorPosition(content) {
  */
 function checkIsInputContent(content) {
   const index = content.indexOf('{input:content}')
-  return !(index === -1)
+  const index_more = content.indexOf('{input:content:')
+  if (index === -1 && index_more === -1) {
+    return false;
+  }
+  return true;
 }
 
 /**

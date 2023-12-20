@@ -118,6 +118,10 @@ const placeholder_tags = [
         "value": "{input:content}"
       },
       {
+        "name": "手动输入内容 (多个)",
+        "value": "{input:content:1}"
+      },
+      {
         "name": "内网ip",
         "value": "{ip:0}"
       }
