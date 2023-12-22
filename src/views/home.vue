@@ -132,7 +132,9 @@ export default {
       }
       let search_snippet = []
       snippet_list.forEach(item => {
-        if (item.data.snippet.indexOf(this.inputContent) !== -1) {
+        if ((item.data.snippet.indexOf(this.inputContent) !== -1) ||
+          (item.data.keyword.indexOf(this.inputContent) !== -1) ||
+          (item.data.name.indexOf(this.inputContent) !== -1)) {
           search_snippet.push(item)
         }
       })
@@ -252,7 +254,9 @@ export default {
       // 搜索文本片段
       let search_snippet = []
       snippet_list.forEach(item => {
-        if (item.data.snippet.indexOf(this.inputContent) !== -1) {
+        if ((item.data.snippet.indexOf(this.inputContent) !== -1) ||
+          (item.data.keyword.indexOf(this.inputContent) !== -1) ||
+          (item.data.name.indexOf(this.inputContent) !== -1)) {
           search_snippet.push(item)
         }
       })

@@ -79,7 +79,7 @@ export default {
       store.state.inputContent = ""
       window.utools.setSubInput(({text}) => {
         store.state.inputContent = text
-      }, '根据文本片段内容进行模糊搜索', false)
+      }, '输入搜索关键字进行模糊搜索文本片段', false)
       this.$router.back();
     },
 
