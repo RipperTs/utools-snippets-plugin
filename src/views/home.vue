@@ -48,6 +48,7 @@ import {mapState} from 'vuex'
 import {autoSnippets} from "@/utils/snippets";
 import Headers from "@/components/headers.vue";
 import store from "@/store";
+import _ from 'lodash';
 
 export default {
   components: {
@@ -132,9 +133,9 @@ export default {
       }
       let search_snippet = []
       snippet_list.forEach(item => {
-        if ((item.data.snippet.indexOf(this.inputContent) !== -1) ||
-          (item.data.keyword.indexOf(this.inputContent) !== -1) ||
-          (item.data.name.indexOf(this.inputContent) !== -1)) {
+        if ((_.toLower(item.data.snippet).indexOf(_.toLower(this.inputContent)) !== -1) ||
+          (_.toLower(item.data.keyword).indexOf(_.toLower(this.inputContent)) !== -1) ||
+          (_.toLower(item.data.name).indexOf(_.toLower(this.inputContent)) !== -1)) {
           search_snippet.push(item)
         }
       })
@@ -254,9 +255,9 @@ export default {
       // 搜索文本片段
       let search_snippet = []
       snippet_list.forEach(item => {
-        if ((item.data.snippet.indexOf(this.inputContent) !== -1) ||
-          (item.data.keyword.indexOf(this.inputContent) !== -1) ||
-          (item.data.name.indexOf(this.inputContent) !== -1)) {
+        if ((_.toLower(item.data.snippet).indexOf(_.toLower(this.inputContent)) !== -1) ||
+          (_.toLower(item.data.keyword).indexOf(_.toLower(this.inputContent)) !== -1) ||
+          (_.toLower(item.data.name).indexOf(_.toLower(this.inputContent)) !== -1)) {
           search_snippet.push(item)
         }
       })
