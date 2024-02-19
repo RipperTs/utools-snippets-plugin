@@ -30,7 +30,7 @@
       ref="snippetDialogForm"
       :dialog-form-visible="dialogFormVisible"
       :current_snippet_item="current_snippet_item"
-      :collection_list="collection_list"
+      :collection_list="all_category_list"
       :is_edit="is_edit"
       :current_collection_item="current_collection_item"
       @close-dialog="dialogFormVisible = false"
@@ -69,7 +69,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['sharedData', 'inputContent'])
+    ...mapState(['sharedData', 'inputContent']),
+    all_category_list() {
+      return window.utools.db.allDocs(collection_prefix) || []
+    }
   },
   created() {
     let that = this;
