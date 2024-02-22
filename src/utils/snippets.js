@@ -172,18 +172,29 @@ async function processingContent(content, start_clipboard_content, select_words 
     {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
     {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
     {pattern: /{clipboard:number}/g, replacement: () => toNumber(start_clipboard_content)},
-    {pattern: /{timeoffset:add:(\d+):(.*?):(.*?)}/g, replacement: (match, num, type, format) => dayjs().add(num, type).format(format)},
-    {pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g, replacement: (match, num, type, format) => dayjs().add(num, type).format(format)},
+    {
+      pattern: /{timeoffset:add:(\d+):(.*?):(.*?)}/g,
+      replacement: (match, num, type, format) => dayjs().add(num, type).format(format)
+    },
+    {
+      pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g,
+      replacement: (match, num, type, format) => dayjs().add(num, type).format(format)
+    },
   ];
 
-  // 多个输入占位符
-  let input_content_list = input_content.split(',')
-  if (input_content_list.length > 1) {
-    for (let i = 1; i <= input_content_list.length; i++) {
-      replacements.push({
-        pattern: new RegExp(`{input:content:${i}}`, 'g'),
-        replacement: input_content_list[i - 1]
-      })
+  // 检查是否含有多参数的占位符
+  let multiple_parameters_pattern = /{input:content:(\d+)}/g
+  if (multiple_parameters_pattern.test(content)) {
+    let input_content_list = input_content.split(',')
+    if (input_content_list.length > 1) {
+      for (let i = 1; i <= input_content_list.length; i++) {
+        replacements.push({
+          pattern: new RegExp(`{input:content:${i}}`, 'g'),
+          replacement: input_content_list[i - 1]
+        })
+      }
+    } else {
+      replacements.push({pattern: /{input:content}/g, replacement: input_content})
     }
   } else {
     replacements.push({pattern: /{input:content}/g, replacement: input_content})
