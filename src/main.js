@@ -49,10 +49,10 @@ if (window.utools) {
     Vue.prototype.$pluginDetach = true
   })
 
-}
+  new Vue({
+    router,
+    store,
+    render: (h) => h(App),
+  }).$mount('#app');
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount('#app');
+}
