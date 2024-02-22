@@ -7,7 +7,7 @@ const placeholder_tags = [
     "label": "日期和时间",
     "value": [{
       "name": "日期和时间",
-      "value": "{datetime}"
+      "value": "{isodate:YYYY-MM-DD HH:mm:ss}"
     },
       {
         "name": "现在日期",
@@ -22,9 +22,21 @@ const placeholder_tags = [
         "value": "{timestamp}"
       },
       {
-        "name": "日期和时间 (自定义格式)",
-        "value": "{isodate:YYYY-MM-DD HH:mm:ss}"
-      }
+        "name": "时间偏移+1天",
+        "value": "{timeoffset:add:1:day:YYYY-MM-DD}"
+      },
+      {
+        "name": "时间偏移-1天",
+        "value": "{timeoffset:subtract:1:day:YYYY-MM-DD}"
+      },
+      {
+        "name": "时间偏移+1月",
+        "value": "{timeoffset:add:1:month:YYYY-MM-DD}"
+      },
+      {
+        "name": "时间偏移-1月",
+        "value": "{timeoffset:subtract:1:month:YYYY-MM-DD}"
+      },
     ]
   },
   {

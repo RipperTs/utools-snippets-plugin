@@ -172,6 +172,8 @@ async function processingContent(content, start_clipboard_content, select_words 
     {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
     {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
     {pattern: /{clipboard:number}/g, replacement: () => toNumber(start_clipboard_content)},
+    {pattern: /{timeoffset:add:(\d+):(.*?):(.*?)}/g, replacement: (match, num, type, format) => dayjs().add(num, type).format(format)},
+    {pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g, replacement: (match, num, type, format) => dayjs().add(num, type).format(format)},
   ];
 
   // 多个输入占位符
