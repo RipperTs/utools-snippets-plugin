@@ -178,7 +178,7 @@ async function processingContent(content, start_clipboard_content, select_words 
     },
     {
       pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g,
-      replacement: (match, num, type, format) => dayjs().add(num, type).format(format)
+      replacement: (match, num, type, format) => dayjs().subtract(num, type).format(format)
     },
   ];
 
