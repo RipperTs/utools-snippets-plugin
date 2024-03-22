@@ -300,3 +300,8 @@ body {
 .chunk-box .el-tabs__item.is-active {
     color: #eee !important;
 }
+
+.el-radio__label,.el-checkbox__label {
+    color: #aaa !important;
+}
+
