@@ -25,6 +25,10 @@ Vue.prototype.$dayjs = dayjs;
 if (window.utools) {
   window.utools.onPluginEnter(({code, type, payload}) => {
 
+    window.utools.onPluginDetach(() => {
+      store.state.detach_window = true
+    })
+
     if (window.utools.isDarkColors()) {
       // 加载深色模式样式
       import('./assets/css/dark-theme.css')

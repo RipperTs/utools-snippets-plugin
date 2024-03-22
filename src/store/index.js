@@ -7,5 +7,6 @@ export default new Vuex.Store({
   state: {
     sharedData: {},
     inputContent: '',
+    detach_window: false,
   }
 })
