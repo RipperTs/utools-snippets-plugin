@@ -83,6 +83,10 @@ export default {
 
     closeDialog() {
       this.edit_collection_item = null
+      this.form = {
+        name: '',
+        prefix: ''
+      }
     },
 
     /**
