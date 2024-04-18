@@ -78,6 +78,10 @@ const placeholder_tags = [
         "name": "文件路径",
         "value": "{clipboard:file:0}"
       },
+      {
+        "name": "转wsl文件路径",
+        "value": "{clipboard:wslfile:0}"
+      }
     ]
   },
   {

@@ -3,6 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
 import store from '@/store'
+import {getConfig} from "@/utils/config";
 
 // 顺序执行延迟函数
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -35,7 +36,7 @@ export function snippets(code) {
       } else {
         store.state.sharedData = {}
       }
-    }, `${snippets.data.name} · 多个参数使用,分隔 · 回车确认`)
+    }, `${snippets.data.name} · 多个参数使用“${getConfig('delimiter')}”分隔 · 回车确认`)
     return true;
   }
 
@@ -57,7 +58,7 @@ export async function autoSnippets(snippets, input_content = '') {
     // 需要获取划词选中内容
     window.utools.hideMainWindow()
     window.utools.simulateKeyboardTap('c', window.utools.isMacOS() ? 'command' : 'ctrl')
-    await delay(100);
+    await delay(parseInt(getConfig('delineate_words_delay')));
     let select_words = window.getClipboardContent()
     content = await processingContent(snippets.data.snippet, start_clipboard_content, select_words, input_content)
   } else {
@@ -74,7 +75,7 @@ export async function autoSnippets(snippets, input_content = '') {
   await pasteText(snippets, content)
 
   if (cursor_position > 0) {
-    await delay(20);
+    await delay(parseInt(getConfig('cursor_movement_delay')));
     for (let i = 0; i < cursor_position; i++) {
       window.utools.simulateKeyboardTap('left')
     }
@@ -121,12 +122,12 @@ async function postAction(snippets, start_clipboard_content) {
   const is_enter = snippets.data?.is_enter || 2
 
   if (is_enter === 1) {
-    await delay(50);
+    await delay(parseInt(getConfig('enter_key_delay')));
     window.utools.simulateKeyboardTap('enter')
   }
 
   if (is_reduction_clipboard === 1) {
-    await delay(100);
+    await delay(parseInt(getConfig('reduction_clipboard_delay')));
     window.utools.copyText(start_clipboard_content)
   }
 
@@ -171,6 +172,10 @@ async function processingContent(content, start_clipboard_content, select_words 
     {pattern: /{selection:snakecase}/g, replacement: _.snakeCase(select_words.trim())},
     {pattern: /{ip:(\d+)}/g, replacement: (match, num) => window.getIPAddress(num)},
     {pattern: /{clipboard:file:(\d+)}/g, replacement: (match, num) => getClipboardFiles(num)},
+    {
+      pattern: /{clipboard:wslfile:(\d+)}/g,
+      replacement: (match, num) => getClipboardFilesToWsl(num)
+    },
     {pattern: /{clipboard:number}/g, replacement: () => toNumber(start_clipboard_content)},
     {
       pattern: /{timeoffset:add:(\d+):(.*?):(.*?)}/g,
@@ -185,7 +190,7 @@ async function processingContent(content, start_clipboard_content, select_words 
   // 检查是否含有多参数的占位符
   let multiple_parameters_pattern = /{input:content:(\d+)}/g
   if (multiple_parameters_pattern.test(content)) {
-    let input_content_list = input_content.split(',')
+    let input_content_list = input_content.split(getConfig('delimiter'))
     if (input_content_list.length > 1) {
       for (let i = 1; i <= input_content_list.length; i++) {
         replacements.push({
@@ -269,6 +274,32 @@ function getClipboardFiles(num = 0) {
       return "";
     }
     return files[num].path;
+  } catch (e) {
+    return "";
+  }
+}
+
+function convertToWslPath(windowsPath) {
+  // 将反斜杠替换为正斜杠
+  let wslPath = windowsPath.replace(/\\/g, '/');
+  // 去除驱动器号和冒号
+  wslPath = wslPath.replace(/^[A-Za-z]:/, '');
+  // 在路径前面添加"/mnt/"和小写的驱动器号
+  const driveLetter = windowsPath.charAt(0).toLowerCase();
+  wslPath = `/mnt/${driveLetter}${wslPath}`;
+  return wslPath;
+}
+
+function getClipboardFilesToWsl(num = 0) {
+  if (!window.utools.isWindows()) {
+    return ""
+  }
+  try {
+    const files = window.utools.getCopyedFiles();
+    if (!files || files.length === 0) {
+      return "";
+    }
+    return convertToWslPath(files[num].path);
   } catch (e) {
     return "";
   }

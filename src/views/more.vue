@@ -4,6 +4,39 @@
       <el-button size="mini" icon="el-icon-back" @click="backHome">返回首页</el-button>
     </div>
     <div class="chunk-box">
+      <div class="label">全局配置</div>
+      <el-form size="mini" ref="form" :model="form" label-width="110px" label-position="left">
+        <el-form-item label="自定义分隔符" style="margin-top: 10px;">
+          <el-input style="width: 60px;" size="mini" v-model="form.delimiter"></el-input>
+        </el-form-item>
+        <el-form-item label="划词选中延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.delineate_words_delay" :min="50" :step="10" :max="5000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
+        <el-form-item label="光标移动延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.cursor_movement_delay" :min="20" :step="10" :max="5000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
+        <el-form-item label="按下回车键延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.enter_key_delay" :min="5" :max="1000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
+        <el-form-item label="还原剪切板延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.reduction_clipboard_delay" :min="20" :step="10" :max="5000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
+
+        <div class="btn mt-10 flex">
+          <el-button type="primary" size="mini" @click="saveData">保存配置</el-button>
+          <el-button type="warning" size="mini" @click="restartData">重置</el-button>
+        </div>
+      </el-form>
+    </div>
+    <div class="chunk-box">
       <div class="label">数据备份</div>
       <div class="desc mt-3">
         <p>如果您是 uTools 会员, 在有网络的前提下可自动进行多端数据同步,无需再进行手动操作!</p>
@@ -54,6 +87,7 @@
 <script>
 import {checkKeywordIsExist, collection_prefix, snippet_prefix} from "@/utils";
 import store from "@/store";
+import {getAllConfig, restartData, saveConfig} from "@/utils/config";
 
 export default {
   components: {},
@@ -63,10 +97,18 @@ export default {
       downloadPath: '',
       fileName: 'snippets_data',
       importType: 1,
+      form: {
+        delimiter: ',',
+        delineate_words_delay: 100,
+        cursor_movement_delay: 20,
+        enter_key_delay: 20,
+        reduction_clipboard_delay: 100,
+      },
     }
   },
 
   created() {
+    this.getForm()
     this.downloadPath = window.utools.getPath('downloads')
     window.utools.onPluginOut(() => {
       this.$router.back()
@@ -74,6 +116,19 @@ export default {
   },
 
   methods: {
+
+    saveData() {
+      saveConfig(this.form)
+      this.$message.success('保存成功')
+    },
+
+    getForm() {
+      this.form = getAllConfig()
+    },
+
+    restartData() {
+      this.form = restartData()
+    },
 
     backHome() {
       store.state.inputContent = ""
@@ -281,6 +336,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .headers-box {
+  width: 100%;
   background: #fff;
   margin-bottom: 16px;
   padding: 10px;
@@ -288,7 +344,12 @@ export default {
 }
 
 .more-main {
+  height: 100vh;
   padding: 20px;
+  // 超出滚动
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 60px;
 }
 
 .chunk-box {
