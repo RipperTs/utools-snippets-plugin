@@ -4,6 +4,7 @@ const initConfig = {
   cursor_movement_delay: 20,
   enter_key_delay: 20,
   reduction_clipboard_delay: 100,
+  paste_clipboard_delay: 50, // 粘贴(上屏)内容延迟
 }
 
 const configKey = "config"
@@ -16,7 +17,20 @@ export function restartData() {
 
 // 获取当前全部配置数据
 export function getAllConfig() {
-  return window.utools.dbStorage.getItem(configKey) || initConfig
+  const cacheData = window.utools.dbStorage.getItem(configKey)
+  if (cacheData) {
+    // 检查是否有新增的配置项
+    const newConfig = Object.assign({}, initConfig)
+    const keys = Object.keys(newConfig)
+    for (let i = 0; i < keys.length; i++) {
+      if (!cacheData[keys[i]]) {
+        cacheData[keys[i]] = newConfig[keys[i]]
+      }
+    }
+    return cacheData
+  }
+
+  return initConfig
 }
 
 // 获取指定配置数据

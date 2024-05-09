@@ -9,6 +9,11 @@
         <el-form-item label="自定义分隔符" style="margin-top: 10px;">
           <el-input style="width: 60px;" size="mini" v-model="form.delimiter"></el-input>
         </el-form-item>
+        <el-form-item label="粘贴文本延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.paste_clipboard_delay" :min="20" :step="10" :max="5000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
         <el-form-item label="划词选中延迟" style="margin-top: 10px;">
           <el-input-number v-model="form.delineate_words_delay" :min="50" :step="10" :max="5000"
                            size="mini"></el-input-number>
@@ -97,13 +102,7 @@ export default {
       downloadPath: '',
       fileName: 'snippets_data',
       importType: 1,
-      form: {
-        delimiter: ',',
-        delineate_words_delay: 100,
-        cursor_movement_delay: 20,
-        enter_key_delay: 20,
-        reduction_clipboard_delay: 100,
-      },
+      form: {},
     }
   },
 
