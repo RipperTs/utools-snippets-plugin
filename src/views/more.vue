@@ -10,7 +10,7 @@
           <el-input style="width: 60px;" size="mini" v-model="form.delimiter"></el-input>
         </el-form-item>
         <el-form-item label="粘贴文本延迟" style="margin-top: 10px;">
-          <el-input-number v-model="form.paste_clipboard_delay" :min="20" :step="10" :max="5000"
+          <el-input-number v-model="form.paste_clipboard_delay" :min="0" :step="10" :max="3000"
                            size="mini"></el-input-number>
           <span class="ml-3 opacity-60">毫秒</span>
         </el-form-item>

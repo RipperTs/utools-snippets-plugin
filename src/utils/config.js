@@ -23,7 +23,7 @@ export function getAllConfig() {
     const newConfig = Object.assign({}, initConfig)
     const keys = Object.keys(newConfig)
     for (let i = 0; i < keys.length; i++) {
-      if (!cacheData[keys[i]]) {
+      if (!cacheData[keys[i]] && cacheData[keys[i]] !== 0) {
         cacheData[keys[i]] = newConfig[keys[i]]
       }
     }

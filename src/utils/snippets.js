@@ -95,7 +95,11 @@ async function pasteText(snippets, content) {
   const is_reduction_clipboard = snippets.data?.is_reduction_clipboard || 1
   window.utools.hideMainWindow()
 
-  await delay(parseInt(getConfig('paste_clipboard_delay')));
+  const delay_value = parseInt(getConfig('paste_clipboard_delay'))
+  if (delay_value > 0) {
+    await delay(delay_value);
+  }
+
   // 仅复制文本片段内容
   if (is_reduction_clipboard === 3) {
     window.utools.copyText(content)
