@@ -4,7 +4,7 @@ const initConfig = {
   cursor_movement_delay: 20,
   enter_key_delay: 20,
   reduction_clipboard_delay: 100,
-  paste_clipboard_delay: 50, // 粘贴(上屏)内容延迟
+  paste_clipboard_delay: 20, // 粘贴(上屏)内容延迟
 }
 
 const configKey = "config"
