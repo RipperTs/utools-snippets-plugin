@@ -12,6 +12,7 @@ import './assets/icons' // icon
 import ElementUI from 'element-ui';
 import dayjs from 'dayjs'
 import {snippets} from "@/utils/snippets";
+import {callback, selectCallback} from "@/utils/mainPush";
 
 Vue.config.productionTip = false;
 
@@ -38,6 +39,17 @@ if (window.utools) {
     Vue.prototype.$pluginType = type
     Vue.prototype.$pluginPayload = payload
 
+    if (code === 'search') {
+      window.utools.showMainWindow()
+      window.utools.removeSubInput()
+      const code = store.state.mainPushParams?.code || ''
+      if (code) {
+        snippets(code)
+        store.state.mainPushParams = {}
+      }
+      return
+    }
+
     if (code !== 'snippets') {
       window.utools.removeSubInput()
       snippets(code)
@@ -48,6 +60,9 @@ if (window.utools) {
     }
 
   });
+
+  // 主面板推送消息
+  window.utools.onMainPush(callback, selectCallback)
 
   window.utools.onPluginDetach(() => {
     Vue.prototype.$pluginDetach = true

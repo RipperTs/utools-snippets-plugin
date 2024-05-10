@@ -23,9 +23,17 @@
         "自动上屏",
         "关键字上屏",
         "设置自动上屏",
-        "文本片段",
+        "文本片段"
+      ]
+    },
+    {
+      "code": "search",
+      "explain": "搜索文本片段",
+      "mainPush": true,
+      "cmds": [
         {
-          "type": "regex"
+          "type": "over",
+          "label": "搜索文本片段"
         }
       ]
     }

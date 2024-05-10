@@ -300,7 +300,8 @@ export default {
         let feature_result = window.utools.setFeature({
           "code": `${snippet_prefix}/${this.current_collection_item.data.id}/${snippets.id}`,
           "explain": this.form.name,
-          "cmds": this.keywordList
+          "cmds": this.keywordList,
+          "mainPush": true
         })
         if (!feature_result) {
           window.utools.db.remove(`${snippet_prefix}/${snippets.id}`)
@@ -338,7 +339,8 @@ export default {
         window.utools.setFeature({
           "code": `${snippet_prefix}/${collection_id}/${this.current_snippet_item.data.id}`,
           "explain": this.form.name,
-          "cmds": this.keywordList
+          "cmds": this.keywordList,
+          "mainPush": true
         })
       }
 
