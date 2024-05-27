@@ -4,6 +4,10 @@ import _ from "lodash";
 import store from "@/store";
 
 export function callback({code, type, payload}) {
+  if (payload.length <= 2) {
+    return []
+  }
+
   // 搜索文本片段
   if (code === 'search') {
     // 获取所有的文本片段列表
