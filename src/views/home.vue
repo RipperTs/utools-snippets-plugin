@@ -204,14 +204,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let remove_result = window.utools.removeFeature(`${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`)
-        if (!remove_result) {
-          this.$message({
-            message: '删除失败',
-            type: 'error'
-          })
-          return false;
+        const code = `${snippet_prefix}/${this.current_collection_item.data.id}/${this.current_snippet_item.data.id}`
+        const feature = window.utools.getFeatures([code])
+        if (feature.length > 0) {
+          window.utools.removeFeature(code)
         }
+
         let result = window.utools.db.remove(this.current_snippet_item)
         if (result.ok) {
           this.$message({
