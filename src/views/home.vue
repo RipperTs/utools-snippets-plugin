@@ -132,6 +132,7 @@ export default {
       // 获取所有的文本片段列表
       const snippet_list = window.utools.db.allDocs(snippet_prefix)
       if (snippet_list.length === 0) {
+        this.snippet_list = []
         return false;
       }
       let search_snippet = []
@@ -217,7 +218,10 @@ export default {
             type: 'success'
           })
           changeCollectionNum(this.current_collection_item, 2)
-          this.getCollectionList()
+          this.doSearchSnippets()
+          if (this.inputContent.trim() !== '') {
+            window.utools.subInputSelect()
+          }
           this.current_snippet_item = null
         } else {
           this.$message({
