@@ -94,6 +94,10 @@ const placeholder_tags = [
       {
         "name": "随机数 (自定义范围)",
         "value": "{random:1..10}"
+      },
+      {
+        "name": "随机密码",
+        "value": "{password:16}"
       }
     ]
   },

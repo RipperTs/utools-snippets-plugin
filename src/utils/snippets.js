@@ -4,6 +4,7 @@ import _ from 'lodash';
 import placeholder_tags from "@/utils/placeholder";
 import store from '@/store'
 import {getConfig} from "@/utils/config";
+import generatePassword from 'z-generate-password';
 
 // 顺序执行延迟函数
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -200,6 +201,13 @@ async function processingContent(content, start_clipboard_content, select_words 
         pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g,
         replacement: (match, num, type, format) => dayjs().subtract(num, type).format(format)
       },
+      {
+        pattern: /{password:(\d+)}/g, replacement: (match, num) => { // 生成随机数字密码
+          return generatePassword({
+            length: num
+          });
+        }
+      }
     ];
 
     // 检查是否含有多参数的占位符
