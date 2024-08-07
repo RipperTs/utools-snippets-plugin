@@ -12,6 +12,7 @@
                   :current_collection_index="current_collection_index"
                   :current_collection_item="current_collection_item"
                   @clickCollection="clickCollection"
+                  @updateCollectionList="updateCollectionList"
                   @changeList="changeCollectionList"></collection>
       <div class="right-container rounded">
         <!--   右侧文本片段列表     -->
@@ -49,6 +50,7 @@ import {autoSnippets} from "@/utils/snippets";
 import Headers from "@/components/headers.vue";
 import store from "@/store";
 import _ from 'lodash';
+import {getAllCollectionList} from "@/db/collection";
 
 export default {
   components: {
@@ -71,7 +73,7 @@ export default {
   computed: {
     ...mapState(['sharedData', 'inputContent']),
     all_category_list() {
-      return window.utools.db.allDocs(collection_prefix) || []
+      return getAllCollectionList() || []
     }
   },
   created() {
@@ -95,6 +97,18 @@ export default {
     this.getCollectionList()
   },
   methods: {
+
+    /**
+     * 子组件更新的事件
+     * @param new_collection_index
+     */
+    updateCollectionList({new_collection_index}) {
+      this.collection_list = getAllCollectionList()
+      this.current_collection_index = new_collection_index
+      this.current_collection_item = this.collection_list[new_collection_index]
+      this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
+      this.getSnippetList()
+    },
 
     /**
      * 键盘事件(手动输入时候会启用)
@@ -236,7 +250,7 @@ export default {
      * 获取分组列表
      */
     getCollectionList() {
-      this.collection_list = window.utools.db.allDocs(collection_prefix)
+      this.collection_list = getAllCollectionList()
       if (this.current_collection_index === 0 && this.collection_list.length > 0) {
         this.current_collection_item = this.collection_list[0]
       } else {

@@ -50,6 +50,7 @@ export function changeCollectionNum(rawData, type = 1, num = 1) {
     prefix: rawData.data.prefix,
     id: rawData.data.id,
     num: set_num,
+    sort: rawData.data?.sort || 1
   }
 
   return saveEntity(rawData, collectionEntity)

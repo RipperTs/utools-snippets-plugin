@@ -3,15 +3,24 @@
     <div class="left-container">
       <div class="title">分组列表</div>
       <div class="collection-list">
-        <div v-for="(item,index) in collection_list" :key="index" v-if="collection_list.length > 0">
-          <div class="item bg-white collection-item" @dblclick="dblclickCollection(item,index)"
-               @click="clickCollection(item,index)"
-               :class="current_collection_index=== index ? 'collection-item-active' : ''">
-            <div class="name">{{ item.data.name }}</div>
-            <div class="desc mt-0.5">共有 {{ item.data.num }} 个片段
+        <VueDraggable
+          ref="el"
+          v-model="collection_list"
+          :animation="150"
+          ghostClass="ghost"
+          @update="onUpdate"
+        >
+          <div v-for="(item,index) in collection_list" :key="index"
+               v-if="collection_list.length > 0">
+            <div class="item bg-white collection-item" @dblclick="dblclickCollection(item,index)"
+                 @click="clickCollection(item,index)"
+                 :class="current_collection_index=== index ? 'collection-item-active' : ''">
+              <div class="name">{{ item.data.name }}</div>
+              <div class="desc mt-0.5">共有 {{ item.data.num }} 个片段
+              </div>
             </div>
           </div>
-        </div>
+        </VueDraggable>
         <el-empty v-if="!collection_list.length" :image-size="100" class="mt-20"
                   description="暂无分组"></el-empty>
       </div>
@@ -47,8 +56,13 @@
 <script>
 import {editCollectionEntity, getCollectionEntity} from "@/entitys";
 import {collection_prefix, snippet_prefix} from "@/utils";
+import {VueDraggable} from "vue-draggable-plus";
+import {reorderCollection} from "@/db/collection";
 
 export default {
+  components: {
+    VueDraggable
+  },
   props: {
     collection_list: {
       type: Array,
@@ -77,7 +91,16 @@ export default {
 
   methods: {
 
-    _initDialog(){
+    onUpdate(e) {
+      const collection_list = reorderCollection(this.collection_list)
+      window.utools.db.bulkDocs(collection_list)
+
+      this.$emit('updateCollectionList', {
+        new_collection_index: e.newIndex
+      });
+    },
+
+    _initDialog() {
       this.dialogFormVisible = false
     },
 
@@ -315,7 +338,8 @@ export default {
 .collection-item {
   background: #fff;
 }
-.collection-item-active{
+
+.collection-item-active {
   background: #eee;
 }
 </style>
