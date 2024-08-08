@@ -16,6 +16,18 @@ export function getAllCollectionList() {
 }
 
 /**
+ * 获取所有集合数量
+ * @returns {number}
+ */
+export function getAllCollectionCount() {
+  const collection_list = window.utools.db.allDocs(collection_prefix)
+  if (!collection_list || collection_list.length === 0) {
+    return 0
+  }
+  return collection_list.length
+}
+
+/**
  * 重排序集合列表
  * @param collection_list
  * @returns {*}

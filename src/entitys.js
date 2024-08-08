@@ -1,4 +1,5 @@
 import {snippet_prefix} from "@/utils";
+import {getAllCollectionCount} from "@/db/collection";
 
 /**
  * 创建分组实体
@@ -7,11 +8,13 @@ import {snippet_prefix} from "@/utils";
  * @returns {{prefix, num: number, name, id: number}}
  */
 export function getCollectionEntity(name, prefix) {
+  const sort = getAllCollectionCount() + 1
   return {
     name: name,
     prefix: prefix,
     id: new Date().getTime(),
     num: 0,
+    sort: sort
   }
 
 }
@@ -41,16 +44,17 @@ export function editCollectionEntity(rawData, name, prefix, num = 0) {
  * @param rawData
  * @param type
  * @param num
+ * @param sort
  * @returns {DbReturn}
  */
-export function changeCollectionNum(rawData, type = 1, num = 1) {
+export function changeCollectionNum(rawData, type = 1, num = 1, sort = 100) {
   let set_num = type === 1 ? rawData.data.num + num : rawData.data.num - num
   const collectionEntity = {
     name: rawData.data.name,
     prefix: rawData.data.prefix,
     id: rawData.data.id,
     num: set_num,
-    sort: rawData.data?.sort || 1
+    sort: rawData.data?.sort || sort
   }
 
   return saveEntity(rawData, collectionEntity)
