@@ -5,6 +5,7 @@
       <div class="collection-list">
         <VueDraggable
           v-model="collection_list"
+          :disabled="!is_sort"
           :animation="150"
           ghostClass="ghost"
           @update="onUpdate"
@@ -74,6 +75,10 @@ export default {
     current_collection_item: {
       type: Object,
       default: () => null
+    },
+    is_sort: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

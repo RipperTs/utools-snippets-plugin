@@ -11,6 +11,7 @@
                   :collection_list="collection_list"
                   :current_collection_index="current_collection_index"
                   :current_collection_item="current_collection_item"
+                  :is_sort="inputContent.trim() === ''"
                   @clickCollection="clickCollection"
                   @updateCollectionList="updateCollectionList"
                   @changeList="changeCollectionList"></collection>
@@ -20,6 +21,7 @@
                   :current_snippet_item="current_snippet_item"
                   :collection_list="collection_list"
                   :current_collection_item="current_collection_item"
+                  :is_sort="inputContent.trim() === ''"
                   @add-snippets="addSnippets"
                   @del-snippets="delSnippets"
                   @row-click="clickSnippet"

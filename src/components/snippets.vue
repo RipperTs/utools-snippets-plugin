@@ -4,6 +4,7 @@
       <VueDraggable target="tbody"
                     v-model="snippet_list"
                     :animation="150"
+                    :disabled="!is_sort"
                     @update="onUpdate"
       >
         <div class="table-box">
@@ -98,6 +99,10 @@ export default {
     current_collection_item: {
       type: Object,
       default: () => null
+    },
+    is_sort: {
+      type: Boolean,
+      default: true
     }
   },
 
