@@ -51,6 +51,7 @@ import Headers from "@/components/headers.vue";
 import store from "@/store";
 import _ from 'lodash';
 import {getAllCollectionList} from "@/db/collection";
+import {getAllSnippetList, getSnippetListByCollectionId} from "@/db/snippet";
 
 export default {
   components: {
@@ -138,13 +139,17 @@ export default {
 
     },
 
+    /**
+     * 搜索文本片段
+     * @returns {boolean}
+     */
     doSearchSnippets() {
       if (this.inputContent.trim() === '') {
         this.getCollectionList()
         return false;
       }
       // 获取所有的文本片段列表
-      const snippet_list = window.utools.db.allDocs(snippet_prefix)
+      const snippet_list = getAllSnippetList()
       if (snippet_list.length === 0) {
         this.snippet_list = []
         return false;
@@ -172,29 +177,28 @@ export default {
       this.current_collection_item = collection_list[this.current_collection_index]
       this.current_snippet_item = null
       this.getSnippetList()
-
     },
 
     /**
      * 单击文本片段
-     * @param row
      */
-    clickSnippet(row) {
+    clickSnippet({row}) {
       this.current_snippet_item = row
     },
 
     /**
      * 双击文本片段
      */
-    dbClickSnippet() {
-      const is_enter = this.current_snippet_item.data?.is_enter || 2
+    dbClickSnippet({row}) {
+      const is_enter = row.data?.is_enter || 2
       this.$refs.snippetDialogForm.form = {
-        name: this.current_snippet_item.data.name,
-        keyword: this.current_snippet_item.data.keyword,
-        snippet: this.current_snippet_item.data.snippet,
-        is_reduction_clipboard: this.current_snippet_item.data?.is_reduction_clipboard || 1,
+        name: row.data.name,
+        keyword: row.data.keyword,
+        snippet: row.data.snippet,
+        is_reduction_clipboard: row.data?.is_reduction_clipboard || 1,
         is_enter: is_enter === 1,
-        paste_method: this.current_snippet_item.data?.paste_method || 1,
+        paste_method: row.data?.paste_method || 1,
+        sort: row.data.sort
       }
 
       this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
@@ -265,7 +269,7 @@ export default {
      * 获取文本片段
      */
     getSnippetList() {
-      const snippet_list = window.utools.db.allDocs(`${snippet_prefix}/${this.current_collection_item?.data?.id}`)
+      const snippet_list = getSnippetListByCollectionId(this.current_collection_item?.data?.id || 0)
       if (this.inputContent.trim() === '') {
         this.snippet_list = snippet_list
         return false;

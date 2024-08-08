@@ -4,7 +4,6 @@
       <div class="title">分组列表</div>
       <div class="collection-list">
         <VueDraggable
-          ref="el"
           v-model="collection_list"
           :animation="150"
           ghostClass="ghost"

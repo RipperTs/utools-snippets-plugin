@@ -34,7 +34,7 @@ export function getAllCollectionCount() {
  */
 export function reorderCollection(collection_list) {
   const reorderCollection = []
-  // md5 时间戳
+  // 重排序
   collection_list.map((doc, index) => {
     doc.data.sort = (index + 1);
     reorderCollection.push(doc)

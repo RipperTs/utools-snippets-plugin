@@ -1,58 +1,65 @@
 <template>
   <div class="snippets-component">
     <div class="right-container">
-      <div class="table-box">
-        <el-table
-          :data="snippet_list"
-          height="100%"
-          highlight-current-row
-          header-row-class-name="snippet-header-row"
-          header-cell-class-name="snippet-header-cell"
-          cell-class-name="snippet-cell"
-          @row-click="$emit('row-click', $event)"
-          @row-dblclick="$emit('row-dblclick', $event)"
-          style="width: 100%;border-radius: 3px">
-          <el-table-column
-            width="120"
-            label="片段说明">
-            <template slot-scope="scope">
-              <div class="snippet-content">
-                {{ scope.row.data.name }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            width="60"
-            align="center"
-            label="状态">
-            <template slot-scope="scope">
-              <el-switch
-                :value="scope.row.data.status === 1"
-                active-color="#13ce66"
-                @change="changeStatus(scope.row)"
-                inactive-color="#ff4949">
-              </el-switch>
-            </template>
-          </el-table-column>
-          <el-table-column
-            width="100"
-            label="关键字">
-            <template slot-scope="scope">
-              <div class="snippet-content">
-                {{ scope.row.data.keyword }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="文本片段">
-            <template slot-scope="scope">
-              <div class="snippet-content">
-                {{ scope.row.data.snippet }}
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+      <VueDraggable target="tbody"
+                    v-model="snippet_list"
+                    :animation="150"
+                    @update="onUpdate"
+      >
+        <div class="table-box">
+          <el-table
+            :data="snippet_list"
+            height="100%"
+            highlight-current-row
+            header-row-class-name="snippet-header-row"
+            header-cell-class-name="snippet-header-cell"
+            cell-class-name="snippet-cell"
+            :row-class-name="tableRowClassName"
+            @row-click="onRowClick"
+            @row-dblclick="onRowDbClick"
+            style="width: 100%;border-radius: 3px">
+            <el-table-column
+              width="120"
+              label="片段说明">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.data.name }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="60"
+              align="center"
+              label="状态">
+              <template slot-scope="scope">
+                <el-switch
+                  :value="scope.row.data.status === 1"
+                  active-color="#13ce66"
+                  @change="changeStatus(scope.row,scope.$index)"
+                  inactive-color="#ff4949">
+                </el-switch>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="100"
+              label="关键字">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.data.keyword }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="文本片段">
+              <template slot-scope="scope">
+                <div class="snippet-content">
+                  {{ scope.row.data.snippet }}
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </VueDraggable>
       <div class="add-btn">
         <el-button-group>
           <el-button size="mini" icon="el-icon-plus" :disabled="collection_list.length <=0"
@@ -68,8 +75,13 @@
 <script>
 import {changeSnippetsStatus} from "@/entitys";
 import {snippet_prefix} from "@/utils";
+import {VueDraggable} from "vue-draggable-plus";
+import {reorderSnippet} from "@/db/snippet";
 
 export default {
+  components: {
+    VueDraggable
+  },
   props: {
     collection_list: {
       type: Array,
@@ -89,12 +101,55 @@ export default {
     }
   },
 
-  methods:{
+  methods: {
+
+    /**
+     * 点击行事件
+     * @param row
+     * @param event
+     * @param column
+     */
+    onRowClick(row, event, column) {
+      this.$emit('row-click', {row, event, column})
+    },
+
+    /**
+     * 双击行事件
+     * @param row
+     * @param event
+     * @param column
+     */
+    onRowDbClick(row, event, column) {
+      this.$emit('row-dblclick', {row, event, column})
+    },
+
+    /**
+     * 拖拽行排序更新事件
+     * @param e
+     */
+    onUpdate(e) {
+      const snippet_list = reorderSnippet(this.snippet_list)
+      window.utools.db.bulkDocs(snippet_list)
+
+      this.$parent.getCollectionList()
+    },
+
+    /**
+     * 未每一行添加排序字段
+     * @param row
+     * @param rowIndex
+     */
+    tableRowClassName({row, rowIndex}) {
+      const old_sort = row.data?.sort || 0
+      if (old_sort === 0) {
+        row.data.sort = rowIndex + 1
+      }
+    },
 
     // 改变文本片段状态
-    changeStatus(row){
+    changeStatus(row, index) {
       let status = row.data.status === 1 ? 0 : 1
-      let result = changeSnippetsStatus(row, status)
+      let result = changeSnippetsStatus(row, status, index + 1)
       if (!result.ok) return false;
 
       if (status === 0) {
@@ -119,6 +174,7 @@ export default {
   // y超出部分滚动
   overflow-y: auto;
 }
+
 .snippet-content {
   overflow: hidden;
   white-space: nowrap;

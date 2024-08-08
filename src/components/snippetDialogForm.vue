@@ -150,6 +150,7 @@ export default {
         is_reduction_clipboard: 1,
         is_enter: false,
         paste_method: 1,
+        sort: 100,
       },
       currentSelectCollection: null,
       inputVisible: false,

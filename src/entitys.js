@@ -1,5 +1,6 @@
 import {snippet_prefix} from "@/utils";
 import {getAllCollectionCount} from "@/db/collection";
+import {getSnippetListCountByCollectionId} from "@/db/snippet";
 
 /**
  * 创建分组实体
@@ -68,6 +69,7 @@ export function changeCollectionNum(rawData, type = 1, num = 1, sort = 100) {
  * @returns {{collection_id, snippet: (string|*), is_enter: (boolean|*), is_reduction_clipboard: (number|*), name, id: number, keyword, status: number}}
  */
 export function getSnippetsEntity(collection_id, form_data) {
+  const sort = getSnippetListCountByCollectionId(collection_id) + 1
   return {
     collection_id: collection_id,
     name: form_data.name,
@@ -78,6 +80,7 @@ export function getSnippetsEntity(collection_id, form_data) {
     is_reduction_clipboard: form_data.is_reduction_clipboard, // 是否还原粘贴板内容,1:还原,2:不还原 ,默认还原
     is_enter: form_data.is_enter ? 1 : 2, // 是否回车执行,1:回车执行,2:不回车执行 ,默认回车执行
     paste_method: form_data.paste_method, // 粘贴方式,1:模拟快捷键,2:键盘输入
+    sort: sort
   }
 }
 
@@ -86,9 +89,10 @@ export function getSnippetsEntity(collection_id, form_data) {
  * 改变文本片段状态
  * @param rawData
  * @param status
+ * @param sort
  * @returns {DbReturn}
  */
-export function changeSnippetsStatus(rawData, status = 1) {
+export function changeSnippetsStatus(rawData, status = 1, sort = 100) {
   const snippetsEntity = {
     collection_id: rawData.data.collection_id,
     name: rawData.data.name,
@@ -99,6 +103,7 @@ export function changeSnippetsStatus(rawData, status = 1) {
     is_reduction_clipboard: rawData.data?.is_reduction_clipboard || 1,
     is_enter: rawData.data?.is_enter || 2,
     paste_method: rawData.data?.paste_method || 1,
+    sort: rawData.data?.sort || sort
   }
 
   return saveEntity(rawData, snippetsEntity)
@@ -122,6 +127,7 @@ export function editSnippetsEntity(collection_id, rawData, formData) {
     is_reduction_clipboard: formData.is_reduction_clipboard,
     is_enter: formData.is_enter ? 1 : 2,
     paste_method: formData.paste_method,
+    sort: formData.sort
   }
 
   let result = window.utools.db.remove(rawData)
