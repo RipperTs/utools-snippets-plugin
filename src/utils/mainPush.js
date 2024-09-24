@@ -2,6 +2,7 @@ import {snippets} from "@/utils/snippets";
 import {snippet_prefix} from "@/utils/index";
 import _ from "lodash";
 import store from "@/store";
+import {getAllSnippetList} from "@/db/snippet";
 
 export function callback({code, type, payload}) {
   if (payload.length <= 2) {
@@ -11,10 +12,13 @@ export function callback({code, type, payload}) {
   // 搜索文本片段
   if (code === 'search') {
     // 获取所有的文本片段列表
-    const snippet_list = window.utools.db.allDocs(snippet_prefix)
+    let snippet_list = getAllSnippetList()
     if (snippet_list.length === 0) {
       return [];
     }
+
+    // 筛选 snippet_list 中status为1的数据
+    snippet_list = snippet_list.filter(item => item.data.status === 1)
 
     let search_snippet = []
     for (let i = 0; i < snippet_list.length; i++) {
