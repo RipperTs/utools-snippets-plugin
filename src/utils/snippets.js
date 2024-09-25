@@ -160,12 +160,13 @@ async function postAction(snippets, start_clipboard_content) {
  */
 async function processingContent(content, start_clipboard_content, select_words = '', input_content = '') {
   try {
+    const now = dayjs();
     const replacements = [
-      {pattern: /{datetime}/g, replacement: dayjs().format('YYYY年MM月DD日 HH:mm:ss')},
-      {pattern: /{date}/g, replacement: dayjs().format('YYYY年MM月DD日')},
-      {pattern: /{time}/g, replacement: dayjs().format('HH:mm:ss')},
-      {pattern: /{timestamp}/g, replacement: dayjs().unix()},
-      {pattern: /{isodate:(.*?)}/g, replacement: (match, format) => dayjs().format(format)},
+      {pattern: /{datetime}/g, replacement: now.format('YYYY年MM月DD日 HH:mm:ss')},
+      {pattern: /{date}/g, replacement: now.format('YYYY年MM月DD日')},
+      {pattern: /{time}/g, replacement: now.format('HH:mm:ss')},
+      {pattern: /{timestamp}/g, replacement: now.unix()},
+      {pattern: /{isodate:(.*?)}/g, replacement: (match, format) => now.format(format)},
       {pattern: /{clipboard}/g, replacement: start_clipboard_content},
       {pattern: /{clipboard:lowercase}/g, replacement: _.toLower(start_clipboard_content)},
       {pattern: /{clipboard:uppercase}/g, replacement: _.toUpper(start_clipboard_content)},
@@ -195,11 +196,11 @@ async function processingContent(content, start_clipboard_content, select_words 
       {pattern: /{clipboard:number}/g, replacement: () => toNumber(start_clipboard_content)},
       {
         pattern: /{timeoffset:add:(\d+):(.*?):(.*?)}/g,
-        replacement: (match, num, type, format) => dayjs().add(num, type).format(format)
+        replacement: (match, num, type, format) => now.add(num, type).format(format)
       },
       {
         pattern: /{timeoffset:subtract:(\d+):(.*?):(.*?)}/g,
-        replacement: (match, num, type, format) => dayjs().subtract(num, type).format(format)
+        replacement: (match, num, type, format) => now.subtract(num, type).format(format)
       },
       {
         pattern: /{password:(\d+)}/g, replacement: (match, num) => { // 生成随机数字密码
