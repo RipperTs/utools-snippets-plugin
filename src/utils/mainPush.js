@@ -1,10 +1,9 @@
 import {snippets} from "@/utils/snippets";
-import {snippet_prefix} from "@/utils/index";
 import _ from "lodash";
 import store from "@/store";
 import {getAllSnippetList} from "@/db/snippet";
 
-export function callback({code, type, payload}) {
+export function callback({code, payload}) {
   if (payload.length <= 2) {
     return []
   }
@@ -54,7 +53,7 @@ export function callback({code, type, payload}) {
 }
 
 
-export function selectCallback({code, type, payload, option}) {
+export function selectCallback({code, option}) {
   if (code === 'search') {
     store.state.mainPushParams = option
   } else {
