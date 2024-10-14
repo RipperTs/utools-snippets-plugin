@@ -57,6 +57,7 @@
                   placement="left-start"
                   width="300"
                   :ref="`popover-${scope.$index}`"
+                  :open-delay="preview_snippet_delay"
                   trigger="hover">
                   <div class="previews-content">{{ scope.row.data.snippet }}</div>
                   <span slot="reference" class="snippet-content">
@@ -85,6 +86,7 @@ import {changeSnippetsStatus} from "@/entitys";
 import {snippet_prefix} from "@/utils";
 import {VueDraggable} from "vue-draggable-plus";
 import {reorderSnippet} from "@/db/snippet";
+import {getConfig} from "@/utils/config";
 
 export default {
   components: {
@@ -110,6 +112,12 @@ export default {
     is_sort: {
       type: Boolean,
       default: true
+    }
+  },
+
+  computed: {
+    preview_snippet_delay() {
+      return parseInt(getConfig('preview_snippet_delay'))
     }
   },
 
@@ -209,7 +217,7 @@ export default {
   transform: scale(0.6);
 }
 
-.previews-content{
+.previews-content {
   max-height: 65vh;
   white-space: pre-wrap;
   word-wrap: break-word;

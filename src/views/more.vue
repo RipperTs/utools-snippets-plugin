@@ -1,7 +1,7 @@
 <template>
   <div class="more-main">
     <div class="headers-box">
-      <el-button size="mini" icon="el-icon-back" @click="backHome">返回首页</el-button>
+      <el-button size="mini" icon="el-icon-back" @click="backHome">返回</el-button>
     </div>
     <div class="chunk-box">
       <div class="label">全局配置</div>
@@ -31,6 +31,12 @@
         </el-form-item>
         <el-form-item label="还原剪切板延迟" style="margin-top: 10px;">
           <el-input-number v-model="form.reduction_clipboard_delay" :min="20" :step="10" :max="5000"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">毫秒</span>
+        </el-form-item>
+
+        <el-form-item label="预览片段延迟" style="margin-top: 10px;">
+          <el-input-number v-model="form.preview_snippet_delay" :min="20" :step="10" :max="10000"
                            size="mini"></el-input-number>
           <span class="ml-3 opacity-60">毫秒</span>
         </el-form-item>
