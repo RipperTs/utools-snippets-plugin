@@ -6,6 +6,8 @@
                :show-close="false" width="80%"
                @close="closeDialog">
       <el-form :model="form">
+
+        <!--   说明和分组编辑     -->
         <div class="flex justify-start">
           <el-form-item label="说明" :label-width="formLabelWidth">
             <el-input size="mini" style="width: 220px;" v-model="form.name"
@@ -24,16 +26,21 @@
             </el-select>
           </el-form-item>
         </div>
+
+        <!--   创建关键字     -->
         <el-form-item label="关键字" class="keyword-box" :label-width="formLabelWidth">
-          <el-tag
-            :key="tag"
-            v-for="tag in keywordList"
-            v-if="keywordList.length > 0"
-            closable
-            @close="handleClose(tag)"
-            :disable-transitions="false">
-            {{ tag }}
-          </el-tag>
+          <template v-if="keywordList.length > 0">
+            <el-tag
+              :key="index"
+              class="cursor-pointer"
+              v-for="(tag,index) in keywordList"
+              closable
+              @close="handleClose(tag)"
+              @click="tagHandleClick(tag)"
+              :disable-transitions="false">
+              {{ tag }}
+            </el-tag>
+          </template>
           <template v-if="keywordList.length < 3">
             <el-input
               class="input-new-tag"
@@ -51,6 +58,8 @@
             </el-button>
           </template>
         </el-form-item>
+
+        <!--   文本片段内容     -->
         <el-form-item label="文本片段" :label-width="formLabelWidth">
           <el-input id="textarea" type="textarea" ref="snippetInput" :rows="7"
                     placeholder="在这里输入文本片段, 支持占位符"
@@ -64,6 +73,8 @@
             <p>点击上方 { } 按钮选择要插入占位符, 即可在当前光标位置插入占位符.</p>
           </div>
         </el-form-item>
+
+        <!--   选项操作区     -->
         <el-form-item label="粘贴方式" :label-width="formLabelWidth">
           <el-radio-group v-model="form.paste_method" size="mini">
             <el-radio :label=1 border>模拟快捷键</el-radio>
@@ -93,6 +104,8 @@
           {{ !is_edit ? '保 存' : '修 改' }}
         </el-button>
       </div>
+
+      <!--   占位符弹层选择   -->
       <el-dialog
         width="70%"
         style="user-select: none;"
@@ -103,6 +116,7 @@
         <placeholder @clickTag="clickTag"></placeholder>
       </el-dialog>
     </el-dialog>
+
   </div>
 </template>
 
@@ -184,6 +198,16 @@ export default {
       this.form.keyword = this.keywordList.join(',')
     },
 
+    /**
+     * 点击关键字标签事件
+     * @param tag
+     */
+    tagHandleClick(tag) {
+      this.handleClose(tag)
+      this.inputValue = tag
+      this.showInput()
+    },
+
     showInput() {
       this.inputVisible = true;
       // eslint-disable-next-line no-unused-vars
@@ -261,10 +285,6 @@ export default {
         startPos: 0,
         endPos: 0
       }
-    },
-
-    redirectPlugin() {
-      window.utools.redirect('一步到位')
     },
 
     // 提交表单内容
