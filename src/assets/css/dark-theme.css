@@ -301,7 +301,16 @@ body {
     color: #eee !important;
 }
 
-.el-radio__label,.el-checkbox__label {
+.el-radio__label, .el-checkbox__label {
     color: #aaa !important;
 }
 
+.previews-content {
+    background: #494848 !important;
+    color: #ddd !important;
+}
+
+.el-popover {
+    background: #919090 !important;
+    border: none !important;
+}

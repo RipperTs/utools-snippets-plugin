@@ -53,9 +53,16 @@
             <el-table-column
               label="文本片段">
               <template slot-scope="scope">
-                <div class="snippet-content">
-                  {{ scope.row.data.snippet }}
-                </div>
+                <el-popover
+                  placement="left-start"
+                  width="300"
+                  :ref="`popover-${scope.$index}`"
+                  trigger="hover">
+                  <div class="previews-content">{{ scope.row.data.snippet }}</div>
+                  <span slot="reference" class="snippet-content">
+                    {{ scope.row.data.snippet }}
+                  </span>
+                </el-popover>
               </template>
             </el-table-column>
           </el-table>
@@ -130,12 +137,10 @@ export default {
 
     /**
      * 拖拽行排序更新事件
-     * @param e
      */
-    onUpdate(e) {
+    onUpdate() {
       const snippet_list = reorderSnippet(this.snippet_list)
       window.utools.db.bulkDocs(snippet_list)
-
       this.$parent.getCollectionList()
     },
 
@@ -202,5 +207,18 @@ export default {
 
 .el-switch {
   transform: scale(0.6);
+}
+
+.previews-content{
+  max-height: 65vh;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 12px;
+  padding: 5px;
+  background: #f5f5f5;
+  border-radius: 3px;
+  color: #606266;
+  // 超出部分滚动
+  overflow-y: auto;
 }
 </style>

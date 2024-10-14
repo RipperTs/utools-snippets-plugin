@@ -14,7 +14,7 @@
                   :is_sort="inputContent.trim() === ''"
                   @clickCollection="clickCollection"
                   @updateCollectionList="updateCollectionList"
-                  @changeList="changeCollectionList"></collection>
+                  @changeList="changeCollectionList" />
       <div class="right-container rounded">
         <!--   右侧文本片段列表     -->
         <snippets :snippet_list="snippet_list"
@@ -25,7 +25,7 @@
                   @add-snippets="addSnippets"
                   @del-snippets="delSnippets"
                   @row-click="clickSnippet"
-                  @row-dblclick="dbClickSnippet"></snippets>
+                  @row-dblclick="dbClickSnippet" />
       </div>
     </div>
     <!--  添加/修改文本片段  -->
@@ -37,7 +37,7 @@
       :is_edit="is_edit"
       :current_collection_item="current_collection_item"
       @close-dialog="dialogFormVisible = false"
-    ></snippetDialogForm>
+    />
   </div>
 </template>
 
@@ -50,7 +50,6 @@ import {collection_prefix, snippet_prefix} from "@/utils";
 import {mapState} from 'vuex'
 import {autoSnippets} from "@/utils/snippets";
 import Headers from "@/components/headers.vue";
-import store from "@/store";
 import _ from 'lodash';
 import {getAllCollectionList} from "@/db/collection";
 import {getAllSnippetList, getSnippetListByCollectionId} from "@/db/snippet";
@@ -88,7 +87,7 @@ export default {
       }
     );
     window.utools.onPluginOut(() => {
-      store.state.inputContent = ""
+      this.$store.state.inputContent = ""
       this.dialogFormVisible = false
       this.innerVisible = false;
       this.$refs.collectionRef._initDialog()

@@ -8,6 +8,6 @@ export default new Vuex.Store({
     sharedData: {},
     inputContent: '',
     detach_window: false,
-    mainPushParams: {},
+    mainPushParams: {}
   }
 })
