@@ -9,7 +9,7 @@
           fit="contain"></el-image>
         <div class="description_content ml-3">
           <div class="title">
-            Automatic snippets
+            自动上屏任意文本片段
             <span v-if="detach_window" class="warning-text"> 检测到插件正在以独立窗口方式运行, 部分功能将无法使用! </span>
           </div>
           <div class="desc mt-0.5">仅需简单的几步设置，就可以帮助您随时随地使用最有用的文本片段。

@@ -1,9 +1,9 @@
 {
   "name": "snippets",
-  "pluginName": "Automatic snippets",
+  "pluginName": "超级文本片段",
   "description": "帮助您随时随地使用最有用的文本片段。呼出uTools输入对应关键字，即可将其对应的文本片段插入到指定位置！令人惊喜的是文本片段还支持多种动态占位符（灵感来源：Alfred）。",
   "author": "https://github.com/ripperts",
-  "homepage": "https://github.com/ripperts/snippets",
+  "homepage": "https://github.com/RipperTs/utools-snippets-plugin",
   "version": "2.0.7",
   "logo": "dist/logo.png",
   "main": "dist/index.html",
@@ -23,7 +23,8 @@
         "自动上屏",
         "关键字上屏",
         "设置自动上屏",
-        "文本片段"
+        "文本片段",
+        "超级文本片段"
       ]
     },
     {
