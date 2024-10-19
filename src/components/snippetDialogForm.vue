@@ -184,6 +184,7 @@ export default {
     'fastAddSnippets.snippetContent': {
       handler(newValue) {
         this.form.snippet = newValue
+        this.currentSelectCollection = this.current_collection_item
       },
       immediate: true
     }
