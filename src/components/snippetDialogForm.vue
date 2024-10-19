@@ -2,7 +2,6 @@
   <div class="snippets-dialog-form">
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
                :close-on-click-modal="false"
-               :destroy-on-close="true"
                top="3vh"
                :show-close="false" width="80%"
                @close="closeDialog">
