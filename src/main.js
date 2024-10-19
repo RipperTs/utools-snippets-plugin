@@ -13,6 +13,7 @@ import ElementUI from 'element-ui';
 import dayjs from 'dayjs'
 import {snippets} from "@/utils/snippets";
 import {callback, selectCallback} from "@/utils/mainPush";
+import {addSnippet} from "@/utils/fastAddSnippets";
 
 Vue.config.productionTip = false;
 
@@ -48,6 +49,11 @@ if (window.utools) {
         store.state.mainPushParams = {}
       }
       return
+    }
+
+    if (code === "add") {
+      addSnippet(type, payload)
+      return;
     }
 
     if (code !== 'snippets') {

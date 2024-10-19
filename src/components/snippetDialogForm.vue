@@ -13,8 +13,7 @@
             <el-input size="mini" style="width: 220px;" v-model="form.name"
                       placeholder="请输入名称, 为文本片段的说明"></el-input>
           </el-form-item>
-          <el-form-item label="所在分组" style="margin-left: 15px;" :label-width="formLabelWidth"
-                        v-if="is_edit">
+          <el-form-item label="所在分组" style="margin-left: 15px;" :label-width="formLabelWidth">
             <el-select :value="currentSelectCollection?._id"
                        @change="selectCollection" size="mini">
               <el-option
@@ -44,7 +43,7 @@
           <template v-if="keywordList.length < 3">
             <el-input
               class="input-new-tag"
-              :style="{marginLeft: keywordList.length === 0 ? '0px' : '10px',width: keywordList.length === 0 ? '240px' : '110px'}"
+              :style="{marginLeft: keywordList.length === 0 ? '0px' : '10px',width: '110px'}"
               v-if="keywordList.length === 0 || inputVisible"
               v-model="inputValue"
               ref="saveTagInput"
@@ -124,6 +123,7 @@
 import placeholder from "@/components/placeholder.vue";
 import {changeCollectionNum, editSnippetsEntity, getSnippetsEntity} from "@/entitys";
 import {snippet_prefix} from "@/utils";
+import {mapState} from "vuex";
 
 export default {
   props: {
@@ -174,8 +174,18 @@ export default {
   },
 
   computed: {
+    ...mapState(['fastAddSnippets']),
     keywordList() {
       return this.form.keyword.split(',').filter(item => item !== '')
+    }
+  },
+
+  watch:{
+    'fastAddSnippets.snippetContent':{
+      handler(newValue) {
+        this.form.snippet = newValue
+      },
+      immediate: true
     }
   },
 
@@ -380,7 +390,7 @@ export default {
     _verify() {
       if (this.form.name === '') {
         this.$message({
-          message: '名称不能为空',
+          message: '片段说明不能为空',
           type: 'warning'
         })
         return false;

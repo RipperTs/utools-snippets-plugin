@@ -14,7 +14,7 @@
                   :is_sort="inputContent.trim() === ''"
                   @clickCollection="clickCollection"
                   @updateCollectionList="updateCollectionList"
-                  @changeList="changeCollectionList" />
+                  @changeList="changeCollectionList"/>
       <div class="right-container rounded">
         <!--   右侧文本片段列表     -->
         <snippets :snippet_list="snippet_list"
@@ -25,18 +25,18 @@
                   @add-snippets="addSnippets"
                   @del-snippets="delSnippets"
                   @row-click="clickSnippet"
-                  @row-dblclick="dbClickSnippet" />
+                  @row-dblclick="dbClickSnippet"/>
       </div>
     </div>
     <!--  添加/修改文本片段  -->
     <snippetDialogForm
       ref="snippetDialogForm"
-      :dialog-form-visible="dialogFormVisible"
+      :dialog-form-visible="dialogFormVisible || fastAddSnippets.show"
       :current_snippet_item="current_snippet_item"
       :collection_list="all_category_list"
       :is_edit="is_edit"
       :current_collection_item="current_collection_item"
-      @close-dialog="dialogFormVisible = false"
+      @close-dialog="closeSnippetsDialog"
     />
   </div>
 </template>
@@ -73,7 +73,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['sharedData', 'inputContent']),
+    ...mapState(['sharedData', 'inputContent', 'fastAddSnippets']),
     all_category_list() {
       return getAllCollectionList() || []
     }
@@ -99,6 +99,14 @@ export default {
     this.getCollectionList()
   },
   methods: {
+
+    /**
+     * 关闭添加文本片段弹窗
+     */
+    closeSnippetsDialog() {
+      this.dialogFormVisible = false
+      this.$store.state.fastAddSnippets.show = false
+    },
 
     /**
      * 子组件更新的事件

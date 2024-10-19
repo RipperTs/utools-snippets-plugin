@@ -28,6 +28,17 @@
       ]
     },
     {
+      "code": "add",
+      "explain": "选中文本后快速添加文本片段",
+      "cmds": [
+        {
+          "type": "over",
+          "label": "添加文本片段"
+        },
+        "添加文本片段"
+      ]
+    },
+    {
       "code": "search",
       "explain": "搜索文本片段",
       "mainPush": true,
