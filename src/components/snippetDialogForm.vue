@@ -180,8 +180,8 @@ export default {
     }
   },
 
-  watch:{
-    'fastAddSnippets.snippetContent':{
+  watch: {
+    'fastAddSnippets.snippetContent': {
       handler(newValue) {
         this.form.snippet = newValue
       },
@@ -396,6 +396,13 @@ export default {
         return false;
       }
 
+      if (this.current_collection_item === null) {
+        this.$message({
+          message: '请先选择或创建分组',
+          type: 'warning'
+        })
+        return false;
+      }
 
       if (this.keywordList.length === 0) {
         this.$message({
