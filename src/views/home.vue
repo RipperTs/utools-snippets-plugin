@@ -33,7 +33,7 @@
       ref="snippetDialogForm"
       :dialog-form-visible="dialogFormVisible || fastAddSnippets.show"
       :current_snippet_item="current_snippet_item"
-      :collection_list="all_category_list"
+      :collection_list="collection_list"
       :is_edit="is_edit"
       :current_collection_item="current_collection_item"
       @close-dialog="closeSnippetsDialog"
@@ -73,10 +73,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['sharedData', 'inputContent', 'fastAddSnippets']),
-    all_category_list() {
-      return getAllCollectionList() || []
-    }
+    ...mapState(['sharedData', 'inputContent', 'fastAddSnippets'])
   },
   created() {
     let that = this;
@@ -300,7 +297,9 @@ export default {
      * 改变分组列表的事件
      */
     changeCollectionList() {
-      this.getCollectionList()
+      this.collection_list = getAllCollectionList()
+      const index = this.collection_list.length - 1
+      this.clickCollection(this.collection_list[index], index)
     },
 
     /**

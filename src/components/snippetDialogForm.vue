@@ -2,6 +2,7 @@
   <div class="snippets-dialog-form">
     <el-dialog style="user-select: none;" :visible.sync="dialogFormVisible"
                :close-on-click-modal="false"
+               :destroy-on-close="true"
                top="3vh"
                :show-close="false" width="80%"
                @close="closeDialog">
@@ -254,7 +255,7 @@ export default {
         is_enter: false,
         paste_method: 1,
       }
-      this.currentSelectCollection = this.current_collection_item
+      this.currentSelectCollection = null
       this.$parent.closeDialog()
     },
 
