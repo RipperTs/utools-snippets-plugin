@@ -315,6 +315,7 @@ export default {
         })
         return false;
       }
+      this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
       this.dialogFormVisible = true
     },
 
