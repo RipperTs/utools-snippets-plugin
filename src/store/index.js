@@ -13,5 +13,6 @@ export default new Vuex.Store({
       show: false,
       snippetContent: ''
     },
+    utoolsInputPlaceholder: '输入搜索关键字进行模糊搜索文本片段'
   }
 })

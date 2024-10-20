@@ -37,7 +37,7 @@ if (window.utools) {
       if (option === undefined) {
         window.utools.setSubInput(({text}) => {
           store.state.inputContent = text
-        }, '输入搜索关键字进行模糊搜索文本片段')
+        }, store.state.utoolsInputPlaceholder)
         store.state.inputContent = payload
         window.utools.setSubInputValue(payload)
         window.utools.subInputSelect()
@@ -64,7 +64,7 @@ if (window.utools) {
     } else {
       window.utools.setSubInput(({text}) => {
         store.state.inputContent = text
-      }, '输入搜索关键字进行模糊搜索文本片段')
+      }, store.state.utoolsInputPlaceholder)
     }
 
   });
