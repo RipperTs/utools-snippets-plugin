@@ -4,7 +4,7 @@ import store from "@/store";
 import {getAllSnippetList} from "@/db/snippet";
 
 export function callback({code, payload}) {
-  if (payload.length <= 2) {
+  if (payload.length < 2) {
     return []
   }
 

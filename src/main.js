@@ -1,6 +1,5 @@
 import Vue from "vue";
 import App from "./App.vue";
-import axios from 'axios'
 import 'mavon-editor/dist/css/index.css'
 import Vant from "./vant.js";
 import router from './router';
@@ -10,22 +9,18 @@ import './style.css';
 import "./assets/css/tailwindcss.css"
 import './assets/icons' // icon
 import ElementUI from 'element-ui';
-import dayjs from 'dayjs'
 import {snippets} from "@/utils/snippets";
 import {callback, selectCallback} from "@/utils/mainPush";
 import {addSnippet} from "@/utils/fastAddSnippets";
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$http = axios
-
 Vue.use(Vant);
 Vue.use(ElementUI, {size: 'small'});
 
-Vue.prototype.$dayjs = dayjs;
 
 if (window.utools) {
-  window.utools.onPluginEnter(({code, type, payload}) => {
+  window.utools.onPluginEnter(({code, type, payload, option}) => {
 
     window.utools.onPluginDetach(() => {
       store.state.detach_window = true
@@ -36,12 +31,19 @@ if (window.utools) {
       import('./assets/css/dark-theme.css')
     }
 
-    Vue.prototype.$pluginCode = code
-    Vue.prototype.$pluginType = type
-    Vue.prototype.$pluginPayload = payload
-
     if (code === 'search') {
       window.utools.showMainWindow()
+      // 判断是否超级面板进来的
+      if (option === undefined) {
+        window.utools.setSubInput(({text}) => {
+          store.state.inputContent = text
+        }, '输入搜索关键字进行模糊搜索文本片段')
+        store.state.inputContent = payload
+        window.utools.setSubInputValue(payload)
+        window.utools.subInputSelect()
+        return
+      }
+
       window.utools.removeSubInput()
       const code = store.state.mainPushParams?.code || ''
       if (code) {
