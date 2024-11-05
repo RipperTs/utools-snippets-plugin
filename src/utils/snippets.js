@@ -74,7 +74,7 @@ export async function autoSnippets(snippets, input_content = '') {
       const terminal_type = snippets.data?.terminal_type || 'default'
       window.openTerminal(content, terminal_type)
       window.utools.outPlugin()
-      return;
+      return false;
     }
 
     // 获取要移动到光标的位置

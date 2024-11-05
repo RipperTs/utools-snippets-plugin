@@ -45,8 +45,7 @@ window.getIPAddress = function (num = 0) {
 
 // Windows系统
 function openTerminalWindows(command) {
-  // 添加 /MAX 参数最大化窗口并置前
-  exec(`start /MAX cmd /K ${command}`);
+  exec(`start cmd /K ${command}`);
 }
 
 // MacOS系统默认终端
