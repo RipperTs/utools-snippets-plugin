@@ -43,14 +43,23 @@ window.getIPAddress = function (num = 0) {
 }
 
 
+// 处理命令中的特殊字符
+function escapeCommand(command) {
+  // 针对Windows和Mac的不同转义处理
+  if (window.utools.isWindows()) {
+    return command.replace(/([&|<>^])/g, '^$1');
+  }
+  return command.replace(/"/g, '\\"');
+}
+
 // Windows系统
 function openTerminalWindows(command) {
-  exec(`start cmd /K ${command}`);
+  // 对于包含空格的路径，需要确保正确引用
+  exec(`start cmd /K "${command}"`);
 }
 
 // MacOS系统默认终端
 function openTerminalMac(command) {
-  // 使用 osascript 激活终端窗口
   exec(`osascript -e 'tell app "Terminal" to do script "${command}"' -e 'tell app "Terminal" to activate'`);
 }
 
@@ -65,7 +74,7 @@ function openITerminal2Mac(command) {
         end tell
     end tell`;
 
-  exec(`osascript -e '${script}'`);
+  exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
 }
 
 // Warp 专用的 AppleScript 命令
@@ -82,7 +91,7 @@ function openWarpTerminalMac(command) {
         tell application "System Events" to key code 36
     end tell`;
 
-  exec(`osascript -e '${script}'`);
+  exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
 }
 
 // Linux系统
@@ -96,37 +105,47 @@ function openTerminalLinux(command) {
  * @param terminalType 终端类型, 暂定为MacOS的终端类型, default: Terminal, iterm2: iTerm2, warp: Warp
  */
 window.openTerminal = function (command, terminalType) {
-  if (window.utools.isWindows()){
-    openTerminalWindows(command);
+  // 处理可能的错误情况
+  if (!command) {
+    window.utools.showNotification('命令不能为空');
     return;
   }
 
-  if (window.utools.isLinux()){
-    // todo: linux 未做测试
-    openTerminalLinux(command);
-    return;
-  }
+  try {
+    const escapedCommand = escapeCommand(command);
+    if (window.utools.isWindows()){
+      openTerminalWindows(escapedCommand);
+      return;
+    }
 
-  if (!window.utools.isMacOS()){
-    window.utools.showNotification('未知的操作系统, 无法打开终端');
-    return;
-  }
+    if (window.utools.isLinux()){
+      openTerminalLinux(escapedCommand);
+      return;
+    }
 
-  if(terminalType === 'default'){
-    openTerminalMac(command);
-    return;
-  }
+    if (!window.utools.isMacOS()){
+      window.utools.showNotification('未知的操作系统, 无法打开终端');
+      return;
+    }
 
-  if (terminalType === 'iterm2') {
-    openITerminal2Mac(command);
-    return;
-  }
+    if(terminalType === 'default'){
+      openTerminalMac(escapedCommand);
+      return;
+    }
 
-  if (terminalType === 'warp') {
-    openWarpTerminalMac(command);
-    return;
-  }
+    if (terminalType === 'iterm2') {
+      openITerminal2Mac(escapedCommand);
+      return;
+    }
 
-  window.utools.showNotification('未知的终端类型, 无法打开终端');
+    if (terminalType === 'warp') {
+      openWarpTerminalMac(escapedCommand);
+      return;
+    }
+
+    window.utools.showNotification('未知的终端类型, 无法打开终端');
+  } catch (error) {
+    window.utools.showNotification(`执行命令时出错: ${error.message}`);
+  }
 
 }
