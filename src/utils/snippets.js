@@ -73,7 +73,6 @@ export async function autoSnippets(snippets, input_content = '') {
       window.utools.hideMainWindow()
       const terminal_type = snippets.data?.terminal_type || 'default'
       window.openTerminal(content, terminal_type)
-      window.utools.outPlugin()
       return false;
     }
 
