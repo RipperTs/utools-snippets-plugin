@@ -18,9 +18,19 @@ Vue.config.productionTip = false;
 Vue.use(Vant);
 Vue.use(ElementUI, {size: 'small'});
 
+let vueInstance = null;
 
 if (window.utools) {
   window.utools.onPluginEnter(({code, type, payload, option}) => {
+
+    // 只在 vueInstance 为 null 时创建 Vue 实例
+    if (!vueInstance) {
+      vueInstance = new Vue({
+        router,
+        store,
+        render: (h) => h(App),
+      }).$mount('#app');
+    }
 
     window.utools.onPluginDetach(() => {
       store.state.detach_window = true
@@ -71,15 +81,5 @@ if (window.utools) {
 
   // 主面板推送消息
   window.utools.onMainPush(callback, selectCallback)
-
-  window.utools.onPluginDetach(() => {
-    Vue.prototype.$pluginDetach = true
-  })
-
-  new Vue({
-    router,
-    store,
-    render: (h) => h(App),
-  }).$mount('#app');
 
 }
