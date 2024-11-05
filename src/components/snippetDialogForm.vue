@@ -78,23 +78,43 @@
           <el-radio-group v-model="form.paste_method" size="mini">
             <el-radio :label=1 border>模拟快捷键</el-radio>
             <el-radio :label=2 border>键盘输入</el-radio>
+            <el-radio :label=3 border>打开终端并执行</el-radio>
           </el-radio-group>
           <div class="remark">
             <p v-if="form.paste_method=== 1">常规的粘贴场景, 兼容性更好, 适用于绝大多数的应用场景.
               原理是按下键盘 {{ is_macos ? 'command' : 'ctrl' }} + v</p>
             <p v-if="form.paste_method=== 2">可解决在 XShell 等软件无法使用快捷键粘贴的情况 <span
-              class="text-blue-500 font-medium">*仅适用于单行文本片段</span></p>
+              class=" font-medium">*仅适用于单行文本片段</span></p>
+            <p v-if="form.paste_method=== 3">打开终端并执行文本片段内容, <span
+              class=" font-medium">*文本片段必须是可执行的命令</span></p>
           </div>
         </el-form-item>
-        <el-form-item label="后置动作" :label-width="formLabelWidth">
-          <el-radio-group v-model="form.is_reduction_clipboard" size="mini">
-            <el-radio :label=1 border>还原剪贴板内容</el-radio>
-            <el-radio :label=2 border>保留剪贴板内容 (方便手动粘贴)</el-radio>
-            <el-radio :label=3 border>仅复制文本片段</el-radio>
-          </el-radio-group>
-          <el-checkbox label="模拟敲击回车键" v-model="form.is_enter" size="mini" border
-                       class="mt-2.5"></el-checkbox>
-        </el-form-item>
+
+        <template v-if="form.paste_method === 1 || form.paste_method === 2">
+          <el-form-item label="后置动作" :label-width="formLabelWidth">
+            <el-radio-group v-model="form.is_reduction_clipboard" size="mini">
+              <el-radio :label=1 border>还原剪贴板内容</el-radio>
+              <el-radio :label=2 border>保留剪贴板内容 (方便手动粘贴)</el-radio>
+              <el-radio :label=3 border>仅复制文本片段</el-radio>
+            </el-radio-group>
+            <el-checkbox label="模拟敲击回车键" v-model="form.is_enter" size="mini" border
+                         class="mt-2.5"></el-checkbox>
+          </el-form-item>
+        </template>
+
+        <template v-if="form.paste_method === 3">
+          <el-form-item label="终端类型" :label-width="formLabelWidth">
+            <el-radio-group v-model="form.terminal_type" size="mini">
+              <el-radio label="default" border>默认</el-radio>
+              <el-radio label="iterm2" v-if="is_macos" border>iTerm2</el-radio>
+              <el-radio label="warp" v-if="is_macos" border>Warp</el-radio>
+            </el-radio-group>
+            <div class="remark">
+              <p v-if="form.terminal_type === 'iterm2'">iTerm2 是一款功能强大的终端工具, 适用于高级用户. https://iterm2.com</p>
+              <p v-if="form.terminal_type === 'warp'">Warp 是一款现代化的 Rust 终端. https://www.warp.dev</p>
+            </div>
+          </el-form-item>
+        </template>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -165,6 +185,7 @@ export default {
         is_enter: false,
         paste_method: 1,
         sort: 100,
+        terminal_type: 'default',
       },
       currentSelectCollection: null,
       inputVisible: false,
@@ -254,6 +275,8 @@ export default {
         is_reduction_clipboard: 1,
         is_enter: false,
         paste_method: 1,
+        terminal_type: 'default',
+        sort: 100,
       }
       this.currentSelectCollection = null
       this.$parent.closeDialog()

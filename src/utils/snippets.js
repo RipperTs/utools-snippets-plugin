@@ -66,6 +66,17 @@ export async function autoSnippets(snippets, input_content = '') {
     } else {
       content = await processingContent(snippets.data.snippet, start_clipboard_content, '', input_content)
     }
+
+    const paste_method = snippets.data?.paste_method || 1
+    // 打开终端执行命令
+    if (paste_method === 3) {
+      window.utools.hideMainWindow()
+      const terminal_type = snippets.data?.terminal_type || 'default'
+      window.openTerminal(content, terminal_type)
+      window.utools.outPlugin()
+      return;
+    }
+
     // 获取要移动到光标的位置
     let cursor_position = await getCursorPosition(content)
     if (cursor_position > 0) {

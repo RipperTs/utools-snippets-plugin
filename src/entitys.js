@@ -80,7 +80,8 @@ export function getSnippetsEntity(collection_id, form_data) {
     is_reduction_clipboard: form_data.is_reduction_clipboard, // 是否还原粘贴板内容,1:还原,2:不还原 ,默认还原
     is_enter: form_data.is_enter ? 1 : 2, // 是否回车执行,1:回车执行,2:不回车执行 ,默认回车执行
     paste_method: form_data.paste_method, // 粘贴方式,1:模拟快捷键,2:键盘输入
-    sort: sort
+    sort: sort,
+    terminal_type: form_data.terminal_type
   }
 }
 
@@ -103,7 +104,8 @@ export function changeSnippetsStatus(rawData, status = 1, sort = 100) {
     is_reduction_clipboard: rawData.data?.is_reduction_clipboard || 1,
     is_enter: rawData.data?.is_enter || 2,
     paste_method: rawData.data?.paste_method || 1,
-    sort: rawData.data?.sort || sort
+    sort: rawData.data?.sort || sort,
+    terminal_type: rawData.data?.terminal_type || 'default'
   }
 
   return saveEntity(rawData, snippetsEntity)
@@ -117,6 +119,7 @@ export function changeSnippetsStatus(rawData, status = 1, sort = 100) {
  * @returns {DbReturn}
  */
 export function editSnippetsEntity(collection_id, rawData, formData) {
+  console.log(formData)
   const snippetsEntity = {
     collection_id: collection_id,
     name: formData.name,
@@ -127,7 +130,8 @@ export function editSnippetsEntity(collection_id, rawData, formData) {
     is_reduction_clipboard: formData.is_reduction_clipboard,
     is_enter: formData.is_enter ? 1 : 2,
     paste_method: formData.paste_method,
-    sort: formData.sort
+    sort: formData.sort,
+    terminal_type: formData.terminal_type
   }
 
   let result = window.utools.db.remove(rawData)

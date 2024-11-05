@@ -204,7 +204,8 @@ export default {
         is_reduction_clipboard: row.data?.is_reduction_clipboard || 1,
         is_enter: is_enter === 1,
         paste_method: row.data?.paste_method || 1,
-        sort: row.data.sort
+        sort: row.data.sort,
+        terminal_type: row.data?.terminal_type || 'default',
       }
 
       this.$refs.snippetDialogForm.currentSelectCollection = this.current_collection_item
