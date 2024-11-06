@@ -7,7 +7,7 @@
 希望此插件能够帮助您提高工作效率，如果您在使用过程中遇到任何问题，欢迎提 issue 或者 PR。    
 
 
-更详细的介绍和教程可以查看论坛文章：[https://yuanliao.info/d/19810-automatic-snippets](https://yuanliao.info/d/19810-automatic-snippets)   
+**更详细的介绍和教程可以查看: [项目文档](https://github.com/RipperTs/utools-snippets-plugin/wiki)**  
 
 ## 功能
 - [x] 允许设置每一个片段状态、后置动作、多个关键字等。
