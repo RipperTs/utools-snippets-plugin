@@ -110,8 +110,8 @@
               <el-radio label="warp" v-if="is_macos" border>Warp</el-radio>
             </el-radio-group>
             <div class="remark">
-              <p v-if="form.terminal_type === 'iterm2'">iTerm2 是一款功能强大的终端工具, 适用于高级用户. https://iterm2.com</p>
-              <p v-if="form.terminal_type === 'warp'">Warp 是一款现代化的 Rust 终端. https://www.warp.dev</p>
+              <p v-if="form.terminal_type === 'iterm2'">iTerm2 是一款功能强大的终端工具, 适用于高级用户可完美替代默认终端.</p>
+              <p v-if="form.terminal_type === 'warp'">Warp 是一款现代化的 Rust 终端, 使用此终端会将命令保存在剪贴板后再执行.</p>
             </div>
           </el-form-item>
         </template>

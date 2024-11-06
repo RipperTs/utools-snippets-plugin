@@ -78,20 +78,22 @@ function openITerminal2Mac(command) {
 }
 
 // Warp 专用的 AppleScript 命令
-function openWarpTerminalMac(command) {
+function openWarpTerminalMac(command, warp_activate_delay) {
   const script = `
+    set the clipboard to "${command}"
+
     tell application "Warp"
         activate
         tell application "System Events"
             keystroke "t" using command down
+            delay ${warp_activate_delay}
+            keystroke "v" using command down
             delay 0.5
+            key code 36
         end tell
-        do shell script "sleep 0.5"
-        tell application "System Events" to keystroke "${command}"
-        tell application "System Events" to key code 36
     end tell`;
 
-  exec(`osascript -e '${script.replace(/'/g, "'\\''")}'`);
+  exec(`osascript -e '${script}'`);
 }
 
 // Linux系统
@@ -103,8 +105,9 @@ function openTerminalLinux(command) {
  * 打开终端并执行命令
  * @param command 执行的命令
  * @param terminalType 终端类型, 暂定为MacOS的终端类型, default: Terminal, iterm2: iTerm2, warp: Warp
+ * @param warp_activate_delay Warp激活延迟, 默认为3秒
  */
-window.openTerminal = function (command, terminalType) {
+window.openTerminal = function (command, terminalType, warp_activate_delay = 3) {
   // 处理可能的错误情况
   if (!command) {
     window.utools.showNotification('命令不能为空');
@@ -113,22 +116,22 @@ window.openTerminal = function (command, terminalType) {
 
   try {
     const escapedCommand = escapeCommand(command);
-    if (window.utools.isWindows()){
+    if (window.utools.isWindows()) {
       openTerminalWindows(escapedCommand);
       return;
     }
 
-    if (window.utools.isLinux()){
+    if (window.utools.isLinux()) {
       openTerminalLinux(escapedCommand);
       return;
     }
 
-    if (!window.utools.isMacOS()){
+    if (!window.utools.isMacOS()) {
       window.utools.showNotification('未知的操作系统, 无法打开终端');
       return;
     }
 
-    if(terminalType === 'default'){
+    if (terminalType === 'default') {
       openTerminalMac(escapedCommand);
       return;
     }
@@ -139,7 +142,7 @@ window.openTerminal = function (command, terminalType) {
     }
 
     if (terminalType === 'warp') {
-      openWarpTerminalMac(escapedCommand);
+      openWarpTerminalMac(escapedCommand, warp_activate_delay);
       return;
     }
 

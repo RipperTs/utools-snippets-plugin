@@ -41,6 +41,12 @@
           <span class="ml-3 opacity-60">毫秒</span>
         </el-form-item>
 
+        <el-form-item label="Warp启动延迟" style="margin-top: 10px;" v-if="is_macos">
+          <el-input-number v-model="form.warp_activate_delay" :min="1" :step="0.5" :max="10"
+                           size="mini"></el-input-number>
+          <span class="ml-3 opacity-60">秒</span>
+        </el-form-item>
+
         <div class="btn mt-10 flex">
           <el-button type="primary" size="mini" @click="saveData">保存配置</el-button>
           <el-button type="warning" size="mini" @click="restartData">重置</el-button>
@@ -109,10 +115,12 @@ export default {
       fileName: 'snippets_data',
       importType: 1,
       form: {},
+      is_macos: false,
     }
   },
 
   created() {
+    this.is_macos = window.utools.isMacOS()
     this.getForm()
     this.downloadPath = window.utools.getPath('downloads')
     window.utools.onPluginOut(() => {

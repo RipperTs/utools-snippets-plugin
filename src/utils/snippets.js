@@ -72,7 +72,7 @@ export async function autoSnippets(snippets, input_content = '') {
     if (paste_method === 3) {
       window.utools.hideMainWindow()
       const terminal_type = snippets.data?.terminal_type || 'default'
-      window.openTerminal(content, terminal_type)
+      window.openTerminal(content, terminal_type, parseInt(getConfig('warp_activate_delay')))
       window.utools.outPlugin()
       return false;
     }

@@ -6,6 +6,7 @@ const initConfig = {
   reduction_clipboard_delay: 100,
   paste_clipboard_delay: 20, // 粘贴(上屏)内容延迟
   preview_snippet_delay: 500, // 预览片段内容延迟
+  warp_activate_delay: 3, // Warp激活延迟
 }
 
 const configKey = "config"
