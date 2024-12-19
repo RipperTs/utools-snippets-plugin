@@ -144,6 +144,14 @@ const placeholder_tags = [
       {
         "name": "内网ip",
         "value": "{ip:0}"
+      },
+      {
+        "name": "回车键",
+        "value": "{enter}"
+      },
+      {
+        "name": "Tab键",
+        "value": "{tab}"
       }
     ]
   },

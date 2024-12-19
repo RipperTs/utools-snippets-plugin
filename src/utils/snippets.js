@@ -122,16 +122,41 @@ async function pasteText(snippets, content) {
     window.utools.copyText(content)
     return false;
   }
-  // 获取粘贴方式
+
+  // 首先处理 enter，将文本分割成主要段落
+  const enterSegments = content.split(/{enter}/g)
   const paste_method = snippets.data?.paste_method || 1
-  if (paste_method === 1) {
-    window.utools.hideMainWindowPasteText(content)
-    return true;
+
+  for (let i = 0; i < enterSegments.length; i++) {
+    let segment = enterSegments[i]
+
+    // 处理每个段落中的 tab
+    const tabSegments = segment.split(/{tab}/g)
+    for (let j = 0; j < tabSegments.length; j++) {
+      const tabSegment = tabSegments[j]
+      if (tabSegment) {
+        if (paste_method === 1) {
+          window.utools.hideMainWindowPasteText(tabSegment)
+        } else if (paste_method === 2) {
+          window.utools.hideMainWindowTypeString(tabSegment)
+        }
+      }
+
+      // 如果不是最后一个 tab 片段，则模拟 tab 键
+      if (j < tabSegments.length - 1) {
+        await delay(parseInt(getConfig('enter_key_delay')));
+        window.utools.simulateKeyboardTap('tab')
+      }
+    }
+
+    // 如果不是最后一个 enter 片段，则模拟回车键
+    if (i < enterSegments.length - 1) {
+      await delay(parseInt(getConfig('enter_key_delay')));
+      window.utools.simulateKeyboardTap('enter')
+    }
   }
-  if (paste_method === 2) {
-    window.utools.hideMainWindowTypeString(content)
-    return true;
-  }
+
+  return true;
 }
 
 /**
