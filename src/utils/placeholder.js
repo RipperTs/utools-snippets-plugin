@@ -152,6 +152,10 @@ const placeholder_tags = [
       {
         "name": "Tab键",
         "value": "{tab}"
+      },
+      {
+        "name": "延时等待",
+        "value": "{sleep:3}"
       }
     ]
   },

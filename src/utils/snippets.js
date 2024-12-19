@@ -123,36 +123,72 @@ async function pasteText(snippets, content) {
     return false;
   }
 
-  // 首先处理 enter，将文本分割成主要段落
-  const enterSegments = content.split(/{enter}/g)
   const paste_method = snippets.data?.paste_method || 1
 
-  for (let i = 0; i < enterSegments.length; i++) {
-    let segment = enterSegments[i]
+  // 使用正则表达式匹配所有特殊标记
+  const tokens = content.match(/({sleep:\d+}|{enter}|{tab}|[^{]+)|({[^}]*})/g) || []
 
-    // 处理每个段落中的 tab
-    const tabSegments = segment.split(/{tab}/g)
-    for (let j = 0; j < tabSegments.length; j++) {
-      const tabSegment = tabSegments[j]
-      if (tabSegment) {
+  let currentText = ''
+
+  for (const token of tokens) {
+    // 处理 sleep
+    if (token.startsWith('{sleep:')) {
+      if (currentText) {
+        // 先输出累积的文本
         if (paste_method === 1) {
-          window.utools.hideMainWindowPasteText(tabSegment)
+          window.utools.hideMainWindowPasteText(currentText)
         } else if (paste_method === 2) {
-          window.utools.hideMainWindowTypeString(tabSegment)
+          window.utools.hideMainWindowTypeString(currentText)
         }
+        currentText = ''
       }
-
-      // 如果不是最后一个 tab 片段，则模拟 tab 键
-      if (j < tabSegments.length - 1) {
-        await delay(parseInt(getConfig('enter_key_delay')));
-        window.utools.simulateKeyboardTap('tab')
-      }
+      const sleepTime = parseInt(token.match(/\d+/)[0]) * 1000
+      await delay(sleepTime)
+      continue
     }
 
-    // 如果不是最后一个 enter 片段，则模拟回车键
-    if (i < enterSegments.length - 1) {
-      await delay(parseInt(getConfig('enter_key_delay')));
+    // 处理 enter
+    if (token === '{enter}') {
+      if (currentText) {
+        // 先输出累积的文本
+        if (paste_method === 1) {
+          window.utools.hideMainWindowPasteText(currentText)
+        } else if (paste_method === 2) {
+          window.utools.hideMainWindowTypeString(currentText)
+        }
+        currentText = ''
+      }
+      await delay(parseInt(getConfig('enter_key_delay')))
       window.utools.simulateKeyboardTap('enter')
+      continue
+    }
+
+    // 处理 tab
+    if (token === '{tab}') {
+      if (currentText) {
+        // 先输出累积的文本
+        if (paste_method === 1) {
+          window.utools.hideMainWindowPasteText(currentText)
+        } else if (paste_method === 2) {
+          window.utools.hideMainWindowTypeString(currentText)
+        }
+        currentText = ''
+      }
+      await delay(parseInt(getConfig('enter_key_delay')))
+      window.utools.simulateKeyboardTap('tab')
+      continue
+    }
+
+    // 累积普通文本
+    currentText += token
+  }
+
+  // 输出最后累积的文本
+  if (currentText) {
+    if (paste_method === 1) {
+      window.utools.hideMainWindowPasteText(currentText)
+    } else if (paste_method === 2) {
+      window.utools.hideMainWindowTypeString(currentText)
     }
   }
 
